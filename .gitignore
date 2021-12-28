@@ -1,0 +1,17 @@
+out/**
+.vs/**
+*.obj
+*.log
+*.pdb
+*.exe
+*.dll
+
+.DS_Store
+
+Makefile
+
+JUCE/**
+
+/vcpkg/
+
+/cmake-build-*/

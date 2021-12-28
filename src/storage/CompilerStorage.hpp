@@ -1,0 +1,33 @@
+#ifndef FORMULA_STORAGE_COMPILER_STORAGE_INCLUDED
+#define FORMULA_STORAGE_COMPILER_STORAGE_INCLUDED
+
+#include <string>
+
+#include <boost/uuid/uuid_io.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+
+#include <processor/PluginState.hpp>
+#include <storage/LocalStorage.hpp>
+
+namespace formula::storage {
+	class CompilerStorage : public LocalStorage {
+	public:
+		struct CompiledLibraryPath {
+			std::string twoChannelsLibraryPath;
+			std::string singleChannelLibrariesPaths[2];
+		};
+
+		CompilerStorage();
+		std::string createCompilationId();
+		std::string createSourceFile(std::string compilationId, std::string sourceCode);
+		void deleteSourceFile(std::string compilationId);
+		CompiledLibraryPath getLibraryPath(std::string compilationId);
+		void deleteLibrary(std::string compilationId);
+	private:
+		const std::string sourceFileSuffix = ".c";
+		const std::string twoChannelsLibrarySuffix = ".2ch.formula";
+		const std::string singleChannelLibrariesPaths[2] = { ".1ch.left.formula", ".1ch.right.formula" };
+	};
+}
+
+#endif // FORMULA_STORAGE_COMPILER_STORAGE_INCLUDED

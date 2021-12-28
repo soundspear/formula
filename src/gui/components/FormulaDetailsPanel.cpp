@@ -1,0 +1,121 @@
+#include "FormulaDetailsPanel.hpp"
+
+#include <memory>
+
+formula::gui::FormulaDetailsPanel::FormulaDetailsPanel(const std::shared_ptr<formula::events::EventHub> &eventHub)
+: eventHub(eventHub) {
+    nameFont = nameLabel.getFont();
+    nameFont.setHeight(20);
+    nameLabel.setFont(nameFont);
+
+    closeButton = std::unique_ptr<Button>(getLookAndFeel().createDocumentWindowButton(DocumentWindow::TitleBarButtons::closeButton));
+    addAndMakeVisible(closeButton.get());
+    closeButton->onClick = [this]() {
+        this->setVisible(false);
+    };
+
+    addAndMakeVisible(nameLabel);
+    authorFont = authorLabel.getFont();
+    authorFont.setItalic(true);
+    authorLabel.setFont(authorFont);
+    addAndMakeVisible(authorLabel);
+    descriptionFont = descriptionLabel.getFont();
+    descriptionFont.setItalic(true);
+    descriptionLabel.setFont(descriptionFont);
+    addAndMakeVisible(descriptionLabel);
+
+    codePreviewEditor = std::make_unique<CodeEditorComponent>(codePreview, &cppTokeniser);
+    addAndMakeVisible(codePreviewEditor.get());
+    ratingsHeadingLabel.setText("User ratings", NotificationType::sendNotificationAsync);
+#ifdef __PREVIEW_SHOW_RATINGS
+    addAndMakeVisible(ratingsHeadingLabel);
+#endif
+}
+
+
+void formula::gui::FormulaDetailsPanel::setFormulaDto(formula::cloud::GetFormulaDto dto) {
+    this->dto = dto;
+    nameLabel.setText(dto.name, NotificationType::sendNotificationAsync);
+    authorLabel.setText("by " + dto.author, NotificationType::sendNotificationAsync);
+    codePreviewEditor->loadContent(dto.source);
+    descriptionLabel.setText(dto.description, NotificationType::sendNotificationAsync);
+
+#ifdef __PREVIEW_SHOW_RATINGS
+    ratingComponents.clear(); commentLabels.clear();
+    for (auto& rating : dto.ratings) {
+        auto ratingComponent = std::make_unique<RatingComponent>(true);
+        ratingComponent->setRating(rating.rating);
+        addAndMakeVisible(ratingComponent.get());
+        ratingComponents.push_back(std::move(ratingComponent));
+
+        auto commentLabel = std::make_unique<Label>();
+        commentLabel->setText(rating.comment, NotificationType::sendNotificationAsync);
+        addAndMakeVisible(commentLabel.get());
+        commentLabels.push_back(std::move(commentLabel));
+    }
+#endif
+
+    resized();
+    repaint();
+}
+
+void formula::gui::FormulaDetailsPanel::paint(Graphics& g)
+{
+    g.fillAll(getLookAndFeel().findColour(ListBox::backgroundColourId).brighter(0.1f));
+    auto area = getLocalBounds();
+    g.setColour(getLookAndFeel().findColour(ListBox::outlineColourId));
+    g.drawRect(area);
+}
+
+void formula::gui::FormulaDetailsPanel::resized()
+{
+    constexpr auto pad = 12;
+    constexpr auto borderSize = 1;
+    constexpr auto topMargin = 10;
+    constexpr auto componentsMargin = 14;
+    constexpr auto labelMargin = 4;
+
+    constexpr auto closeButtonSize = 32;
+    constexpr auto nameHeight = 18;
+    constexpr auto labelHeight = 12;
+    constexpr auto descriptionHeight = 32;
+    constexpr auto commentHeight = 32;
+    constexpr auto editorPreviewHeight = 100;
+    constexpr auto ratingHeight = 25;
+    constexpr auto ratingWidth = 80;
+
+    auto area = getLocalBounds();
+
+    closeButton->setBounds(area.getX() + area.getWidth() - closeButtonSize - borderSize, borderSize,
+                           closeButtonSize, closeButtonSize);
+
+    area = area.withTrimmedTop(pad).withTrimmedBottom(pad).withTrimmedLeft(pad).withTrimmedRight(pad);
+
+    area.removeFromTop(topMargin);
+
+    nameLabel.setBounds(area.removeFromTop(nameHeight));
+    area.removeFromTop(labelMargin);
+    authorLabel.setBounds(area.removeFromTop(nameHeight));
+    area.removeFromTop(componentsMargin);
+
+    codePreviewEditor->setBounds(area.removeFromTop(editorPreviewHeight));
+
+    descriptionLabel.setBounds(area.removeFromTop(descriptionHeight));
+    area.removeFromTop(componentsMargin);
+
+#ifdef __PREVIEW_SHOW_RATINGS
+    ratingsHeadingLabel.setBounds(area.removeFromTop(labelHeight));
+    area.removeFromTop(labelMargin);
+
+    const auto numRatings = ratingComponents.size();
+    for (auto i = 0; i < numRatings; i++) {
+        auto ratingArea = area.removeFromTop(ratingHeight);
+        ratingArea.setWidth(ratingWidth);
+        ratingComponents[i]->setBounds(ratingArea);
+        area.removeFromTop(labelMargin);
+        commentLabels[i]->setBounds(area.removeFromTop(commentHeight));
+        area.removeFromTop(labelMargin);
+    }
+#endif
+}
+

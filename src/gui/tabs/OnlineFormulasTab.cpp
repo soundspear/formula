@@ -1,0 +1,161 @@
+#include <boost/format.hpp>
+#include "OnlineFormulasTab.hpp"
+#include "gui/components/RatingComponent.hpp"
+
+using namespace boost::assign;
+
+formula::gui::OnlineFormulasTab::OnlineFormulasTab(const std::shared_ptr<formula::events::EventHub>& eventHub,
+                                                   const std::shared_ptr<formula::cloud::FormulaCloudClient>& cloud)
+        : eventHub(eventHub), cloud(cloud), detailsPanel(this->eventHub)
+{
+    table.setColour(ListBox::outlineColourId, Colours::grey);
+    table.setOutlineThickness(2);
+    table.setRowHeight(30);
+    auto & header = table.getHeader();
+    header.addColumn("Name", OnlineFormulasColumnsIds::name, 200);
+    header.addColumn("Author", OnlineFormulasColumnsIds::author, 125);
+
+#ifdef __PREVIEW_SHOW_RATINGS
+    header.addColumn("Rating", OnlineFormulasColumnsIds::rating, 75);
+#endif
+
+    header.addColumn("Description", OnlineFormulasColumnsIds::description, 600);
+    header.addColumn("Created", OnlineFormulasColumnsIds::created, 100);
+    header.addColumn("LastModified", OnlineFormulasColumnsIds::lastModified, 100);
+    table.setModel(this);
+    table.getVerticalScrollBar().addListener(this);
+    addAndMakeVisible(table);
+
+    addChildComponent(detailsPanel);
+
+    eventHub->subscribeOnUiThread<OnlineFormulasTab>(
+            EventType::listFormulaResponse, [](boost::any arg, OnlineFormulasTab* thisPtr) {
+        thisPtr->searchParams.skip += thisPtr->searchParams.take;
+        const auto response = boost::any_cast<std::vector<formula::cloud::ListFormulaDto>>(arg);
+        if (response.size() < thisPtr->searchParams.take) {
+            thisPtr->endOfResultsReached = true;
+        }
+        thisPtr->data.insert(thisPtr->data.end(), response.begin(), response.end());
+        thisPtr->table.updateContent();
+    }, this);
+
+    eventHub->subscribeOnUiThread<OnlineFormulasTab>(
+            EventType::getFormulaResponse, [](boost::any arg, OnlineFormulasTab* thisPtr) {
+        const auto response = boost::any_cast<formula::cloud::GetFormulaDto>(arg);
+        thisPtr->detailsPanel.setFormulaDto(response);
+        thisPtr->detailsPanel.setVisible(true);
+        thisPtr->resized();
+    }, this);
+}
+
+int formula::gui::OnlineFormulasTab::getNumRows() {
+    return static_cast<int>(data.size());
+}
+
+void formula::gui::OnlineFormulasTab::paintRowBackground(Graphics &g, int rowNumber, int, int, bool rowIsSelected) {
+    auto alternateColour = getLookAndFeel().findColour(ListBox::backgroundColourId)
+            .interpolatedWith(getLookAndFeel().findColour(ListBox::textColourId), 0.03f);
+    if (rowIsSelected)
+        g.fillAll(Colours::lightblue);
+    else if (rowNumber % 2)
+        g.fillAll(alternateColour);
+}
+
+void formula::gui::OnlineFormulasTab::paintCell(Graphics &g, int rowNumber, int columnId, int width, int height, bool) {
+    if (rowNumber >= data.size()) {
+        return;
+    }
+
+    g.setColour(getLookAndFeel().findColour(ListBox::textColourId));
+    g.setFont(Font());
+
+    auto row = data[rowNumber];
+    String text = "";
+
+    switch (columnId) {
+        case OnlineFormulasColumnsIds::name:
+            text = row.name;
+            break;
+        case OnlineFormulasColumnsIds::author:
+            text = row.author;
+            break;
+        case OnlineFormulasColumnsIds::description:
+            text = row.description;
+            break;
+        case OnlineFormulasColumnsIds::created:
+            text = boost::posix_time::to_simple_string(row.created);
+            text = text.dropLastCharacters(text.length() - 11);
+            break;
+        case OnlineFormulasColumnsIds::lastModified:
+            text = boost::posix_time::to_simple_string(row.lastModified);
+            text = text.dropLastCharacters(text.length() - 11);
+            break;
+        default:
+            return;
+    }
+
+    g.drawText(text, 2, 0, width - 4, height, Justification::centredLeft, true);
+
+    g.setColour(getLookAndFeel().findColour(ListBox::backgroundColourId));
+    g.fillRect(width - 1, 0, 1, height);
+}
+
+void formula::gui::OnlineFormulasTab::sortOrderChanged(int newSortColumnId, bool isForwards) {
+}
+
+Component *formula::gui::OnlineFormulasTab::refreshComponentForCell(int rowNumber, int columnId, bool,
+                                                                    Component *existingComponentToUpdate) {
+
+#ifdef __PREVIEW_SHOW_RATINGS
+    if (columnId == OnlineFormulasColumnsIds::rating) {
+        auto* ratingsBox = dynamic_cast<formula::gui::RatingComponent*> (existingComponentToUpdate);
+
+        if (ratingsBox == nullptr)
+            ratingsBox = new RatingComponent(false);
+
+        if (data[rowNumber].rating.has_value())
+            ratingsBox->setRating(data[rowNumber].rating.value());
+        else
+            ratingsBox->setRating(-1);
+        return ratingsBox;
+    }
+#endif
+    return nullptr;
+}
+
+void formula::gui::OnlineFormulasTab::selectedRowsChanged(int lastRowSelected) {
+    const auto selectedRowIdx = table.getSelectedRow();
+    if (selectedRowIdx == -1 || selectedRowIdx >= data.size()) {
+        return;
+    }
+    const auto & selectedRowInformation = data[selectedRowIdx];
+    cloud->getFormula(selectedRowInformation.id);
+}
+
+void formula::gui::OnlineFormulasTab::resized() {
+    constexpr auto tableMargin = 8;
+
+    auto area = getLocalBounds();
+
+    table.setBounds(area.withTrimmedLeft(tableMargin).withTrimmedRight(tableMargin));
+
+    detailsPanel.setBounds(getLocalBounds().removeFromLeft(getLocalBounds().getWidth() / 3));
+}
+
+void formula::gui::OnlineFormulasTab::visibilityChanged() {
+    if (isVisible() && data.size() == 0) {
+        makeSearchAsync();
+    }
+}
+
+void formula::gui::OnlineFormulasTab::scrollBarMoved(ScrollBar *scrollBarThatHasMoved, double newRangeStart) {
+    const auto barRange = scrollBarThatHasMoved->getCurrentRange();
+    const auto scrollLimit = scrollBarThatHasMoved->getMaximumRangeLimit();
+    if (barRange.getEnd() >= scrollLimit && !this->endOfResultsReached) {
+        makeSearchAsync();
+    }
+}
+
+void formula::gui::OnlineFormulasTab::makeSearchAsync() {
+    cloud->listFormulas(searchParams.skip, searchParams.take, "last_modified", "desc", false, "");
+}

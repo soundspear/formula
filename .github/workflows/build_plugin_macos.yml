@@ -1,0 +1,51 @@
+name: Build plugin (MacOS)
+on: 
+  workflow_dispatch:
+    inputs:
+      debug_enabled:
+        description: 'Run the build with tmate debugging enabled'     
+        required: false
+        default: false
+
+jobs:  
+  build:
+    name: Building the project
+    runs-on: macos-11
+    steps: 
+    - name: Git Checkout
+      uses: actions/checkout@v2
+      
+    - name: Configure
+      run: |
+        chmod +x configure-mac.sh
+        ./configure-mac.sh
+        
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
+      if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled }}
+        
+    - name: CMake
+      run: |
+        cmake -G Ninja . 
+            
+    - name: CMake Build
+      run: |
+        cmake --build .
+        
+    - name: Create setup
+      run: |
+        export IDENTIFIER=com.soundspear.pkg.formula
+        export SYSTEM_PLUGINS_DIR=/Library/Audio/Plug-Ins
+        export BUILD_DIR=Formula_artefacts
+        
+        pkgbuild --root "$BUILD_DIR/VST3/" --identifier "$IDENTIFIER.vst3" --install-location "$SYSTEM_PLUGINS_DIR/VST3" Formula_VST3.pkg
+        pkgbuild --root "$BUILD_DIR/AU/" --identifier "$IDENTIFIER.component" --install-location "$SYSTEM_PLUGINS_DIR/Components" Formula_AU.pkg
+        
+        zip -r formula-macos.zip *.pkg        
+        
+    - name: Upload
+      run: |
+        brew install minio-mc
+        mc config host add scw ${{ secrets.BUCKET_ENDPOINT }} ${{ secrets.BUCKET_ACCESS_KEY }} ${{ secrets.BUCKET_SECRET_KEY }} --api S3v4
+        
+        mc cp "formula-macos.zip" "scw/formula/"

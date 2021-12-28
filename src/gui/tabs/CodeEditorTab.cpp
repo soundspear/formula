@@ -1,0 +1,211 @@
+#include <gui/tabs/CodeEditorTab.hpp>
+
+formula::gui::CodeEditorTab::CodeEditorTab(
+    const std::shared_ptr<formula::events::EventHub>& eventHub,
+    const std::shared_ptr<formula::processor::PluginState>& pluginState
+) : eventHub(eventHub), pluginState(pluginState),
+    savePopup(eventHub, pluginState),
+    knobsPanel(pluginState)
+{
+    setOpaque(true);
+
+    editor.reset(new CodeEditorComponent(codeDocument, &cppTokeniser));
+    addAndMakeVisible(editor.get());
+    auto metadata = pluginState->getActiveFormulaMetadata();
+    auto formulaSource = metadata[formula::processor::FormulaMetadataKeys::source];
+    if (formulaSource.empty()) {
+        editor->loadContent(R"""(
+formula_main {
+    float output = input;
+    return output;
+}
+)""");
+    }
+    else {
+        editor->loadContent(formulaSource);
+    }
+    metadata[formula::processor::FormulaMetadataKeys::source] = editor->getDocument().getAllContent().toStdString();
+    pluginState->setActiveFormulaMetadata(metadata);
+    setCodeEditorComponentColourScheme();
+    codeDocument.addListener(this);
+
+    compileButton.setImages(formula::binary::compile_svg);
+    compileButton.onClick = [&] {
+        auto metadata = pluginState->getActiveFormulaMetadata();
+        auto formulaSource = metadata[formula::processor::FormulaMetadataKeys::source];
+        eventHub->publish(EventType::compilationRequest, formulaSource);
+        compileButton.setEnabled(false);
+    };
+    addAndMakeVisible(compileButton);
+
+    muteButton.setImages(formula::binary::mute_svg, nullptr, formula::binary::unmute_svg);
+    addAndMakeVisible(muteButton);
+
+    pauseButton.setImages(formula::binary::pause_svg, nullptr, formula::binary::unpause_svg);
+    addAndMakeVisible(pauseButton);
+
+    saveLocalButton.setImages(formula::binary::save_local_svg);
+    saveLocalButton.onClick = [this] {
+        this->savePopup.resetContent();
+        this->savePopup.setVisible(true);
+        this->resized();
+    };
+    addAndMakeVisible(saveLocalButton);
+    
+    showKnobsButton.setImages(formula::binary::show_knobs_svg);
+    showKnobsButton.onClick = [this] {        
+        this->knobsPanel.setVisible(!this->knobsPanel.isVisible());
+        this->resized();
+    };
+    addAndMakeVisible(showKnobsButton);
+
+    zoomInButton.setImages(formula::binary::zoom_in_svg);
+    addAndMakeVisible(zoomInButton);
+
+    zoomOutButton.setImages(formula::binary::zoom_in_svg);
+    addAndMakeVisible(zoomOutButton);
+
+    compilerErrors.setReadOnly(true);
+    compilerErrors.setMultiLine(true);
+    addChildComponent(compilerErrors);
+
+    addChildComponent(knobsPanel);
+
+    addChildComponent(savePopup);
+
+    eventHub->subscribeOnUiThread<CodeEditorTab>(
+            EventType::compilationSuccess,[] (boost::any _, CodeEditorTab* editor) {
+         editor->compilerErrors.setText("");
+         editor->compilerErrors.setVisible(false);
+         editor->compileButton.setEnabled(true);
+         editor->resized();
+    }, this);
+
+    eventHub->subscribeOnUiThread<CodeEditorTab>(
+            EventType::compilationFail, [](boost::any errorText, CodeEditorTab* editor) {
+        auto errorStr = boost::any_cast<std::string>(errorText);
+        editor->compilerErrors.setVisible(true);
+        editor->compilerErrors.setText(boost::any_cast<std::string>(errorStr));
+        editor->compileButton.setEnabled(true);
+        editor->resized();
+    }, this);
+
+    eventHub->subscribeOnUiThread<CodeEditorTab>(
+            EventType::loadFormulaRequest, [](boost::any metadata, CodeEditorTab* editor) {
+        auto formulaMetadata = boost::any_cast<formula::processor::FormulaMetadata>(metadata);
+        editor->editor->loadContent(formulaMetadata[formula::processor::FormulaMetadataKeys::source]);
+        editor->knobsPanel.restoreFromState(formulaMetadata);
+        editor->pluginState->setActiveFormulaMetadata(formulaMetadata);
+        editor->resized();
+    }, this);
+}
+
+void formula::gui::CodeEditorTab::paint(Graphics& g)
+{
+    g.fillAll(Colours::lightgrey);
+}
+
+void formula::gui::CodeEditorTab::codeDocumentTextInserted(const String& newText, int insertIndex)
+{
+    /* -- Leads to insert/delete desynchronisations
+    auto activeFormula = pluginState->getPropertyAsString(formula::processor::FormulaMetadataKeys::source);
+    activeFormula.insert(insertIndex, newText.toStdString());
+    pluginState->setActiveFormulaMetadataField(formula::processor::FormulaMetadataKeys::source, activeFormula);
+    */
+    auto source = codeDocument.getAllContent();
+    pluginState->setActiveFormulaMetadataField(formula::processor::FormulaMetadataKeys::source, source.toStdString());
+}
+
+void formula::gui::CodeEditorTab::codeDocumentTextDeleted(int startIndex, int endIndex)
+{
+    /* -- Leads to insert/delete desynchronisations
+    auto activeFormula = pluginState->getPropertyAsString(formula::processor::FormulaMetadataKeys::source);
+    activeFormula.erase(startIndex, static_cast<size_t>(endIndex) - startIndex);
+    pluginState->setActiveFormulaMetadataField(formula::processor::FormulaMetadataKeys::source, activeFormula);
+    */
+    auto source = codeDocument.getAllContent();
+    pluginState->setActiveFormulaMetadataField(formula::processor::FormulaMetadataKeys::source, source.toStdString());
+}
+
+void formula::gui::CodeEditorTab::resized()
+{
+    constexpr auto buttonSizePixels = 32;
+    constexpr auto buttonMarginBottomPixels = 5;
+    constexpr auto compilerErrorsHeightPixels = 140;
+    constexpr auto knobsPanelHeightPixels = 325;
+
+    auto area = getLocalBounds();
+
+    const auto editorCenter = area.getCentre();
+    savePopup.setBounds(Rectangle<int>(
+        editorCenter.getX() - 200,
+        editorCenter.getY() - 175,
+        400,
+        350
+        ));
+
+    auto toolbarArea = area.removeFromLeft(buttonSizePixels);
+
+    compileButton.setBounds(toolbarArea.removeFromTop(buttonSizePixels));
+    toolbarArea.removeFromTop(buttonMarginBottomPixels);
+
+    muteButton.setBounds(toolbarArea.removeFromTop(buttonSizePixels));
+    toolbarArea.removeFromTop(buttonMarginBottomPixels);
+
+    pauseButton.setBounds(toolbarArea.removeFromTop(buttonSizePixels));
+    toolbarArea.removeFromTop(buttonMarginBottomPixels);
+
+    saveLocalButton.setBounds(toolbarArea.removeFromTop(buttonSizePixels));
+    toolbarArea.removeFromTop(buttonMarginBottomPixels);
+
+    zoomInButton.setBounds(toolbarArea.removeFromTop(buttonSizePixels));
+    toolbarArea.removeFromTop(buttonMarginBottomPixels);
+
+    zoomOutButton.setBounds(toolbarArea.removeFromTop(buttonSizePixels));
+    toolbarArea.removeFromTop(buttonMarginBottomPixels);
+
+    showKnobsButton.setBounds(toolbarArea.removeFromTop(buttonSizePixels));
+    toolbarArea.removeFromTop(buttonMarginBottomPixels);
+
+    if (knobsPanel.isVisible()) {
+        knobsPanel.setBounds(area.removeFromBottom(knobsPanelHeightPixels));
+    }
+
+    if (compilerErrors.isVisible()) {
+        compilerErrors.setBounds(area.removeFromBottom(compilerErrorsHeightPixels));
+    }
+
+    editor->setBounds(area);
+
+}
+
+void formula::gui::CodeEditorTab::setCodeEditorComponentColourScheme()
+{
+    struct Type
+    {
+        const char* name;
+        juce::uint32 colour;
+    };
+
+    const Type types[] =
+    {
+        { "Error",              0xffe60000 },
+        { "Comment",            0xff72d20c },
+        { "Keyword",            0xffee6f6f },
+        { "Operator",           0xffc4eb19 },
+        { "Identifier",         0xffcfcfcf },
+        { "Integer",            0xff42c8c4 },
+        { "Float",              0xff885500 },
+        { "String",             0xffbc45dd },
+        { "Bracket",            0xff058202 },
+        { "Punctuation",        0xffcfbeff },
+        { "Preprocessor Text",  0xfff8f631 }
+    };
+
+    CodeEditorComponent::ColourScheme cs;
+
+    for (auto& t : types)
+        cs.set(t.name, Colour(t.colour));
+
+    editor->setColourScheme(cs);
+}

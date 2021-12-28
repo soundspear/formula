@@ -1,0 +1,54 @@
+name: Build plugin (Windows)
+on: 
+  workflow_dispatch:
+    inputs:
+      debug_enabled:
+        description: 'Run the build with tmate debugging enabled'     
+        required: false
+        default: false
+
+jobs:  
+  build:
+    name: Building the project
+    runs-on: windows-2019
+    steps:        
+    - name: Git Checkout
+      uses: actions/checkout@v2
+                  
+    - name: Configure
+      shell: powershell
+      run: |
+        .\configure-windows.ps1
+                
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
+      if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled }}
+      
+    - name: CMake
+      shell: powershell
+      run: |
+        cmake . -G "Visual Studio 16 2019" -DVCPKG_TARGET_TRIPLET=x64-windows-static -DCMAKE_TOOLCHAIN_FILE=D:/a/formula/formula/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_WIN_DIR=D:/a/formula/formula/vcpkg/installed/x64-windows-static
+    
+    - name: CMake Build
+      shell: powershell
+      run: |
+        cmake --build . --target Formula_All
+        
+    - name: Package
+      shell: powershell
+      run: |
+        choco install innosetup -y
+        cp Formula_artefacts/Debug/VST3/Formula.vst3/Contents/x86_64-win/Formula.vst3 packaging/windows/
+        cd packaging/windows/
+        .\create-setup.ps1 -AppName "Formula" -AppFolderName "Formula" -AppVer "0.1" -Vst3File64 "./Formula.vst3" -OutputFileName formula-windows
+        cd ../..
+        
+    - name: Upload
+      shell: powershell
+      run: |
+        choco install minio-client --ignore-checksums -y
+        mc config host add scw ${{ secrets.BUCKET_ENDPOINT }} ${{ secrets.BUCKET_ACCESS_KEY }} ${{ secrets.BUCKET_SECRET_KEY }} --api S3v4       
+        mc cp packaging/windows/Output/formula-windows.exe "scw/formula/"
+ 
+
+   
