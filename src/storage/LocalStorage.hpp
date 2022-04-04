@@ -16,6 +16,11 @@ namespace formula::storage {
 #else
 				boost::filesystem::path(std::getenv("HOME")) / ".formula";
 #endif
+
+            if (!boost::filesystem::exists(storageFolder))
+            {
+                boost::filesystem::create_directories(storageFolder);
+            }
 		}
 
 	protected:
