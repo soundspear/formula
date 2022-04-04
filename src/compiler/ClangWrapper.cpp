@@ -5,11 +5,12 @@ using namespace boost::assign;
 formula::compiler::ClangWrapper::ClangWrapper(const std::shared_ptr<formula::events::EventHub>& eventHub)
     : eventHub(eventHub)
 {
-    clangPath = boost::process::search_path("clang");
-#if defined(__APPLE__ )
-    clangArgs += "-dynamiclib";
-#elif defined (_WIN32)
+#if defined (_WIN32)
+    clangPath = boost::filesystem::path(R"(C:\Program Files\tcc\tcc.exe)");
     clangArgs += "-shared";
+#elif defined(__APPLE__ )
+    clangPath = boost::process::search_path("clang");
+    clangArgs += "-dynamiclib";
 #endif
     clangArgs += "-fvisibility=hidden";
 

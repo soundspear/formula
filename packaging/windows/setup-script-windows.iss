@@ -7,6 +7,7 @@ AppSupportURL={#WebsiteUrl}contact/
 AppUpdatesURL={#WebsiteUrl}myaccount/
 AppVerName={#AppName}
 AppVersion={#AppVer}
+ChangesEnvironment=yes
 Compression=lzma2/ultra64
 DefaultDirName={commonpf}\Soundspear\{#AppName}
 DefaultGroupName={#AppName}
@@ -32,6 +33,7 @@ WizardSmallImageFile=setup-image-small.bmp
 Source: "{#Vst2File64}"; DestDir: {code:GetVST2Dir|0}; Components: VST64; Flags: ignoreversion
 #endif
 Source: "{#Vst3File64}"; DestDir: "{commoncf64}\VST3\"; Components: VST364; Flags: ignoreversion
+Source: "tcc\*"; DestDir: "{commonpf64}\tcc\"; Flags: ignoreversion recursesubdirs
 
 [Icons]
 Name: {group}\Uninstall Soundspear {#AppName}; Filename: {uninstallexe}
@@ -57,17 +59,28 @@ Name: "VST364"; Description: "64-bit VST3"; Types: Full;
 Name: "VST64"; Description: "64-bit VST2"; Types: Full;
 #endif
 
+[Registry]
+Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; \
+    ValueType: expandsz; ValueName: "Path"; ValueData: "{olddata};{commonpf64}\tcc"; \
+    Check: NeedsAddPath('{commonpf64}\tcc')
+
 [Code]
 var
   VST2DirPage: TInputDirWizardPage;
   TypesComboOnChangePrev: TNotifyEvent;
-  DownloadPage: TDownloadWizardPage;
 
-function OnDownloadProgress(const Url, FileName: String; const Progress, ProgressMax: Int64): Boolean;
+function NeedsAddPath(Param: string): boolean;
+var
+  OrigPath: string;
 begin
-  if Progress = ProgressMax then
-    Log(Format('Successfully downloaded file to {tmp}: %s', [FileName]));
-  Result := True;
+  if not RegQueryStringValue(HKEY_LOCAL_MACHINE,
+    'SYSTEM\CurrentControlSet\Control\Session Manager\Environment',
+    'Path', OrigPath)
+  then begin
+    Result := True;
+    exit;
+  end;
+  Result := Pos(';' + Param + ';', ';' + OrigPath + ';') = 0;
 end;
 
 procedure ComponentsListCheckChanges;
@@ -100,8 +113,6 @@ begin
 
   VST2DirPage.Add('64-bit folder');
   VST2DirPage.Values[0] := GetPreviousData('VST64', ExpandConstant('{reg:HKLM\SOFTWARE\VST,VSTPluginsPath|{pf}\Steinberg\VSTPlugins}'));
-
-  DownloadPage := CreateDownloadPage('Downloading requirements', 'Formula needs to download and install LLVM', @OnDownloadProgress);
 end;
 
 procedure CurPageChanged(CurPageID: Integer);
@@ -119,36 +130,6 @@ begin
   end;
 end;
 
-function NextButtonClick(CurPageID: Integer): Boolean;
-var 
-  FileName: string;
-  ResultCode: Integer;
-begin
-  if CurPageID = wpLicense then 
-  begin
-    DownloadPage.Clear;
-    DownloadPage.Add('https://github.com/llvm/llvm-project/releases/download/llvmorg-11.1.0/LLVM-11.1.0-win64.exe', 'llvm-11.exe', '');
-    DownloadPage.Show;
-    try
-      try
-        DownloadPage.Download;
-		FileName := ExpandConstant('{tmp}\llvm-11.exe');
-		Result := Exec(FileName, '', '', SW_SHOW, ewWaitUntilTerminated, ResultCode);
-
-		if not Result then
-		begin
-		  MsgBox('Cannot install required dependencies (LLVM 11)', mbError, MB_OK);
-		end;
-      except
-        SuppressibleMsgBox(AddPeriod(GetExceptionMessage), mbCriticalError, MB_OK, IDOK);
-		Result := False;
-      end;
-    finally
-      DownloadPage.Hide;
-    end;
-  end else
-    Result := True;
-end;
 
 function ShouldSkipPage(PageID: Integer): Boolean;
 begin

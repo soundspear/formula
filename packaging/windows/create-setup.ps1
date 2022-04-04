@@ -21,6 +21,15 @@ function Prepend-Param {
 	$paramStr + (Get-Content $OutputScriptPath -Raw) | Set-Content $OutputScriptPath
 }
 
+function Download-TinyCC {
+	$source = 'http://download.savannah.gnu.org/releases/tinycc/tcc-0.9.27-win64-bin.zip'
+	Invoke-WebRequest $source -OutFile tcc.zip
+	Expand-Archive tcc.zip -DestinationPath . -Force
+	Remove-Item -LiteralPath "tcc.zip", "tcc/doc", "tcc/examples", "tcc/i386-win32-tcc.exe" -Force -Recurse
+}
+
+Download-TinyCC
+
 Copy-Item -Force $InputScriptPath -Destination $OutputScriptPath
 
 Prepend-Param -Name AppName -Value $AppName
