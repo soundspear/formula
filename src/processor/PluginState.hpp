@@ -24,6 +24,9 @@ namespace formula::processor {
 
 		float getKnobValue(int knobId);
 		float getSwitchValue(int switchId);
+        float getDryWet();
+        float getInGain();
+        float getOutGain();
 
 		void setActiveFormulaMetadata(FormulaMetadata metadata);
 		void setActiveFormulaMetadataField(std::string key, std::string value);
@@ -36,10 +39,14 @@ namespace formula::processor {
 			attachSlider(std::string name, Slider& slider);
 		AudioProcessorValueTreeState::ButtonAttachment*
 			attachButton(std::string name, Button& button);
+
+        bool isBypassed() { return bypass; }
+        void setBypassed(bool isBypassed) { bypass = isBypassed; }
 	private:
 		void setPropertyAsString(std::string key, std::string value);
 		std::string getPropertyAsString(std::string key);
 
+        std::atomic<bool> bypass = false;
 
 		//JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PluginState)
 	};

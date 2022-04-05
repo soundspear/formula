@@ -104,6 +104,10 @@ void formula::processor::PluginProcessor::processBlock (juce::AudioBuffer<float>
 {
     juce::ignoreUnused (midiMessages);
 
+    if (pluginState->isBypassed()) {
+        return;
+    }
+
     if (recompiled) {
         formulaLoader.unloadLibrary();
 

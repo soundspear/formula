@@ -37,7 +37,6 @@ namespace formula::gui
         std::unique_ptr<CodeEditorComponent> editor;
         formula::gui::FormulaButton compileButton;
         formula::gui::FormulaButton muteButton;
-        formula::gui::FormulaButton pauseButton;
         formula::gui::FormulaButton saveLocalButton;
         formula::gui::FormulaButton showKnobsButton;
         formula::gui::FormulaButton zoomInButton;

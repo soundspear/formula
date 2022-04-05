@@ -8,8 +8,8 @@
 #include <storage/CompilerStorage.hpp>
 #include <processor/PluginState.hpp>
 
-typedef void (ProcessBlockMono)(float*, int, float, float*, float*);
-typedef void (ProcessBlockStereo)(float**, int, float, float*, float*);
+typedef void (ProcessBlockMono)(float*, int, float, float*, float*, float, float, float);
+typedef void (ProcessBlockStereo)(float**, int, float, float*, float*, float, float, float);
 
 namespace formula::processor {
 	class FormulaLoader

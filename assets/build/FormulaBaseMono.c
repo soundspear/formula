@@ -31,10 +31,11 @@ formula_main;
 
 float time = 0;
 
-FORMULA_EXPORT void process_block_mono(float* in, int numSamples, float sampleRate, const float* knobs, const float* switches) {
+FORMULA_EXPORT void process_block_mono(float* in, int numSamples, float sampleRate, const float* knobs, const float* switches,
+                                       float wet, float inGain, float outGain) {
     for (int s = 0; s < numSamples; s++) {
         time += 1 / sampleRate;
-        in[s] = _formula_main(in[s], sampleRate, knobs, switches);
+        in[s] = outGain*(wet*_formula_main(in[s]*inGain, sampleRate, knobs, switches) + (1-wet)*in[s]);
     }
 }
 

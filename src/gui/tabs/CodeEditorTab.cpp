@@ -29,7 +29,12 @@ formula_main {
     setCodeEditorComponentColourScheme();
     codeDocument.addListener(this);
 
-    compileButton.setImages(formula::binary::compile_svg);
+    const auto green = Colour::fromRGB(0x49,0x9c,0x54);
+    const auto grey = Colour::fromRGB(0xaf,0xb1,0xb3);
+    const auto orange = Colour::fromRGB(0xc2,0x93,0x44);
+    const auto blue = Colour::fromRGB(0x35,0x92,0xc4);
+    compileButton.setImage(formula::binary::compile_svg, green);
+    compileButton.setTooltip("Launch the current formula");
     compileButton.onClick = [&] {
         auto metadata = pluginState->getActiveFormulaMetadata();
         auto formulaSource = metadata[formula::processor::FormulaMetadataKeys::source];
@@ -38,13 +43,16 @@ formula_main {
     };
     addAndMakeVisible(compileButton);
 
-    muteButton.setImages(formula::binary::mute_svg, nullptr, formula::binary::unmute_svg);
+    muteButton.setImage(formula::binary::mute_svg, grey);
+    muteButton.setTooltip("Mute the plugin output");
+    muteButton.setClickingTogglesState(true);
+    muteButton.onClick = [this] {
+        this->pluginState->setBypassed(this->muteButton.getToggleState());
+    };
     addAndMakeVisible(muteButton);
 
-    pauseButton.setImages(formula::binary::pause_svg, nullptr, formula::binary::unpause_svg);
-    addAndMakeVisible(pauseButton);
-
-    saveLocalButton.setImages(formula::binary::save_local_svg);
+    saveLocalButton.setImage(formula::binary::save_local_svg, orange);
+    saveLocalButton.setTooltip("Save formula to local storage");
     saveLocalButton.onClick = [this] {
         this->savePopup.resetContent();
         this->savePopup.setVisible(true);
@@ -52,17 +60,27 @@ formula_main {
     };
     addAndMakeVisible(saveLocalButton);
     
-    showKnobsButton.setImages(formula::binary::show_knobs_svg);
+    showKnobsButton.setImage(formula::binary::show_knobs_svg, blue);
+    showKnobsButton.setTooltip("Show the knobs panel");
+    showKnobsButton.setClickingTogglesState(true);
     showKnobsButton.onClick = [this] {        
         this->knobsPanel.setVisible(!this->knobsPanel.isVisible());
         this->resized();
     };
     addAndMakeVisible(showKnobsButton);
 
-    zoomInButton.setImages(formula::binary::zoom_in_svg);
+    zoomInButton.setImage(formula::binary::zoom_in_svg, grey);
+    zoomInButton.setTooltip("Zoom in");
+    zoomInButton.onClick = [this] {
+        this->eventHub->publish(EventType::scaleUp);
+    };
     addAndMakeVisible(zoomInButton);
 
-    zoomOutButton.setImages(formula::binary::zoom_in_svg);
+    zoomOutButton.setImage(formula::binary::zoom_out_svg, grey);
+    zoomOutButton.setTooltip("Zoom out");
+    zoomOutButton.onClick = [this] {
+        this->eventHub->publish(EventType::scaleDown);
+    };
     addAndMakeVisible(zoomOutButton);
 
     compilerErrors.setReadOnly(true);
@@ -102,7 +120,9 @@ formula_main {
 
 void formula::gui::CodeEditorTab::paint(Graphics& g)
 {
-    g.fillAll(Colours::lightgrey);
+    const auto backgroundColour = Colour::fromRGB(0x3c, 0x3f, 0x41);
+
+    g.fillAll(backgroundColour);
 }
 
 void formula::gui::CodeEditorTab::codeDocumentTextInserted(const String& newText, int insertIndex)
@@ -129,8 +149,10 @@ void formula::gui::CodeEditorTab::codeDocumentTextDeleted(int startIndex, int en
 
 void formula::gui::CodeEditorTab::resized()
 {
-    constexpr auto buttonSizePixels = 32;
-    constexpr auto buttonMarginBottomPixels = 5;
+    constexpr auto buttonSizePixels = 24;
+    constexpr auto toolbarSizePixels = 32;
+    constexpr auto buttonMarginSidesPixels = (toolbarSizePixels - buttonSizePixels) / 2;
+    constexpr auto buttonMarginBottomPixels = 15;
     constexpr auto compilerErrorsHeightPixels = 140;
     constexpr auto knobsPanelHeightPixels = 325;
 
@@ -144,27 +166,38 @@ void formula::gui::CodeEditorTab::resized()
         350
         ));
 
-    auto toolbarArea = area.removeFromLeft(buttonSizePixels);
-
-    compileButton.setBounds(toolbarArea.removeFromTop(buttonSizePixels));
+    auto toolbarArea = area.removeFromLeft(toolbarSizePixels);
     toolbarArea.removeFromTop(buttonMarginBottomPixels);
 
-    muteButton.setBounds(toolbarArea.removeFromTop(buttonSizePixels));
+    compileButton.setBounds(
+            toolbarArea.removeFromTop(buttonSizePixels)
+            .withTrimmedLeft(buttonMarginSidesPixels)
+            .withTrimmedRight(buttonMarginSidesPixels));
     toolbarArea.removeFromTop(buttonMarginBottomPixels);
 
-    pauseButton.setBounds(toolbarArea.removeFromTop(buttonSizePixels));
+    muteButton.setBounds(toolbarArea.removeFromTop(buttonSizePixels)
+                                 .withTrimmedLeft(buttonMarginSidesPixels)
+                                 .withTrimmedRight(buttonMarginSidesPixels));
     toolbarArea.removeFromTop(buttonMarginBottomPixels);
 
-    saveLocalButton.setBounds(toolbarArea.removeFromTop(buttonSizePixels));
+    saveLocalButton.setBounds(toolbarArea.removeFromTop(buttonSizePixels)
+                                      .withTrimmedLeft(buttonMarginSidesPixels)
+                                      .withTrimmedRight(buttonMarginSidesPixels));
     toolbarArea.removeFromTop(buttonMarginBottomPixels);
 
-    zoomInButton.setBounds(toolbarArea.removeFromTop(buttonSizePixels));
+    zoomInButton.setBounds(toolbarArea.removeFromTop(buttonSizePixels)
+                                   .withTrimmedLeft(buttonMarginSidesPixels)
+                                   .withTrimmedRight(buttonMarginSidesPixels));
     toolbarArea.removeFromTop(buttonMarginBottomPixels);
 
-    zoomOutButton.setBounds(toolbarArea.removeFromTop(buttonSizePixels));
+    zoomOutButton.setBounds(toolbarArea.removeFromTop(buttonSizePixels)
+                                    .withTrimmedLeft(buttonMarginSidesPixels)
+                                    .withTrimmedRight(buttonMarginSidesPixels));
     toolbarArea.removeFromTop(buttonMarginBottomPixels);
 
-    showKnobsButton.setBounds(toolbarArea.removeFromTop(buttonSizePixels));
+    showKnobsButton.setBounds(toolbarArea.removeFromTop(buttonSizePixels)
+                                      .withTrimmedLeft(buttonMarginSidesPixels)
+                                      .withTrimmedRight(buttonMarginSidesPixels));
     toolbarArea.removeFromTop(buttonMarginBottomPixels);
 
     if (knobsPanel.isVisible()) {

@@ -37,12 +37,13 @@ formula_main_stereo;
 
 float time = 0;
 
-FORMULA_EXPORT void process_block_stereo(float** in, int numSamples, float sampleRate, const float* knobs, const float* switches) {
+FORMULA_EXPORT void process_block_stereo(float** in, int numSamples, float sampleRate, const float* knobs, const float* switches,
+                                         float wet, float inGain, float outGain) {
     for (int s = 0; s < numSamples; s++) {
         time += 1 / sampleRate;
-        Stereo output = _formula_main((Stereo) { .left = in[0][s], .right = in[1][s] }, sampleRate, knobs, switches);
-        in[0][s] = output.left;
-        in[1][s] = output.right;
+        Stereo output = _formula_main((Stereo) { .left = in[0][s]*inGain, .right = in[1][s]*inGain }, sampleRate, knobs, switches);
+        in[0][s] = (output.left*wet + in[0][s]*(1-wet))*outGain;
+        in[1][s] = (output.right*wet + in[0][s]*(1-wet))*outGain;
     }
 }
 

@@ -7,6 +7,7 @@
 #include <gui/tabs/SavedFilesTab.hpp>
 #include <gui/tabs/OnlineFormulasTab.hpp>
 #include <gui/components/SpinnerOverlay.hpp>
+#include <gui/FormulaLookAndFeel.hpp>
 
 namespace formula::gui 
 {
@@ -18,7 +19,7 @@ namespace formula::gui
             const std::shared_ptr<formula::events::EventHub>& eventHub,
             const std::shared_ptr<formula::processor::PluginState>& pluginState,
             const std::shared_ptr<formula::cloud::FormulaCloudClient>& cloud
-            );
+        );
         ~PluginWindow() override;
 
         void paint(juce::Graphics&) override;
@@ -31,6 +32,10 @@ namespace formula::gui
 
         TabbedComponent tabs;
         SpinnerOverlay spinner;
+        static std::unique_ptr<TooltipWindow> tooltipWindow;
+        std::unique_ptr<formula::gui::FormulaLookAndFeel> laf;
+
+        float scaleFactor = 1;
 
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PluginWindow)
     };

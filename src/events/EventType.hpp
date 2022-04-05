@@ -2,11 +2,15 @@
 #define FORMULA_EVENTS_EVENT_TYPE
 
 enum class EventType {
+    // Formula management
 	compilationRequest,
 	compilationSuccess,
 	compilationFail,
 	loadFormulaRequest,
 	saveLocalFormulaRequest,
+    // GUI
+    scaleUp,
+    scaleDown,
     // Web client events
     webRequestSent,
     webRequestFinished,

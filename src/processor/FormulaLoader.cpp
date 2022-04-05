@@ -80,13 +80,17 @@ void formula::processor::FormulaLoader::formulaProcessBlock(
         switches[i] = pluginState->getSwitchValue(i);
     }
 
+    const auto wet = pluginState->getDryWet();
+    const auto inGain = powf(10, 0.05f*pluginState->getInGain());
+    const auto outGain = powf(10, 0.05f*pluginState->getOutGain());
     if (isMono) {
         for (int channel = 0; channel < numChannels; channel++) {
             singleChannelEntrypoints[channel](
                 writePointers[channel], 
                 numSamples, 
                 static_cast<float>(sampleRate), 
-                knobs, switches
+                knobs, switches,
+                wet, inGain, outGain
             );
         }
     }
@@ -96,7 +100,8 @@ void formula::processor::FormulaLoader::formulaProcessBlock(
             writePointers, 
             numSamples, 
             static_cast<float>(sampleRate), 
-            knobs, switches
+            knobs, switches,
+            wet, inGain, outGain
         );
     }
 }

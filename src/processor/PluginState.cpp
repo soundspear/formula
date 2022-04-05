@@ -22,6 +22,17 @@ float formula::processor::PluginState::getSwitchValue(int switchId)
     return getParameterAsValue("Switch " + std::to_string(switchId)).getValue();
 }
 
+float formula::processor::PluginState::getDryWet() {
+    return getParameterAsValue("Dry Wet").getValue();
+}
+
+float formula::processor::PluginState::getInGain() {
+    return getParameterAsValue("In Gain").getValue();
+}
+
+float formula::processor::PluginState::getOutGain() {
+    return getParameterAsValue("Out Gain").getValue();
+}
 void formula::processor::PluginState::setActiveFormulaMetadata(formula::processor::FormulaMetadata metadata)
 {
     for (auto keyPair : metadata) {
