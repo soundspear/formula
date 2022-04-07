@@ -93,7 +93,7 @@ target_sources(Formula
         "src/processor/FormulaLoader.cpp"
         "src/processor/PluginState.cpp"
         "src/processor/PluginProcessor.cpp"
-        "src/compiler/ClangWrapper.cpp"
+        "src/compiler/CompilerWrapper.cpp"
         "src/storage/LocalIndex.cpp"
         "src/storage/LocalSettings.cpp"
         "src/storage/CompilerStorage.cpp"

@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <math.h>
+#include <stdio.h>
 
 #ifndef M_PI
 #   define M_PI 3.14159265358979323846
@@ -10,8 +11,19 @@
 #else
 #	define FORMULA_EXPORT __attribute__ ((visibility("default")))
 #endif
+
 #define formula_main inline float _formula_main(float input, float sampleRate, const float* knobs, const float* switches)
 formula_main;
+
+char** __debug_stack;
+int* __debug_idx;
+int __debug_stack_size;
+int __debug_enabled;
+
+#define __DEBUG_STACK_SIZE_REACHED_STR "Maximum debug stack size reached (beware of DEBUG() in loops!)"
+#define __MAX_DEBUG_REACHED sprintf(__debug_stack[__debug_stack_size - 1], __DEBUG_STACK_SIZE_REACHED_STR); (*__debug_idx)++;
+#define __PUSH_DEBUG(x) sprintf(__debug_stack[(*__debug_idx)++], "%s: %f (line %i)", #x, x, __LINE__);
+#define DEBUG(x)  if (!__debug_enabled || !__debug_stack); else if (*__debug_idx >= __debug_stack_size - 1) { __MAX_DEBUG_REACHED } else __PUSH_DEBUG(x)
 
 #define knob_1 knobs[0]
 #define knob_2 knobs[1]
@@ -31,11 +43,18 @@ formula_main;
 
 float time = 0;
 
-FORMULA_EXPORT void process_block_mono(float* in, int numSamples, float sampleRate, const float* knobs, const float* switches,
-                                       float wet, float inGain, float outGain) {
+FORMULA_EXPORT void process_block_mono(float* in, int numSamples, float sampleRate,
+                                       const float* knobs, const float* switches,
+                                       float wet, float inGain, float outGain,
+                                       int* debug_idx, char** debug_stack, int debug_stack_size) {
+    __debug_idx = debug_idx; *__debug_idx = 0;
+    __debug_stack = debug_stack;
+    __debug_stack_size = debug_stack_size;
+    __debug_enabled = 1;
     for (int s = 0; s < numSamples; s++) {
         time += 1 / sampleRate;
         in[s] = outGain*(wet*_formula_main(in[s]*inGain, sampleRate, knobs, switches) + (1-wet)*in[s]);
+        __debug_enabled = 0;
     }
 }
 

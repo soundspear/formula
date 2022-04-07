@@ -1,8 +1,11 @@
-﻿#include <compiler/ClangWrapper.hpp>
+﻿#include <compiler/CompilerWrapper.hpp>
+
+#include <boost/algorithm/string.hpp>
+#include <boost/lexical_cast.hpp>
 
 using namespace boost::assign;
 
-formula::compiler::ClangWrapper::ClangWrapper(const std::shared_ptr<formula::events::EventHub>& eventHub)
+formula::compiler::CompilerWrapper::CompilerWrapper(const std::shared_ptr<formula::events::EventHub>& eventHub)
     : eventHub(eventHub)
 {
 #if defined (_WIN32)
@@ -20,14 +23,41 @@ formula::compiler::ClangWrapper::ClangWrapper(const std::shared_ptr<formula::eve
             compileThread.join();
         }
         auto sourceCode = boost::any_cast<std::string>(arg);
-        compileThread = std::thread{ &formula::compiler::ClangWrapper::compileFormula, this, sourceCode };
+        compileThread = std::thread{&formula::compiler::CompilerWrapper::compileFormula, this, sourceCode };
     });
 
     formulaBaseCodeMono = std::string(formula::binary::FormulaBaseMono_c, formula::binary::FormulaBaseMono_cSize);
     formulaBaseCodeStereo = std::string(formula::binary::FormulaBaseStereo_c, formula::binary::FormulaBaseStereo_cSize);
 }
+void formula::compiler::CompilerWrapper::sanitizeErrorString(std::string& errStr, bool isMono) {
+    const auto& sourceBase = isMono ? formulaBaseCodeMono : formulaBaseCodeStereo;
+    int lineNumberInBaseFile = std::count(sourceBase.begin(), sourceBase.end(), '\n');
 
-void formula::compiler::ClangWrapper::compileFormula(const std::string& sourceCode)
+    boost::replace_all(errStr, "\r\n", "\n");
+    std::vector<std::string> strs;
+    boost::split(strs,errStr,boost::is_any_of("\n"));
+
+    std::regex lineNumberError(R"(^.*\.c:(\d+)(.*)$)");
+    std::regex compilerError(R"(tcc:\s+)");
+    errStr.clear();
+    for (auto& line : strs) {
+        line = std::regex_replace(line, compilerError, "");
+
+        std::smatch matches;
+        std::regex_search(line, matches, lineNumberError);
+        if (matches.empty()) {
+            errStr += line + "\r\n";
+            continue;
+        }
+
+        auto lineNumber = boost::lexical_cast<int>(matches[1]);
+        lineNumber -= lineNumberInBaseFile;
+        std::string errorMessage = matches[2];
+        errStr += "Line " + std::to_string(lineNumber) + errorMessage + "\r\n";
+    }
+}
+
+void formula::compiler::CompilerWrapper::compileFormula(const std::string& sourceCode)
 {
     formula::storage::CompilerStorage storage;
     const auto compilationId = storage.createCompilationId();
@@ -77,11 +107,16 @@ void formula::compiler::ClangWrapper::compileFormula(const std::string& sourceCo
         eventHub->publish(EventType::compilationSuccess, compilationId);
     }
     else {
+        try {
+            sanitizeErrorString(errStr, hasMonoEntrypoint);
+        } catch (std::exception& ex) {
+            errStr = "[WARNING] Failed to sanitize error string\r\n" + errStr;
+        }
         eventHub->publish(EventType::compilationFail, errStr);
     }
 }
 
-bool formula::compiler::ClangWrapper::launchClang
+bool formula::compiler::CompilerWrapper::launchClang
 (std::vector<std::string> compileArgs, std::string& errStr) {
 
     boost::process::ipstream errReader;
@@ -112,7 +147,7 @@ bool formula::compiler::ClangWrapper::launchClang
     return c.exit_code() == 0;
 }
 
-formula::compiler::ClangWrapper::~ClangWrapper() {
+formula::compiler::CompilerWrapper::~CompilerWrapper() {
     if (compileThread.joinable()) 
         compileThread.join();
 }

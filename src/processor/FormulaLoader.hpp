@@ -8,8 +8,15 @@
 #include <storage/CompilerStorage.hpp>
 #include <processor/PluginState.hpp>
 
-typedef void (ProcessBlockMono)(float*, int, float, float*, float*, float, float, float);
-typedef void (ProcessBlockStereo)(float**, int, float, float*, float*, float, float, float);
+typedef void (ProcessBlockMono)(float* in, int numSamples, float sampleRate,
+                                const float* knobs, const float* switches,
+                                float wet, float inGain, float outGain,
+                                int* debug_idx, char** debug_stack, int debug_stack_size);
+
+typedef void (ProcessBlockStereo)(float** in, int numSamples, float sampleRate,
+                                  const float* knobs, const float* switches,
+                                  float wet, float inGain, float outGain,
+                                  int* debug_idx, char** debug_stack, int debug_stack_size);
 
 namespace formula::processor {
 	class FormulaLoader
@@ -17,6 +24,7 @@ namespace formula::processor {
 	public:
 		FormulaLoader();
 		~FormulaLoader();
+
 		void loadLibrary(std::string compilationId);
 		void unloadLibrary();
 		void formulaProcessBlock(
@@ -25,11 +33,20 @@ namespace formula::processor {
 			double sampleRate
 		);
 		bool isReady() { return isLoaded; };
+        std::string getDebugString() { return lastDebugString; }
 	private:
+        void formatDebugString();
+
 		boost::dll::shared_library singleChannelLibraries[2];
 		boost::dll::shared_library twoChannelsLibrary;
 		ProcessBlockMono* singleChannelEntrypoints[2];
 		ProcessBlockStereo* twoChannelsEntrypoint;
+
+        int *debugStackIdx;
+        char **debugStack;
+        int debugStackSize = 512;
+
+        std::string lastDebugString;
 
 		bool isMono;
 		bool isLoaded;

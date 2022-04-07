@@ -6,7 +6,7 @@
 #include <JuceHeader.h>
 
 #include <events/EventHub.hpp>
-#include <compiler/ClangWrapper.hpp>
+#include <compiler/CompilerWrapper.hpp>
 #include <processor/FormulaLoader.hpp>
 #include <processor/PluginState.hpp>
 #include <storage/LocalIndex.hpp>
@@ -49,7 +49,7 @@ namespace formula::processor
         std::shared_ptr<formula::processor::PluginState> pluginState;
         std::shared_ptr<formula::storage::LocalSettings> settings;
         std::shared_ptr<formula::cloud::FormulaCloudClient> cloud;
-        formula::compiler::ClangWrapper clangWrapper;
+        formula::compiler::CompilerWrapper clangWrapper;
         formula::processor::FormulaLoader formulaLoader;
 
         std::string previousCompilationId;

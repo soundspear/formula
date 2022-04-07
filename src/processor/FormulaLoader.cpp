@@ -3,11 +3,22 @@
 formula::processor::FormulaLoader::FormulaLoader()
     : isMono(false), isLoaded(false)
 {
+    debugStackIdx = new int;
+    debugStack = new char* [debugStackSize];
+    for (int i = 0; i < debugStackSize; i++) {
+        debugStack[i] = new char[2048];
+    }
 }
 
 formula::processor::FormulaLoader::~FormulaLoader()
 {
     unloadLibrary();
+
+    delete debugStackIdx;
+    for (int i = 0; i < debugStackSize; i++) {
+        delete debugStack[i];
+    }
+    delete debugStack;
 }
 
 void formula::processor::FormulaLoader::loadLibrary(std::string compilationId)
@@ -45,9 +56,9 @@ void formula::processor::FormulaLoader::unloadLibrary()
 {
     if (!isLoaded) return;
     if (isMono) {
-        for (int channel = 0; channel < 2; channel++) {
-            if (singleChannelLibraries[channel].is_loaded()) {
-                singleChannelLibraries[channel].unload();
+        for (auto & singleChannelLibrary : singleChannelLibraries) {
+            if (singleChannelLibrary.is_loaded()) {
+                singleChannelLibrary.unload();
             }
         }
     }
@@ -57,6 +68,7 @@ void formula::processor::FormulaLoader::unloadLibrary()
         }
     }
     isLoaded = false;
+    lastDebugString.clear();
 }
 
 void formula::processor::FormulaLoader::formulaProcessBlock(
@@ -86,11 +98,12 @@ void formula::processor::FormulaLoader::formulaProcessBlock(
     if (isMono) {
         for (int channel = 0; channel < numChannels; channel++) {
             singleChannelEntrypoints[channel](
-                writePointers[channel], 
-                numSamples, 
-                static_cast<float>(sampleRate), 
-                knobs, switches,
-                wet, inGain, outGain
+                    writePointers[channel],
+                    numSamples,
+                    static_cast<float>(sampleRate),
+                    knobs, switches,
+                    wet, inGain, outGain,
+                    debugStackIdx, debugStack, debugStackSize
             );
         }
     }
@@ -101,7 +114,16 @@ void formula::processor::FormulaLoader::formulaProcessBlock(
             numSamples, 
             static_cast<float>(sampleRate), 
             knobs, switches,
-            wet, inGain, outGain
+            wet, inGain, outGain,
+            debugStackIdx, debugStack, debugStackSize
         );
+    }
+    formatDebugString();
+}
+
+void formula::processor::FormulaLoader::formatDebugString() {
+    lastDebugString.clear();
+    for (auto i = 0; i < *debugStackIdx; i++) {
+        lastDebugString += debugStack[i] + std::string("\r\n");
     }
 }
