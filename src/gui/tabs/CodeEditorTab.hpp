@@ -3,18 +3,18 @@
 
 #include <boost/any.hpp>
 
-#include <JuceHeader.h>
+#include "Formula_artefacts/JuceLibraryCode/JuceHeader.h"
 
-#include <gui/components/SvgButton.hpp>
-#include <gui/components/SaveLocalFormulaPopup.hpp>
-#include <gui/components/KnobsPanel.hpp>
-#include <events/EventHub.hpp>
-#include <processor/PluginState.hpp>
-#include <processor/FormulaMetadata.hpp>
+#include "src/gui/components/SvgButton.hpp"
+#include "src/gui/components/SaveLocalFormulaPopup.hpp"
+#include "src/gui/components/KnobsPanel.hpp"
+#include "src/events/EventHub.hpp"
+#include "src/processor/PluginState.hpp"
+#include "src/processor/FormulaMetadata.hpp"
 
 namespace formula::gui
 {
-    class CodeEditorTab : public juce::Component, public juce::CodeDocument::Listener
+class CodeEditorTab : public juce::Component, public juce::CodeDocument::Listener, public juce::Timer
     {
     public:
         CodeEditorTab(
@@ -31,6 +31,8 @@ namespace formula::gui
             int startIndex,
             int endIndex
         ) override;
+
+        void timerCallback() override;
     private:
         CodeDocument codeDocument;
         CPlusPlusCodeTokeniser cppTokeniser;
@@ -38,6 +40,7 @@ namespace formula::gui
         formula::gui::FormulaButton compileButton;
         formula::gui::FormulaButton muteButton;
         formula::gui::FormulaButton saveLocalButton;
+        formula::gui::FormulaButton showDebugButton;
         formula::gui::FormulaButton showKnobsButton;
         formula::gui::FormulaButton zoomInButton;
         formula::gui::FormulaButton zoomOutButton;
@@ -47,6 +50,7 @@ namespace formula::gui
         formula::gui::KnobsPanel<FORMULA_NUM_USER_KNOBS, FORMULA_NUM_USER_SWITCHES> knobsPanel;
 
         juce::TextEditor compilerErrors;
+        juce::TextEditor debugSymbols;
 
         std::shared_ptr<formula::events::EventHub> eventHub;
         std::shared_ptr<formula::processor::PluginState> pluginState;

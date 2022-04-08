@@ -53,10 +53,11 @@ void formula::processor::PluginState::setActiveFormulaMetadataField(std::string 
 formula::processor::FormulaMetadata formula::processor::PluginState::getActiveFormulaMetadata()
 {
     FormulaMetadata metadata;
-    const auto numProperties = state.getNumProperties();
+    const auto stateCopy = copyState(); // Copy the current state in a thread-safe way
+    const auto numProperties = stateCopy.getNumProperties();
     for (auto i = 0; i < numProperties; i++) {
-        auto propName = state.getPropertyName(i);
-        auto &stateVar = state.getProperty(propName);
+        auto propName = stateCopy.getPropertyName(i);
+        auto &stateVar = stateCopy.getProperty(propName);
         if (stateVar.isString()) {
             metadata[propName.toString().toStdString()] = VariantConverter<String>::fromVar(stateVar).toStdString();
         }

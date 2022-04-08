@@ -124,6 +124,8 @@ void formula::processor::PluginProcessor::processBlock (juce::AudioBuffer<float>
         juce::ScopedNoDenormals noDenormals;
 
         formulaLoader.formulaProcessBlock(buffer, pluginState, getSampleRate());
+
+        pluginState->setDebugString(formulaLoader.getDebugString());
     }
 }
 

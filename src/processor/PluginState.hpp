@@ -27,6 +27,8 @@ namespace formula::processor {
         float getDryWet();
         float getInGain();
         float getOutGain();
+        std::string getDebugString() { return debugString; };
+        void setDebugString(std::string newString) { debugString = newString; }
 
 		void setActiveFormulaMetadata(FormulaMetadata metadata);
 		void setActiveFormulaMetadataField(std::string key, std::string value);
@@ -46,6 +48,7 @@ namespace formula::processor {
 		void setPropertyAsString(std::string key, std::string value);
 		std::string getPropertyAsString(std::string key);
 
+        std::string debugString;
         std::atomic<bool> bypass = false;
 
 		//JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PluginState)

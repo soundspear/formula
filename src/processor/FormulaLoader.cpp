@@ -73,7 +73,7 @@ void formula::processor::FormulaLoader::unloadLibrary()
 
 void formula::processor::FormulaLoader::formulaProcessBlock(
     AudioBuffer<float>& buffer, 
-    std::shared_ptr<PluginState> pluginState,
+    const std::shared_ptr<PluginState>& pluginState,
     double sampleRate
 ) {
     if (buffer.getNumChannels() > 2) return;

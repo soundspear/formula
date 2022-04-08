@@ -59,11 +59,20 @@ formula_main {
         this->resized();
     };
     addAndMakeVisible(saveLocalButton);
-    
+
+    showDebugButton.setImage(formula::binary::show_debug_svg, grey);
+    showDebugButton.setTooltip("Show the debug symbols");
+    showDebugButton.setClickingTogglesState(true);
+    showDebugButton.onClick = [this] {
+        this->debugSymbols.setVisible(!this->debugSymbols.isVisible());
+        this->resized();
+    };
+    addAndMakeVisible(showDebugButton);
+
     showKnobsButton.setImage(formula::binary::show_knobs_svg, blue);
     showKnobsButton.setTooltip("Show the knobs panel");
     showKnobsButton.setClickingTogglesState(true);
-    showKnobsButton.onClick = [this] {        
+    showKnobsButton.onClick = [this] {
         this->knobsPanel.setVisible(!this->knobsPanel.isVisible());
         this->resized();
     };
@@ -86,6 +95,10 @@ formula_main {
     compilerErrors.setReadOnly(true);
     compilerErrors.setMultiLine(true);
     addChildComponent(compilerErrors);
+
+    debugSymbols.setReadOnly(true);
+    debugSymbols.setMultiLine(true);
+    addChildComponent(debugSymbols);
 
     addChildComponent(knobsPanel);
 
@@ -116,6 +129,8 @@ formula_main {
         editor->pluginState->setActiveFormulaMetadata(formulaMetadata);
         editor->resized();
     }, this);
+
+    startTimer(500);
 }
 
 void formula::gui::CodeEditorTab::paint(Graphics& g)
@@ -154,6 +169,7 @@ void formula::gui::CodeEditorTab::resized()
     constexpr auto buttonMarginSidesPixels = (toolbarSizePixels - buttonSizePixels) / 2;
     constexpr auto buttonMarginBottomPixels = 15;
     constexpr auto compilerErrorsHeightPixels = 140;
+    constexpr auto debugSymbolsHeightPixels = 200;
     constexpr auto knobsPanelHeightPixels = 325;
 
     auto area = getLocalBounds();
@@ -195,6 +211,11 @@ void formula::gui::CodeEditorTab::resized()
                                     .withTrimmedRight(buttonMarginSidesPixels));
     toolbarArea.removeFromTop(buttonMarginBottomPixels);
 
+    showDebugButton.setBounds(toolbarArea.removeFromTop(buttonSizePixels)
+                                      .withTrimmedLeft(buttonMarginSidesPixels)
+                                      .withTrimmedRight(buttonMarginSidesPixels));
+    toolbarArea.removeFromTop(buttonMarginBottomPixels);
+
     showKnobsButton.setBounds(toolbarArea.removeFromTop(buttonSizePixels)
                                       .withTrimmedLeft(buttonMarginSidesPixels)
                                       .withTrimmedRight(buttonMarginSidesPixels));
@@ -206,6 +227,10 @@ void formula::gui::CodeEditorTab::resized()
 
     if (compilerErrors.isVisible()) {
         compilerErrors.setBounds(area.removeFromBottom(compilerErrorsHeightPixels));
+    }
+
+    if (debugSymbols.isVisible()) {
+        debugSymbols.setBounds(area.removeFromBottom(debugSymbolsHeightPixels));
     }
 
     editor->setBounds(area);
@@ -241,4 +266,8 @@ void formula::gui::CodeEditorTab::setCodeEditorComponentColourScheme()
         cs.set(t.name, Colour(t.colour));
 
     editor->setColourScheme(cs);
+}
+
+void formula::gui::CodeEditorTab::timerCallback() {
+    debugSymbols.setText(pluginState->getDebugString());
 }

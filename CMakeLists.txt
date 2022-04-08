@@ -69,7 +69,8 @@ juce_add_binary_data(FormulaBinaryData
         assets/icons/mute.svg
         assets/icons/pause.svg
         assets/icons/save_local.svg
-        assets/icons/show_knobs.svg        
+        assets/icons/show_debug.svg
+        assets/icons/show_knobs.svg
         assets/icons/unmute.svg
         assets/icons/unpause.svg
         assets/icons/zoom_in.svg
