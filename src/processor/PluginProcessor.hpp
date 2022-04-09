@@ -48,6 +48,7 @@ namespace formula::processor
         std::shared_ptr<formula::events::EventHub> eventHub;
         std::shared_ptr<formula::processor::PluginState> pluginState;
         std::shared_ptr<formula::storage::LocalSettings> settings;
+        std::shared_ptr<formula::storage::LocalIndex> localIndex;
         std::shared_ptr<formula::cloud::FormulaCloudClient> cloud;
         formula::compiler::CompilerWrapper clangWrapper;
         formula::processor::FormulaLoader formulaLoader;

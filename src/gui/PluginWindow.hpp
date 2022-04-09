@@ -3,6 +3,7 @@
 
 #include <events/EventHub.hpp>
 #include <processor/PluginProcessor.hpp>
+#include <storage/LocalIndex.hpp>
 #include <gui/tabs/CodeEditorTab.hpp>
 #include <gui/tabs/SavedFilesTab.hpp>
 #include <gui/tabs/OnlineFormulasTab.hpp>
@@ -18,7 +19,8 @@ namespace formula::gui
             formula::processor::PluginProcessor& processor, 
             const std::shared_ptr<formula::events::EventHub>& eventHub,
             const std::shared_ptr<formula::processor::PluginState>& pluginState,
-            const std::shared_ptr<formula::cloud::FormulaCloudClient>& cloud
+            const std::shared_ptr<formula::cloud::FormulaCloudClient>& cloud,
+            const std::shared_ptr<formula::storage::LocalIndex>& localIndex
         );
         ~PluginWindow() override;
 

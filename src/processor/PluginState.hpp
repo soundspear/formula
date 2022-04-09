@@ -21,6 +21,7 @@ namespace formula::processor {
 	{
 	public:
 		PluginState(AudioProcessor& processor, String name);
+        ~PluginState();
 
 		float getKnobValue(int knobId);
 		float getSwitchValue(int switchId);
@@ -50,6 +51,8 @@ namespace formula::processor {
 
         std::string debugString;
         std::atomic<bool> bypass = false;
+
+        std::mutex stateSaveMutex;
 
 		//JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PluginState)
 	};

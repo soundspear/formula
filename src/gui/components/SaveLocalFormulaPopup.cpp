@@ -1,9 +1,9 @@
 #include "SaveLocalFormulaPopup.hpp"
 
 formula::gui::SaveLocalFormulaPopup::SaveLocalFormulaPopup(
-	const std::shared_ptr<formula::events::EventHub>& eventHub, 
-	const std::shared_ptr<formula::processor::PluginState>& pluginState)
-	: eventHub(eventHub), pluginState(pluginState)
+	const std::shared_ptr<formula::storage::LocalIndex>& localIndexRef,
+	const std::shared_ptr<formula::processor::PluginState>& pluginStateRef)
+	: localIndex(localIndexRef), pluginState(pluginStateRef)
 {
 	titleLabel.setText("Save Formula to local storage", NotificationType::dontSendNotification);
 	auto labelFont = titleLabel.getFont();
@@ -21,19 +21,22 @@ formula::gui::SaveLocalFormulaPopup::SaveLocalFormulaPopup(
 
 	saveButton.setButtonText("Save");
 	saveButton.onClick = [this] {
-		const auto name = nameEditor.getText().trim().toStdString();
-		if (name.empty()) {
-			return;
-		}
+        SafePointer<SaveLocalFormulaPopup> thisPtr(this);
+        MessageManager::callAsync([thisPtr]() {
+            const auto name = thisPtr->nameEditor.getText().trim().toStdString();
+            if (name.empty()) {
+                return;
+            }
 
-		auto metadata = this->pluginState->getActiveFormulaMetadata();
-		metadata[formula::processor::FormulaMetadataKeys::name] = name;
-		metadata[formula::processor::FormulaMetadataKeys::description] = descriptionEditor.getText().trim().toStdString();
+            auto metadata = thisPtr->pluginState->getActiveFormulaMetadata();
+            metadata[formula::processor::FormulaMetadataKeys::name] = name;
+            metadata[formula::processor::FormulaMetadataKeys::description] = thisPtr->descriptionEditor.getText().trim().toStdString();
 
-		this->pluginState->setActiveFormulaMetadata(metadata);
+            thisPtr->pluginState->setActiveFormulaMetadata(metadata);
 
-		this->eventHub->publish(EventType::saveLocalFormulaRequest);
-		this->setVisible(false);
+            thisPtr->setVisible(false);
+            thisPtr->localIndex->saveCurrentFormulaToIndex();
+        });
 	};
 	addAndMakeVisible(saveButton);
 	cancelButton.setButtonText("Cancel");

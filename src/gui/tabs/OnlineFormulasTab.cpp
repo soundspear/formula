@@ -70,7 +70,7 @@ void formula::gui::OnlineFormulasTab::paintCell(Graphics &g, int rowNumber, int 
     g.setFont(Font());
 
     auto row = data[rowNumber];
-    String text = "";
+    String text;
 
     switch (columnId) {
         case OnlineFormulasColumnsIds::name:

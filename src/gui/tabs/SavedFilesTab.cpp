@@ -5,12 +5,12 @@ using FormulaMetadata = formula::processor::FormulaMetadata;
 using FormulaMetadataKeys = formula::processor::FormulaMetadataKeys;
 
 formula::gui::SavedFilesTab::SavedFilesTab(
-    const std::shared_ptr<formula::events::EventHub>& eventHub,
-    const std::shared_ptr<formula::processor::PluginState>& pluginState
+    const std::shared_ptr<formula::events::EventHub>& eventHubRef,
+    const std::shared_ptr<formula::processor::PluginState>& pluginStateRef,
+    const std::shared_ptr<formula::storage::LocalIndex>& localIndexRef
 )
-    : eventHub(eventHub), pluginState(pluginState),
-    localIndex(std::make_shared<formula::storage::LocalIndex>(eventHub, pluginState)),
-    loginPopup(eventHub, pluginState)
+    : eventHub(eventHubRef), pluginState(pluginStateRef), localIndex(localIndexRef),
+    loginPopup(eventHubRef, pluginStateRef)
 {
     importButton.setButtonText("Import formula from file");
     importButton.onClick = [this] {

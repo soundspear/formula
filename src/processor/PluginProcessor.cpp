@@ -11,6 +11,7 @@ formula::processor::PluginProcessor::PluginProcessor()
     pluginState(std::make_shared<formula::processor::PluginState>(*this, "Formula")),
     settings(std::make_shared<formula::storage::LocalSettings>()),
     cloud(std::make_shared<formula::cloud::FormulaCloudClient>(settings, eventHub)),
+    localIndex(std::make_shared<formula::storage::LocalIndex>(eventHub, pluginState)),
     clangWrapper(eventHub),
     recompiled(false)
 {
@@ -136,7 +137,7 @@ bool formula::processor::PluginProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* formula::processor::PluginProcessor::createEditor()
 {
-    return new formula::gui::PluginWindow(*this, eventHub, pluginState, cloud);
+    return new formula::gui::PluginWindow(*this, eventHub, pluginState, cloud, localIndex);
 }
 
 void formula::processor::PluginProcessor::getStateInformation (juce::MemoryBlock& destData)

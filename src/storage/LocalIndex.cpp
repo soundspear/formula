@@ -11,10 +11,6 @@ formula::storage::LocalIndex::LocalIndex(
 {
     indexPath = storageFolder / "index.json";
 
-    eventHub->subscribe(EventType::saveLocalFormulaRequest, [this](boost::any _) {
-        this->saveCurrentFormulaToIndex();
-    });
-
     refreshIndex();
 }
 

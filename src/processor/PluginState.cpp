@@ -12,6 +12,10 @@ formula::processor::PluginState::PluginState(AudioProcessor& audioProcessor, Str
 {
 }
 
+formula::processor::PluginState::~PluginState() {
+    std::scoped_lock lock(stateSaveMutex);
+}
+
 float formula::processor::PluginState::getKnobValue(int knobId)
 {
     return getParameterAsValue("Knob " + std::to_string(knobId + 1)).getValue();
@@ -35,6 +39,7 @@ float formula::processor::PluginState::getOutGain() {
 }
 void formula::processor::PluginState::setActiveFormulaMetadata(formula::processor::FormulaMetadata metadata)
 {
+    std::scoped_lock lock(stateSaveMutex);
     for (auto keyPair : metadata) {
         setPropertyAsString(
             std::string(keyPair.first),
@@ -52,6 +57,8 @@ void formula::processor::PluginState::setActiveFormulaMetadataField(std::string 
 
 formula::processor::FormulaMetadata formula::processor::PluginState::getActiveFormulaMetadata()
 {
+    std::scoped_lock lock(stateSaveMutex);
+
     FormulaMetadata metadata;
     const auto stateCopy = copyState(); // Copy the current state in a thread-safe way
     const auto numProperties = stateCopy.getNumProperties();
@@ -114,3 +121,4 @@ std::string formula::processor::PluginState::getPropertyAsString(std::string key
         return "";
     }
 }
+

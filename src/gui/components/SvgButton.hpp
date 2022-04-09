@@ -12,9 +12,6 @@ namespace formula::gui
 		FormulaButton()
 			: DrawableButton("", DrawableButton::ButtonStyle::ImageFitted) {}
 
-		FormulaButton(const String& name, const DrawableButton::ButtonStyle buttonStyle) 
-		: DrawableButton(name, buttonStyle) {}
-
         enum ColourIds
         {
             idleColourId = 0xf0f00100,

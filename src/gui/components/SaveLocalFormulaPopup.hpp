@@ -9,6 +9,7 @@
 #include <JuceHeader.h>
 
 #include <events/EventHub.hpp>
+#include <storage/LocalIndex.hpp>
 #include <processor/PluginState.hpp>
 #include <processor/FormulaMetadata.hpp>
 
@@ -18,8 +19,8 @@ namespace formula::gui
     {
     public:
         SaveLocalFormulaPopup(
-            const std::shared_ptr<formula::events::EventHub>& eventHub,
-            const std::shared_ptr<formula::processor::PluginState>& pluginState);
+            const std::shared_ptr<formula::storage::LocalIndex>& localIndexRef,
+            const std::shared_ptr<formula::processor::PluginState>& pluginStateRef);
         void paint(Graphics& g) override;
         void resized() override;
         void resetContent();
@@ -33,7 +34,7 @@ namespace formula::gui
         TextButton saveButton;
         TextButton cancelButton;
 
-        std::shared_ptr<formula::events::EventHub> eventHub;
+        std::shared_ptr<formula::storage::LocalIndex> localIndex;
         std::shared_ptr<formula::processor::PluginState> pluginState;
 
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SaveLocalFormulaPopup)

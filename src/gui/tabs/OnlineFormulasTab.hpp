@@ -29,8 +29,6 @@ namespace formula::gui {
         void selectedRowsChanged(int lastRowSelected) override;
         void resized() override;
         void visibilityChanged() override;
-
-        void scrollBarMoved(ScrollBar *scrollBarThatHasMoved, double newRangeStart) override;
     private:
         void makeSearchAsync();
 
@@ -46,7 +44,7 @@ namespace formula::gui {
         TableListBox table;
         formula::gui::FormulaDetailsPanel detailsPanel;
 
-        bool endOfResultsReached = false;
+        bool endOfResultsReached;
     };
 }
 

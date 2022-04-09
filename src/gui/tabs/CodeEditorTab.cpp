@@ -2,9 +2,10 @@
 
 formula::gui::CodeEditorTab::CodeEditorTab(
     const std::shared_ptr<formula::events::EventHub>& eventHub,
-    const std::shared_ptr<formula::processor::PluginState>& pluginState
+    const std::shared_ptr<formula::processor::PluginState>& pluginState,
+    const std::shared_ptr<formula::storage::LocalIndex>& localIndex
 ) : eventHub(eventHub), pluginState(pluginState),
-    savePopup(eventHub, pluginState),
+    savePopup(localIndex, pluginState),
     knobsPanel(pluginState)
 {
     setOpaque(true);
@@ -142,7 +143,7 @@ void formula::gui::CodeEditorTab::paint(Graphics& g)
 
 void formula::gui::CodeEditorTab::codeDocumentTextInserted(const String& newText, int insertIndex)
 {
-    /* -- Leads to insert/delete desynchronisations
+    /* -- Leads to insert/delete de-synchronisations
     auto activeFormula = pluginState->getPropertyAsString(formula::processor::FormulaMetadataKeys::source);
     activeFormula.insert(insertIndex, newText.toStdString());
     pluginState->setActiveFormulaMetadataField(formula::processor::FormulaMetadataKeys::source, activeFormula);
@@ -153,7 +154,7 @@ void formula::gui::CodeEditorTab::codeDocumentTextInserted(const String& newText
 
 void formula::gui::CodeEditorTab::codeDocumentTextDeleted(int startIndex, int endIndex)
 {
-    /* -- Leads to insert/delete desynchronisations
+    /* -- Leads to insert/delete de-synchronisations
     auto activeFormula = pluginState->getPropertyAsString(formula::processor::FormulaMetadataKeys::source);
     activeFormula.erase(startIndex, static_cast<size_t>(endIndex) - startIndex);
     pluginState->setActiveFormulaMetadataField(formula::processor::FormulaMetadataKeys::source, activeFormula);

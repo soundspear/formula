@@ -81,7 +81,6 @@ void formula::gui::LoginPopup::resized()
 	constexpr auto buttonHeight = 24;
 	constexpr auto buttonMarginX = 64;
 	constexpr auto loginLabelHeight = 48;
-	constexpr auto saveButtonWidth = 225;
 	constexpr auto editorLabelWidth = 128;
 
 	auto area = getLocalBounds();

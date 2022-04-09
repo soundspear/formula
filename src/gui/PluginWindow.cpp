@@ -6,7 +6,8 @@ formula::gui::PluginWindow::PluginWindow(
     formula::processor::PluginProcessor& processor,
     const std::shared_ptr<formula::events::EventHub>& eventHub,
     const std::shared_ptr<formula::processor::PluginState>& pluginState,
-    const std::shared_ptr<formula::cloud::FormulaCloudClient>& cloud
+    const std::shared_ptr<formula::cloud::FormulaCloudClient>& cloud,
+    const std::shared_ptr<formula::storage::LocalIndex>& localIndex
 )
     : AudioProcessorEditor (&processor), 
     processorRef(processor),
@@ -26,8 +27,8 @@ formula::gui::PluginWindow::PluginWindow(
 
     auto colour = findColour(ResizableWindow::backgroundColourId);
 
-    tabs.addTab("Editor", colour, new CodeEditorTab(eventHub, pluginState), true);
-    tabs.addTab("Saved files", colour, new SavedFilesTab(eventHub, pluginState), true);
+    tabs.addTab("Editor", colour, new CodeEditorTab(eventHub, pluginState, localIndex), true);
+    tabs.addTab("Saved files", colour, new SavedFilesTab(eventHub, pluginState, localIndex), true);
 #ifndef FORMULA_LOCAL_ONLY
     tabs.addTab("Browse", colour, new OnlineFormulasTab(eventHub, cloud), true);
 #endif
