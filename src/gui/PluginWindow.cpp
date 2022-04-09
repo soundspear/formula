@@ -4,18 +4,18 @@ std::unique_ptr<TooltipWindow> formula::gui::PluginWindow::tooltipWindow = nullp
 
 formula::gui::PluginWindow::PluginWindow(
     formula::processor::PluginProcessor& processor,
-    const std::shared_ptr<formula::events::EventHub>& eventHub,
-    const std::shared_ptr<formula::processor::PluginState>& pluginState,
-    const std::shared_ptr<formula::cloud::FormulaCloudClient>& cloud,
-    const std::shared_ptr<formula::storage::LocalIndex>& localIndex
+    const std::shared_ptr<formula::events::EventHub>& eventHubRef,
+    const std::shared_ptr<formula::processor::PluginState>& pluginStateRef,
+    const std::shared_ptr<formula::cloud::FormulaCloudClient>& cloudRef,
+    const std::shared_ptr<formula::storage::LocalIndex>& localIndexRef
 )
-    : AudioProcessorEditor (&processor), 
-    processorRef(processor),
-    eventHub(eventHub),
-    pluginState(pluginState),
-    cloud(cloud),
-    tabs(TabbedButtonBar::TabsAtTop),
-    spinner(eventHub)
+    : AudioProcessorEditor (&processor),
+      associatedProcessor(processor),
+      eventHub(eventHubRef),
+      pluginState(pluginStateRef),
+      cloud(cloudRef),
+      tabs(TabbedButtonBar::TabsAtTop),
+      spinner(eventHubRef)
 {
     if (!laf) {
         laf = std::make_unique<FormulaLookAndFeel>();
@@ -27,8 +27,8 @@ formula::gui::PluginWindow::PluginWindow(
 
     auto colour = findColour(ResizableWindow::backgroundColourId);
 
-    tabs.addTab("Editor", colour, new CodeEditorTab(eventHub, pluginState, localIndex), true);
-    tabs.addTab("Saved files", colour, new SavedFilesTab(eventHub, pluginState, localIndex), true);
+    tabs.addTab("Editor", colour, new CodeEditorTab(eventHub, pluginState, localIndexRef), true);
+    tabs.addTab("Saved files", colour, new SavedFilesTab(eventHub, pluginState, localIndexRef), true);
 #ifndef FORMULA_LOCAL_ONLY
     tabs.addTab("Browse", colour, new OnlineFormulasTab(eventHub, cloud), true);
 #endif
@@ -37,19 +37,19 @@ formula::gui::PluginWindow::PluginWindow(
     addAndMakeVisible(tabs);
 
     eventHub->subscribeOnUiThread<PluginWindow>(
-            EventType::loadFormulaRequest, [] (boost::any _, PluginWindow* thisPtr) {
+            EventType::loadFormulaRequest, [] ([[maybe_unused]] boost::any _, PluginWindow* thisPtr) {
         thisPtr->tabs.setCurrentTabIndex(0);
         thisPtr->resized();
     }, this);
 
     eventHub->subscribeOnUiThread<PluginWindow>(
-            EventType::scaleUp, [] (boost::any _, PluginWindow* thisPtr) {
+            EventType::scaleUp, [] ([[maybe_unused]] boost::any _, PluginWindow* thisPtr) {
         thisPtr->scaleFactor += 0.25;
         thisPtr->setScaleFactor(thisPtr->scaleFactor);
     }, this);
 
     eventHub->subscribeOnUiThread<PluginWindow>(
-            EventType::scaleDown, [] (boost::any _, PluginWindow* thisPtr) {
+            EventType::scaleDown, [] ([[maybe_unused]] boost::any _, PluginWindow* thisPtr) {
         thisPtr->scaleFactor -= 0.25;
         thisPtr->setScaleFactor(thisPtr->scaleFactor);
     }, this);
@@ -83,6 +83,6 @@ void formula::gui::PluginWindow::paint (juce::Graphics& g)
 void formula::gui::PluginWindow::resized()
 {
     auto area = getLocalBounds();
-    tabs.setBounds(getLocalBounds());
-    spinner.setBounds(getLocalBounds());
+    tabs.setBounds(area);
+    spinner.setBounds(area);
 }

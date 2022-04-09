@@ -2,14 +2,14 @@
 
 using namespace boost::assign;
 
-formula::gui::SpinnerOverlay::SpinnerOverlay(std::shared_ptr<formula::events::EventHub> eventHub)
+formula::gui::SpinnerOverlay::SpinnerOverlay(const std::shared_ptr<formula::events::EventHub>& eventHubRef)
     : spinner(progress) {
     std::vector<EventType> spinnerStartEvents;
     spinnerStartEvents += EventType::webRequestSent, EventType::compilationRequest;
 
     for (const auto& event : spinnerStartEvents) {
-        eventHub->subscribeOnUiThread<SpinnerOverlay>(
-                event, [](boost::any _, SpinnerOverlay* thisPtr) {
+        eventHubRef->subscribeOnUiThread<SpinnerOverlay>(
+                event, []([[maybe_unused]] boost::any _, SpinnerOverlay* thisPtr) {
             thisPtr->showSpinner();
         }, this);
     }
@@ -18,8 +18,8 @@ formula::gui::SpinnerOverlay::SpinnerOverlay(std::shared_ptr<formula::events::Ev
     spinnerStopEvents += EventType::webRequestFinished, EventType::compilationSuccess, EventType::compilationFail;
 
     for (const auto& event : spinnerStopEvents) {
-        eventHub->subscribeOnUiThread<SpinnerOverlay>(
-                event, [](boost::any _, SpinnerOverlay* thisPtr) {
+        eventHubRef->subscribeOnUiThread<SpinnerOverlay>(
+                event, []([[maybe_unused]] boost::any _, SpinnerOverlay* thisPtr) {
             thisPtr->hideSpinner();
         }, this);
     }

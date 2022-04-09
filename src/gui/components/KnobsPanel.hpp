@@ -18,7 +18,7 @@ namespace formula::gui {
 	class KnobsPanel : public Component 
     {
     public:
-        KnobsPanel(
+        explicit KnobsPanel(
             const std::shared_ptr<formula::processor::PluginState>& pluginState);
         void restoreFromState(formula::processor::FormulaMetadata& metadata);
         void paint(Graphics& g) override;

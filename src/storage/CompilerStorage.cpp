@@ -11,7 +11,9 @@ std::string formula::storage::CompilerStorage::createCompilationId()
     return std::string(boost::uuids::to_string(uuid));
 }
 
-std::string formula::storage::CompilerStorage::createSourceFile(std::string compilationId, std::string sourceCode)
+std::string formula::storage::CompilerStorage::createSourceFile(
+        const std::string& compilationId,
+        const std::string& sourceCode)
 {
     const auto path = storageFolder / (compilationId + sourceFileSuffix);
     boost::filesystem::ofstream file(path);
@@ -20,14 +22,14 @@ std::string formula::storage::CompilerStorage::createSourceFile(std::string comp
     return path.string();
 }
 
-void formula::storage::CompilerStorage::deleteSourceFile(std::string compilationId)
+void formula::storage::CompilerStorage::deleteSourceFile(const std::string& compilationId)
 {
     const auto path = storageFolder / (compilationId + sourceFileSuffix);
     boost::filesystem::remove(path);
 }
 
 formula::storage::CompilerStorage::CompiledLibraryPath 
-formula::storage::CompilerStorage::getLibraryPath(std::string compilationId)
+formula::storage::CompilerStorage::getLibraryPath(const std::string& compilationId)
 {
     return CompiledLibraryPath {
         .twoChannelsLibraryPath = (storageFolder / (compilationId + twoChannelsLibrarySuffix)).string(),
@@ -38,7 +40,7 @@ formula::storage::CompilerStorage::getLibraryPath(std::string compilationId)
     };
 }
 
-void formula::storage::CompilerStorage::deleteLibrary(std::string compilationId) {
+void formula::storage::CompilerStorage::deleteLibrary(const std::string& compilationId) {
     const auto libraryPaths = getLibraryPath(compilationId);
 
     boost::filesystem::remove(libraryPaths.twoChannelsLibraryPath);

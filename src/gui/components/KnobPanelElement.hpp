@@ -20,7 +20,7 @@ namespace formula::gui {
     class KnobPanelElement : public Component
     {
     public:
-        KnobPanelElement(bool isReadOnly = false)
+        explicit KnobPanelElement(bool isReadOnly = false)
         : isReadOnly(isReadOnly) {
             addAndMakeVisible(innerElement);
             addAndMakeVisible(nameEditor);
@@ -50,11 +50,6 @@ namespace formula::gui {
         ComponentType& inner() { return innerElement; }
         juce::TextEditor& nameTextEditor() { return nameEditor; }
 
-        std::string getName() const
-        {
-            return nameEditor.getText().toStdString();
-        }
-
     protected:
         ComponentType innerElement;
         juce::TextEditor nameEditor;
@@ -67,10 +62,10 @@ namespace formula::gui {
     class KnobPanelSlider : public KnobPanelElement<juce::Slider, double>
     {
     public:
-        KnobPanelSlider() : KnobPanelElement<juce::Slider, double>() {
+        explicit KnobPanelSlider() : KnobPanelElement<juce::Slider, double>() {
             setSliderProperties();
         };
-        KnobPanelSlider(bool isReadOnly) : KnobPanelElement<juce::Slider, double>(isReadOnly) {
+        explicit KnobPanelSlider(bool isReadOnly) : KnobPanelElement<juce::Slider, double>(isReadOnly) {
             setSliderProperties();
         };
         KnobPanelSlider(bool isReadOnly, Slider::SliderStyle sliderStyle) : KnobPanelElement<juce::Slider, double>(isReadOnly) {

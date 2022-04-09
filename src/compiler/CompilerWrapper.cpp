@@ -31,7 +31,7 @@ formula::compiler::CompilerWrapper::CompilerWrapper(const std::shared_ptr<formul
 }
 void formula::compiler::CompilerWrapper::sanitizeErrorString(std::string& errStr, bool isMono) {
     const auto& sourceBase = isMono ? formulaBaseCodeMono : formulaBaseCodeStereo;
-    int lineNumberInBaseFile = std::count(sourceBase.begin(), sourceBase.end(), '\n');
+    auto lineNumberInBaseFile = std::count(sourceBase.begin(), sourceBase.end(), '\n');
 
     boost::replace_all(errStr, "\r\n", "\n");
     std::vector<std::string> strs;
@@ -50,7 +50,7 @@ void formula::compiler::CompilerWrapper::sanitizeErrorString(std::string& errStr
             continue;
         }
 
-        auto lineNumber = boost::lexical_cast<int>(matches[1]);
+        auto lineNumber = boost::lexical_cast<long long>(matches[1]);
         lineNumber -= lineNumberInBaseFile;
         std::string errorMessage = matches[2];
         errStr += "Line " + std::to_string(lineNumber) + errorMessage + "\r\n";
@@ -117,7 +117,7 @@ void formula::compiler::CompilerWrapper::compileFormula(const std::string& sourc
 }
 
 bool formula::compiler::CompilerWrapper::launchClang
-(std::vector<std::string> compileArgs, std::string& errStr) {
+(const std::vector<std::string>& compileArgs, std::string& errStr) {
 
     boost::process::ipstream errReader;
     std::thread reader([&errReader, &errStr] {

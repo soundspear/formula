@@ -31,7 +31,7 @@ namespace formula::compiler {
 		void compileFormula(const std::string& sourceCode);
 
 	private:
-		bool launchClang(std::vector<std::string> compileArgs, std::string& errStr);
+		bool launchClang(const std::vector<std::string>& compileArgs, std::string& errStr);
         void sanitizeErrorString(std::string& errStr, bool isMono);
 
 		std::shared_ptr<formula::events::EventHub> eventHub;

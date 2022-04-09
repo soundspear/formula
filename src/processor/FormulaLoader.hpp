@@ -32,7 +32,7 @@ namespace formula::processor {
             const std::shared_ptr<PluginState>& pluginState,
 			double sampleRate
 		);
-		bool isReady() { return isLoaded; };
+		bool isReady() const { return isLoaded; };
         std::string getDebugString() { return lastDebugString; }
 	private:
         void formatDebugString();

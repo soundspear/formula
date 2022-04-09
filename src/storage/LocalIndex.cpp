@@ -3,11 +3,10 @@
 using namespace formula::processor;
 
 formula::storage::LocalIndex::LocalIndex(
-    const std::shared_ptr<formula::events::EventHub>& eventHub,
-    const std::shared_ptr<formula::processor::PluginState>& pluginState
+    const std::shared_ptr<formula::processor::PluginState>& pluginStateRef
 )
     : formula::storage::LocalStorage(),
-    eventHub(eventHub), pluginState(pluginState)
+    pluginState(pluginStateRef)
 {
     indexPath = storageFolder / "index.json";
 
@@ -36,9 +35,10 @@ void formula::storage::LocalIndex::saveCurrentFormulaToIndex()
     auto metadata = pluginState->getActiveFormulaMetadata();
 
     auto t = std::time(nullptr);
-    auto tm = *std::localtime(&t);
+    auto timeInfo = std::make_unique<std::tm>();
+    ::localtime_s(timeInfo.get(), &t);
     std::ostringstream oss;
-    oss << std::put_time(&tm, "%d-%m-%Y %H:%M");
+    oss << std::put_time(timeInfo.get(), "%d-%m-%Y %H:%M");
     const auto dateNow = oss.str();
 
     if (index.get_child_optional(metadata[FormulaMetadataKeys::name]) == boost::none) {

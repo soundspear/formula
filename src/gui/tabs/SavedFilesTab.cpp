@@ -102,12 +102,12 @@ void formula::gui::SavedFilesTab::exportFormulaToFile()
 
     auto fileInfo = chooser.getResult();
 
-    boost::property_tree::ptree properties;
-    for (auto keyPair : metadata) {
-        properties.add(std::string(keyPair.first), keyPair.second);
+    boost::property_tree::ptree exportedProperties;
+    for (const auto& keyPair : metadata) {
+        exportedProperties.add(std::string(keyPair.first), keyPair.second);
     }
 
-    boost::property_tree::write_json(fileInfo.getFullPathName().toStdString(), properties);
+    boost::property_tree::write_json(fileInfo.getFullPathName().toStdString(), exportedProperties);
 }
 
 void formula::gui::SavedFilesTab::importFormulaFromFile()
@@ -123,9 +123,9 @@ void formula::gui::SavedFilesTab::importFormulaFromFile()
     auto fileInfo = chooser.getResult();
 
     FormulaMetadata metadata;
-    boost::property_tree::ptree properties;
-    boost::property_tree::read_json(fileInfo.getFullPathName().toStdString(), properties);
-    for (auto it = properties.begin(); it != properties.end(); ++it) {
+    boost::property_tree::ptree importedProperties;
+    boost::property_tree::read_json(fileInfo.getFullPathName().toStdString(), importedProperties);
+    for (auto it = importedProperties.begin(); it != importedProperties.end(); ++it) {
         metadata[it->first] = it->second.data();
     }
 
@@ -179,7 +179,7 @@ void formula::gui::SavedFilesTab::paintCell(Graphics& g, int rowNumber, int colu
     g.setFont(Font());
 
     auto row = data[rowNumber];
-    String text = "";
+    String text;
 
     switch (columnId) {
     case SavedFileColumnsIds::name:
@@ -194,6 +194,8 @@ void formula::gui::SavedFilesTab::paintCell(Graphics& g, int rowNumber, int colu
     case SavedFileColumnsIds::description:
         text = row[FormulaMetadataKeys::description];
         break;
+    default:
+        return;
     }
 
     g.drawText(text, 2, 0, width - 4, height, Justification::centredLeft, true);

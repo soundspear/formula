@@ -9,7 +9,7 @@ namespace formula::gui {
     public:
         FormulaLookAndFeel()
         : LookAndFeel_V4(createColourScheme()) {
-            std::vector<std::pair<juce::uint32, juce::uint32>> colorMapping {
+            std::vector<std::pair<int, juce::uint32>> colorMapping {
                     { juce::CodeEditorComponent::ColourIds::backgroundColourId, 0x2b2b2b },
                     { juce::CodeEditorComponent::ColourIds::lineNumberBackgroundId, 0x313335 },
                     { juce::TabbedComponent::ColourIds::backgroundColourId, backgroundColor },
@@ -80,41 +80,40 @@ namespace formula::gui {
             textLayout.draw(g, juce::Rectangle<float>(length, depth));
         }
 
-        ColourScheme createColourScheme() {
-            return { 0xff000000 | backgroundColor, 0xff000000 | darker(backgroundColor, 0.3), 0xff000000 | brighter(backgroundColor, 0.3),
+        static ColourScheme createColourScheme() {
+            return { 0xff000000 | backgroundColor, 0xff000000 | darker(backgroundColor, 0.3f), 0xff000000 | brighter(backgroundColor, 0.3f),
              0xff666666, 0xffffffff, 0xffba7272,
              0xff000000, 0xffffffff, 0xffffffff };
         }
     private:
-        constexpr juce::uint32 brighter(juce::uint32 color, float amount) {
+        static constexpr juce::uint32 brighter(juce::uint32 color, float amount) {
             juce::uint32 result = 0;
             amount = 1.0f / (1.0f + amount);
             for (int i = 0; i < 3; i++) {
                 auto offset = i * 8;
                 auto mask = 0xff << offset;
                 auto channel = 255 - ((color & mask) >> offset);
-                channel *= amount;
+                channel = static_cast<int>(amount * channel);
                 result |= (255 - channel) << offset;
             }
             return result;
         }
 
-        constexpr juce::uint32 darker(juce::uint32 color, float amount) {
+        static constexpr juce::uint32 darker(juce::uint32 color, float amount) {
             juce::uint32 result = 0;
             amount = 1.0f / (1.0f + amount);
             for (int i = 0; i < 3; i++) {
                 auto offset = i * 8;
                 auto mask = 0xff << offset;
                 auto channel = (color & mask) >> offset;
-                channel *= amount;
+                channel = static_cast<int>(amount * channel);
                 result |= channel << offset;
             }
             return result;
         }
 
-        void mapColors(std::vector<std::pair<juce::uint32, juce::uint32>> colorMapping) {
+        void mapColors(std::vector<std::pair<int, juce::uint32>> colorMapping) {
             for (auto& pair : colorMapping) {
-                juce::uint32 a = 0xff << 24;
                 juce::uint32 colourHex = (0xff << 24) | std::get<1>(pair);
                 setColour(std::get<0>(pair), juce::Colour(colourHex));
             }

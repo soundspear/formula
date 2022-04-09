@@ -31,10 +31,11 @@ namespace formula::events {
 		}
 
 		void subscribe(EventType eventType, boost::function<void(boost::any)> callback) {
+            callbacks.push_back(std::move(callback));
             if (!events.contains(eventType)) {
                 events[eventType] = boost::signals2::signal<void(boost::any)>();
             }
-            events[eventType].connect(callback);
+            events[eventType].connect(callbacks.back());
         }
 
         template <typename ComponentType>
@@ -46,15 +47,18 @@ namespace formula::events {
             }
 
             auto sp = juce::Component::SafePointer<ComponentType> (componentToUse);
-            events[eventType].connect([=] (boost::any arg) {
+            uiCallbacks.push_back([=] (boost::any arg) {
                 if (sp == nullptr) return;
                 MessageManager::callAsync([=] {
                     callback(arg, sp.getComponent());
                 });
             });
+            events[eventType].connect(uiCallbacks.back());
         }
 	private:
 		std::map<EventType, boost::signals2::signal<void(boost::any)>> events;
+        std::vector<boost::function<void(boost::any)>> callbacks;
+        std::vector<boost::function<void(boost::any)>> uiCallbacks;
 	};
 }
 

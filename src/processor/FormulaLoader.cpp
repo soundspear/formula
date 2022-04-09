@@ -1,7 +1,7 @@
 #include "FormulaLoader.hpp"
 
 formula::processor::FormulaLoader::FormulaLoader()
-    : isMono(false), isLoaded(false)
+    : isMono(false), isLoaded(false), twoChannelsEntrypoint(nullptr), singleChannelEntrypoints()
 {
     debugStackIdx = new int;
     debugStack = new char* [debugStackSize];

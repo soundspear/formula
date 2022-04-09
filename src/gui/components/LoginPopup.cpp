@@ -1,9 +1,9 @@
 #include "LoginPopup.hpp"
 
 formula::gui::LoginPopup::LoginPopup(
-	const std::shared_ptr<formula::events::EventHub>& eventHub,
-	const std::shared_ptr<formula::processor::PluginState>& pluginState)
-	: eventHub(eventHub), pluginState(pluginState),
+	const std::shared_ptr<formula::events::EventHub>& eventHubRef,
+	const std::shared_ptr<formula::processor::PluginState>& pluginStateRef)
+	: eventHub(eventHubRef), pluginState(pluginStateRef),
 	subscribeButton("Subscribe now", juce::URL("https://soundspear.com/product/formula"))
 {
 	auto labelFont = titleLabel.getFont();
@@ -49,17 +49,21 @@ void formula::gui::LoginPopup::setType(LoginPopupType popupType)
 		);
 		descriptionLabelHeight = 60;
 		break;
+    case LoginPopupType::Download:
+        break;
+    default:
+        break;
 	}
 }
 
 juce::Rectangle<int> formula::gui::LoginPopup::getAreaToFit(juce::Point<int> parentCenter)
 {
-	return juce::Rectangle<int>(
+	return {
 		parentCenter.getX() - 200,
 		parentCenter.getY() - 175,
 		400,
 		350
-	);
+    };
 }
 
 void formula::gui::LoginPopup::paint(Graphics& g)

@@ -17,9 +17,8 @@
 namespace formula::gui {
     class OnlineFormulasTab : public juce::Component, public juce::TableListBoxModel, public ScrollBar::Listener {
     public:
-        OnlineFormulasTab(const std::shared_ptr<formula::events::EventHub>& eventHub,
-                          const std::shared_ptr<formula::cloud::FormulaCloudClient>& cloud);
-        ~OnlineFormulasTab() = default;;
+        OnlineFormulasTab(const std::shared_ptr<formula::events::EventHub>& eventHubRef,
+                          const std::shared_ptr<formula::cloud::FormulaCloudClient>& cloudRef);
 
         int getNumRows() override;
         void paintRowBackground(Graphics& g, int rowNumber, int, int, bool rowIsSelected) override;
@@ -29,6 +28,7 @@ namespace formula::gui {
         void selectedRowsChanged(int lastRowSelected) override;
         void resized() override;
         void visibilityChanged() override;
+        void scrollBarMoved(ScrollBar *scrollBarThatHasMoved, double newRangeStart) override;
     private:
         void makeSearchAsync();
 

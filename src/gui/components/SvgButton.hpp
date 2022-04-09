@@ -12,7 +12,7 @@ namespace formula::gui
 		FormulaButton()
 			: DrawableButton("", DrawableButton::ButtonStyle::ImageFitted) {}
 
-        enum ColourIds
+        enum ColourIds : unsigned int
         {
             idleColourId = 0xf0f00100,
             highlightedColourId = 0xf0f00101,

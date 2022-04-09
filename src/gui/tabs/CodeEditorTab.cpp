@@ -10,7 +10,7 @@ formula::gui::CodeEditorTab::CodeEditorTab(
 {
     setOpaque(true);
 
-    editor.reset(new CodeEditorComponent(codeDocument, &cppTokeniser));
+    editor = std::make_unique<CodeEditorComponent>(codeDocument, &cppTokeniser);
     addAndMakeVisible(editor.get());
     auto metadata = pluginState->getActiveFormulaMetadata();
     auto formulaSource = metadata[formula::processor::FormulaMetadataKeys::source];
@@ -106,29 +106,29 @@ formula_main {
     addChildComponent(savePopup);
 
     eventHub->subscribeOnUiThread<CodeEditorTab>(
-            EventType::compilationSuccess,[] (boost::any _, CodeEditorTab* editor) {
-         editor->compilerErrors.setText("");
-         editor->compilerErrors.setVisible(false);
-         editor->compileButton.setEnabled(true);
-         editor->resized();
+            EventType::compilationSuccess,[] ([[maybe_unused]] boost::any _, CodeEditorTab* thisPtr) {
+        thisPtr->compilerErrors.setText("");
+        thisPtr->compilerErrors.setVisible(false);
+        thisPtr->compileButton.setEnabled(true);
+        thisPtr->resized();
     }, this);
 
     eventHub->subscribeOnUiThread<CodeEditorTab>(
-            EventType::compilationFail, [](boost::any errorText, CodeEditorTab* editor) {
+            EventType::compilationFail, [](boost::any errorText, CodeEditorTab* thisPtr) {
         auto errorStr = boost::any_cast<std::string>(errorText);
-        editor->compilerErrors.setVisible(true);
-        editor->compilerErrors.setText(boost::any_cast<std::string>(errorStr));
-        editor->compileButton.setEnabled(true);
-        editor->resized();
+        thisPtr->compilerErrors.setVisible(true);
+        thisPtr->compilerErrors.setText(boost::any_cast<std::string>(errorStr));
+        thisPtr->compileButton.setEnabled(true);
+        thisPtr->resized();
     }, this);
 
     eventHub->subscribeOnUiThread<CodeEditorTab>(
-            EventType::loadFormulaRequest, [](boost::any metadata, CodeEditorTab* editor) {
+            EventType::loadFormulaRequest, [](boost::any metadata, CodeEditorTab* thisPtr) {
         auto formulaMetadata = boost::any_cast<formula::processor::FormulaMetadata>(metadata);
-        editor->editor->loadContent(formulaMetadata[formula::processor::FormulaMetadataKeys::source]);
-        editor->knobsPanel.restoreFromState(formulaMetadata);
-        editor->pluginState->setActiveFormulaMetadata(formulaMetadata);
-        editor->resized();
+        thisPtr->editor->loadContent(formulaMetadata[formula::processor::FormulaMetadataKeys::source]);
+        thisPtr->knobsPanel.restoreFromState(formulaMetadata);
+        thisPtr->pluginState->setActiveFormulaMetadata(formulaMetadata);
+        thisPtr->resized();
     }, this);
 
     startTimer(500);

@@ -4,9 +4,9 @@
 
 using namespace boost::assign;
 
-formula::gui::OnlineFormulasTab::OnlineFormulasTab(const std::shared_ptr<formula::events::EventHub>& eventHub,
-                                                   const std::shared_ptr<formula::cloud::FormulaCloudClient>& cloud)
-        : eventHub(eventHub), cloud(cloud), detailsPanel(this->eventHub)
+formula::gui::OnlineFormulasTab::OnlineFormulasTab(const std::shared_ptr<formula::events::EventHub>& eventHubRef,
+                                                   const std::shared_ptr<formula::cloud::FormulaCloudClient>& cloudRef)
+        : eventHub(eventHubRef), cloud(cloudRef), detailsPanel()
 {
     table.setColour(ListBox::outlineColourId, Colours::grey);
     table.setOutlineThickness(2);

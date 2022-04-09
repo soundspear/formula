@@ -17,17 +17,17 @@ namespace formula::gui
     public:
         explicit PluginWindow(
             formula::processor::PluginProcessor& processor, 
-            const std::shared_ptr<formula::events::EventHub>& eventHub,
-            const std::shared_ptr<formula::processor::PluginState>& pluginState,
-            const std::shared_ptr<formula::cloud::FormulaCloudClient>& cloud,
-            const std::shared_ptr<formula::storage::LocalIndex>& localIndex
+            const std::shared_ptr<formula::events::EventHub>& eventHubRef,
+            const std::shared_ptr<formula::processor::PluginState>& pluginStateRef,
+            const std::shared_ptr<formula::cloud::FormulaCloudClient>& cloudRef,
+            const std::shared_ptr<formula::storage::LocalIndex>& localIndexRef
         );
         ~PluginWindow() override;
 
         void paint(juce::Graphics&) override;
         void resized() override;
     private:
-        formula::processor::PluginProcessor& processorRef;
+        formula::processor::PluginProcessor& associatedProcessor;
         std::shared_ptr<formula::events::EventHub> eventHub;
         std::shared_ptr<formula::processor::PluginState> pluginState;
         std::shared_ptr<formula::cloud::FormulaCloudClient> cloud;

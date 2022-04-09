@@ -53,8 +53,7 @@ namespace formula::storage {
 	class LocalIndex : public LocalStorage {
 	public:
 		LocalIndex(
-			const std::shared_ptr<formula::events::EventHub>& eventHub,
-			const std::shared_ptr<formula::processor::PluginState>& pluginState
+			const std::shared_ptr<formula::processor::PluginState>& pluginStateRef
 		);
 		void refreshIndex();
 		void saveIndex();

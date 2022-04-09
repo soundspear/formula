@@ -9,16 +9,12 @@
 namespace formula::gui {
     class FormulaDetailsPanel : public juce::Component {
     public:
-        explicit FormulaDetailsPanel(
-                const std::shared_ptr<formula::events::EventHub>& eventHub
-        );
+        explicit FormulaDetailsPanel();
         void setFormulaDto(formula::cloud::GetFormulaDto dto);
 
         void paint(Graphics& g) override;
         void resized() override;
     private:
-
-        std::shared_ptr<formula::events::EventHub> eventHub;
         cloud::GetFormulaDto dto;
 
         Font nameFont, authorFont, descriptionFont;

@@ -22,10 +22,11 @@ namespace formula::gui
     {
     public:
         LoginPopup(
-            const std::shared_ptr<formula::events::EventHub>& eventHub,
-            const std::shared_ptr<formula::processor::PluginState>& pluginState);
+            const std::shared_ptr<formula::events::EventHub>& eventHubRef,
+            const std::shared_ptr<formula::processor::PluginState>& pluginStateRef);
         void setType(LoginPopupType popupType);
-        juce::Rectangle<int> getAreaToFit(juce::Point<int> parentCenter);
+        static juce::Rectangle<int> getAreaToFit(juce::Point<int> parentCenter);
+
         void paint(Graphics& g) override;
         void resized() override;
     private:
@@ -41,7 +42,7 @@ namespace formula::gui
         TextEditor passwordEditor;
         TextButton validateLoginButton;
 
-        int descriptionLabelHeight;
+        int descriptionLabelHeight = 0;
 
         std::shared_ptr<formula::events::EventHub> eventHub;
         std::shared_ptr<formula::processor::PluginState> pluginState;

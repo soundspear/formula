@@ -18,11 +18,14 @@ namespace formula::storage {
 		};
 
 		CompilerStorage();
-		std::string createCompilationId();
-		std::string createSourceFile(std::string compilationId, std::string sourceCode);
-		void deleteSourceFile(std::string compilationId);
-		CompiledLibraryPath getLibraryPath(std::string compilationId);
-		void deleteLibrary(std::string compilationId);
+		std::string createSourceFile(
+                const std::string& compilationId,
+                const std::string& sourceCode);
+		void deleteSourceFile(const std::string& compilationId);
+		CompiledLibraryPath getLibraryPath(const std::string& compilationId);
+		void deleteLibrary(const std::string& compilationId);
+
+        static std::string createCompilationId();
 	private:
 		const std::string sourceFileSuffix = ".c";
 		const std::string twoChannelsLibrarySuffix = ".2ch.formula";

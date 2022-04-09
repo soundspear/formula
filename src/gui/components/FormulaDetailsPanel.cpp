@@ -2,8 +2,7 @@
 
 #include <memory>
 
-formula::gui::FormulaDetailsPanel::FormulaDetailsPanel(const std::shared_ptr<formula::events::EventHub> &eventHub)
-: eventHub(eventHub) {
+formula::gui::FormulaDetailsPanel::FormulaDetailsPanel() {
     nameFont = nameLabel.getFont();
     nameFont.setHeight(20);
     nameLabel.setFont(nameFont);
@@ -33,12 +32,12 @@ formula::gui::FormulaDetailsPanel::FormulaDetailsPanel(const std::shared_ptr<for
 }
 
 
-void formula::gui::FormulaDetailsPanel::setFormulaDto(formula::cloud::GetFormulaDto dto) {
-    this->dto = dto;
-    nameLabel.setText(dto.name, NotificationType::sendNotificationAsync);
-    authorLabel.setText("by " + dto.author, NotificationType::sendNotificationAsync);
-    codePreviewEditor->loadContent(dto.source);
-    descriptionLabel.setText(dto.description, NotificationType::sendNotificationAsync);
+void formula::gui::FormulaDetailsPanel::setFormulaDto(formula::cloud::GetFormulaDto newDto) {
+    nameLabel.setText(newDto.name, NotificationType::sendNotificationAsync);
+    authorLabel.setText("by " + newDto.author, NotificationType::sendNotificationAsync);
+    codePreviewEditor->loadContent(newDto.source);
+    descriptionLabel.setText(newDto.description, NotificationType::sendNotificationAsync);
+    this->dto = newDto;
 
 #ifdef __PREVIEW_SHOW_RATINGS
     ratingComponents.clear(); commentLabels.clear();
@@ -77,12 +76,8 @@ void formula::gui::FormulaDetailsPanel::resized()
 
     constexpr auto closeButtonSize = 32;
     constexpr auto nameHeight = 18;
-    constexpr auto labelHeight = 12;
     constexpr auto descriptionHeight = 32;
-    constexpr auto commentHeight = 32;
     constexpr auto editorPreviewHeight = 100;
-    constexpr auto ratingHeight = 25;
-    constexpr auto ratingWidth = 80;
 
     auto area = getLocalBounds();
 
@@ -104,6 +99,11 @@ void formula::gui::FormulaDetailsPanel::resized()
     area.removeFromTop(componentsMargin);
 
 #ifdef __PREVIEW_SHOW_RATINGS
+    constexpr auto commentHeight = 32;
+    constexpr auto labelHeight = 12;
+    constexpr auto ratingHeight = 25;
+    constexpr auto ratingWidth = 80;
+
     ratingsHeadingLabel.setBounds(area.removeFromTop(labelHeight));
     area.removeFromTop(labelMargin);
 
