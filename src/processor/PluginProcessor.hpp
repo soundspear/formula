@@ -53,6 +53,7 @@ namespace formula::processor
         formula::compiler::CompilerWrapper clangWrapper;
         formula::processor::FormulaLoader formulaLoader;
 
+        juce::Random random;
         std::string previousCompilationId;
         bool recompiled;
 

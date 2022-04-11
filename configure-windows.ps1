@@ -34,6 +34,11 @@ Invoke-WebRequest -uri "https://github.com/juce-framework/JUCE/archive/refs/tags
 Expand-Archive "juce.zip" -DestinationPath "." -Force
 Rename-Item -Path "JUCE-$JuceVersion" -NewName "JUCE"
 Remove-Item "juce.zip"
+Write-Host "Downloading Tinycc"
+Invoke-WebRequest -uri "http://download.savannah.gnu.org/releases/tinycc/tcc-0.9.27-win64-bin.zip" -Method "GET" -Outfile "tinycc.zip"
+Expand-Archive "tinycc.zip" -DestinationPath "$Env:Programfiles" -Force
+Remove-Item "tinycc.zip"
+
 Write-Host "Installing vcpkg"
 git clone https://github.com/Microsoft/vcpkg.git --depth 1
 .\vcpkg\bootstrap-vcpkg.bat

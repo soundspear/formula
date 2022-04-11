@@ -105,6 +105,15 @@ void formula::processor::PluginProcessor::processBlock (juce::AudioBuffer<float>
 {
     juce::ignoreUnused (midiMessages);
 
+#ifdef JUCE_STANDALONE_APPLICATION
+    float** wPtrs = buffer.getArrayOfWritePointers();
+    for (auto i = 0; i < buffer.getNumChannels(); i++) {
+        for (auto j = 0; j < buffer.getNumSamples(); j++) {
+            wPtrs[i][j] = random.nextFloat() * 0.2f - 0.1f;
+        }
+    }
+#endif
+
     if (pluginState->isBypassed()) {
         return;
     }
