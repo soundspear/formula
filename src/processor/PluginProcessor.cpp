@@ -12,7 +12,7 @@ formula::processor::PluginProcessor::PluginProcessor()
     settings(std::make_shared<formula::storage::LocalSettings>()),
     cloud(std::make_shared<formula::cloud::FormulaCloudClient>(settings, eventHub)),
     localIndex(std::make_shared<formula::storage::LocalIndex>(pluginState)),
-    clangWrapper(eventHub),
+    compiler(std::make_unique<formula::compiler::TccWrapper>(eventHub)),
     recompiled(false)
 {
     eventHub->subscribe(EventType::compilationSuccess, [this](boost::any compilationId) {

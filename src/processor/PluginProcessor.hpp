@@ -6,7 +6,7 @@
 #include <JuceHeader.h>
 
 #include <events/EventHub.hpp>
-#include <compiler/CompilerWrapper.hpp>
+#include <compiler/TccWrapper.hpp>
 #include <processor/FormulaLoader.hpp>
 #include <processor/PluginState.hpp>
 #include <storage/LocalIndex.hpp>
@@ -50,7 +50,7 @@ namespace formula::processor
         std::shared_ptr<formula::storage::LocalSettings> settings;
         std::shared_ptr<formula::storage::LocalIndex> localIndex;
         std::shared_ptr<formula::cloud::FormulaCloudClient> cloud;
-        formula::compiler::CompilerWrapper clangWrapper;
+        std::unique_ptr<formula::compiler::CompilerWrapper> compiler;
         formula::processor::FormulaLoader formulaLoader;
 
         juce::Random random;

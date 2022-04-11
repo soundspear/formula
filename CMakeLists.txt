@@ -100,7 +100,7 @@ target_sources(Formula
         "src/storage/CompilerStorage.cpp"
         "src/cloud/FormulaCloudClient.cpp"
         "src/cloud/AuthenticatedClient.cpp"
-        )
+         "src/compiler/TccWrapper.cpp")
 
 target_compile_definitions(Formula
     PRIVATE

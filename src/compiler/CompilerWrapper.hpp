@@ -30,13 +30,18 @@ namespace formula::compiler {
 		~CompilerWrapper();
 		void compileFormula(const std::string& sourceCode);
 
+	protected:
+		virtual void sanitizeErrorString(std::string& errStr, bool isMono) = 0;
+		virtual std::string getCompilerPath() = 0;
+		virtual std::vector<std::string> getCompilerArgs(std::string sourcePath, std::string outPath, bool isMono) = 0;
+
+		std::string& getBaseCodeMono() { return formulaBaseCodeMono; }
+		std::string& getBaseCodeStereo() { return formulaBaseCodeStereo; }
+
 	private:
-		bool launchClang(const std::vector<std::string>& compileArgs, std::string& errStr);
-        void sanitizeErrorString(std::string& errStr, bool isMono);
+		bool launchCompiler(const std::string& compilerPath, const std::vector<std::string>& compileArgs, std::string& errStr);
 
 		std::shared_ptr<formula::events::EventHub> eventHub;
-		boost::filesystem::path clangPath;
-		std::vector<std::string> clangArgs;
 		std::thread compileThread;
 		std::mutex compileMutex;
 		std::string formulaBaseCodeMono;

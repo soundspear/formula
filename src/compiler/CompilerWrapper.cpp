@@ -1,22 +1,12 @@
 ﻿#include <compiler/CompilerWrapper.hpp>
 
 #include <boost/algorithm/string.hpp>
-#include <boost/lexical_cast.hpp>
 
 using namespace boost::assign;
 
 formula::compiler::CompilerWrapper::CompilerWrapper(const std::shared_ptr<formula::events::EventHub>& eventHub)
     : eventHub(eventHub)
 {
-#if defined (_WIN32)
-    clangPath = boost::filesystem::path(R"(C:\Program Files\tcc\tcc.exe)");
-    clangArgs += "-shared";
-#elif defined(__APPLE__ )
-    clangPath = boost::process::search_path("clang");
-    clangArgs += "-dynamiclib";
-#endif
-    clangArgs += "-fvisibility=hidden";
-
     eventHub->subscribe(EventType::compilationRequest, [this](boost::any arg) {
         std::lock_guard<std::mutex> lock { compileMutex };
         if (compileThread.joinable()) {
@@ -29,33 +19,6 @@ formula::compiler::CompilerWrapper::CompilerWrapper(const std::shared_ptr<formul
     formulaBaseCodeMono = std::string(formula::binary::FormulaBaseMono_c, formula::binary::FormulaBaseMono_cSize);
     formulaBaseCodeStereo = std::string(formula::binary::FormulaBaseStereo_c, formula::binary::FormulaBaseStereo_cSize);
 }
-void formula::compiler::CompilerWrapper::sanitizeErrorString(std::string& errStr, bool isMono) {
-    const auto& sourceBase = isMono ? formulaBaseCodeMono : formulaBaseCodeStereo;
-    auto lineNumberInBaseFile = std::count(sourceBase.begin(), sourceBase.end(), '\n');
-
-    boost::replace_all(errStr, "\r\n", "\n");
-    std::vector<std::string> strs;
-    boost::split(strs,errStr,boost::is_any_of("\n"));
-
-    std::regex lineNumberError(R"(^.*\.c:(\d+)(.*)$)");
-    std::regex compilerError(R"(tcc:\s+)");
-    errStr.clear();
-    for (auto& line : strs) {
-        line = std::regex_replace(line, compilerError, "");
-
-        std::smatch matches;
-        std::regex_search(line, matches, lineNumberError);
-        if (matches.empty()) {
-            errStr += line + "\r\n";
-            continue;
-        }
-
-        auto lineNumber = boost::lexical_cast<long long>(matches[1]);
-        lineNumber -= lineNumberInBaseFile;
-        std::string errorMessage = matches[2];
-        errStr += "Line " + std::to_string(lineNumber) + errorMessage + "\r\n";
-    }
-}
 
 void formula::compiler::CompilerWrapper::compileFormula(const std::string& sourceCode)
 {
@@ -65,7 +28,6 @@ void formula::compiler::CompilerWrapper::compileFormula(const std::string& sourc
     const auto compiledLibPath = storage.getLibraryPath(compilationId);
 
     std::string errStr;
-    auto compileArgs = std::vector(clangArgs);
     const auto hasMonoEntrypoint =
         std::regex_search(sourceCode,
             std::regex(monoFormulaEntrypoint + std::string(R"(\s*\{)")));
@@ -73,13 +35,13 @@ void formula::compiler::CompilerWrapper::compileFormula(const std::string& sourc
         std::regex_search(sourceCode,
             std::regex(stereoFormulaEntrypoint + std::string(R"(\s*\{)")));
 
-    std::string sourcePath;
+    std::string sourcePath, outPath;
     if (hasMonoEntrypoint) {
-        compileArgs += "-o", compiledLibPath.singleChannelLibrariesPaths[0];
+        outPath = compiledLibPath.singleChannelLibrariesPaths[0];
         sourcePath = storage.createSourceFile(compilationId, formulaBaseCodeMono + sourceCode);
     }
     else if (hasStereoEntrypoint) {
-        compileArgs += "-o", compiledLibPath.twoChannelsLibraryPath;
+        outPath = compiledLibPath.twoChannelsLibraryPath;
         sourcePath = storage.createSourceFile(compilationId, formulaBaseCodeStereo + sourceCode);
     }
     else {
@@ -91,8 +53,9 @@ void formula::compiler::CompilerWrapper::compileFormula(const std::string& sourc
         return;
     }
 
-    compileArgs += sourcePath;
-    bool success = launchClang(compileArgs, errStr);
+    auto compileArgs = getCompilerArgs(sourcePath, outPath, hasMonoEntrypoint);
+    auto compilerPath = getCompilerPath();
+    bool success = launchCompiler(compilerPath, compileArgs, errStr);
 
     storage.deleteSourceFile(compilationId);
 
@@ -116,8 +79,8 @@ void formula::compiler::CompilerWrapper::compileFormula(const std::string& sourc
     }
 }
 
-bool formula::compiler::CompilerWrapper::launchClang
-(const std::vector<std::string>& compileArgs, std::string& errStr) {
+bool formula::compiler::CompilerWrapper::launchCompiler
+(const std::string& compilerPath, const std::vector<std::string>& compileArgs, std::string& errStr) {
 
     boost::process::ipstream errReader;
     std::thread reader([&errReader, &errStr] {
@@ -128,10 +91,10 @@ bool formula::compiler::CompilerWrapper::launchClang
     });
 
 #ifdef _WIN32
-    boost::process::child c(clangPath, compileArgs,
+    boost::process::child c(compilerPath, compileArgs,
         boost::process::std_err > errReader, boost::process::windows::create_no_window);
 #else
-    boost::process::child c(clangPath, compileArgs,
+    boost::process::child c(compilerPath, compileArgs,
                             boost::process::std_err > errReader);
 #endif
 
