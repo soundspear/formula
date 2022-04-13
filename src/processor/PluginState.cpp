@@ -23,7 +23,7 @@ float formula::processor::PluginState::getKnobValue(int knobId)
 
 float formula::processor::PluginState::getSwitchValue(int switchId)
 {
-    return getParameterAsValue("Switch " + std::to_string(switchId)).getValue();
+    return getParameterAsValue("Switch " + std::to_string(switchId + 1)).getValue();
 }
 
 float formula::processor::PluginState::getDryWet() {

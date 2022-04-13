@@ -41,6 +41,7 @@ int __debug_enabled;
 #define switch_2 switches[2]
 #define switch_3 switches[3]
 
+
 float time = 0;
 
 FORMULA_EXPORT void process_block_mono(float* in, int numSamples, float sampleRate,
@@ -53,6 +54,7 @@ FORMULA_EXPORT void process_block_mono(float* in, int numSamples, float sampleRa
     __debug_enabled = 1;
     for (int s = 0; s < numSamples; s++) {
         time += 1 / sampleRate;
+        double fixDenormal = (1.0 / 4294967295.0);
         in[s] = outGain*(wet*_formula_main(in[s]*inGain, sampleRate, knobs, switches) + (1-wet)*in[s]);
         __debug_enabled = 0;
     }
