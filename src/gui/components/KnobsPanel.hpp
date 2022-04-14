@@ -131,6 +131,10 @@ formula::gui::KnobsPanel<NumKnobs, NumSwitches>::KnobsPanel(
 template<unsigned int NumKnobs, unsigned int NumSwitches>
 inline void formula::gui::KnobsPanel<NumKnobs, NumSwitches>::restoreFromState(formula::processor::FormulaMetadata& metadata)
 {
+    dryWetKnob.inner().setValue(1.f);
+    inGainKnob.inner().setValue(0.f);
+    outGainKnob.inner().setValue(0.f);
+
     for (auto i = 0; i < NumSwitches; i++) {
         auto& toggle = userSwitches[i].inner();
         auto valueStr = metadata[formula::processor::FormulaMetadataKeys::switchDefaultValue(i)];
@@ -141,7 +145,10 @@ inline void formula::gui::KnobsPanel<NumKnobs, NumSwitches>::restoreFromState(fo
             );
         }
         catch (boost::bad_lexical_cast&)
-        { }
+        {
+            // Switch has never been toggled and does not have a default value
+            toggle.setToggleState(0, juce::NotificationType::sendNotification);
+        }
         auto& textEditor = userSwitches[i].nameTextEditor(); 
         auto name = metadata[formula::processor::FormulaMetadataKeys::switchName(i)];
         if (!name.empty()) {
@@ -157,7 +164,10 @@ inline void formula::gui::KnobsPanel<NumKnobs, NumSwitches>::restoreFromState(fo
             knob.setValue(boost::lexical_cast<double>(valueStr));
         }
         catch (boost::bad_lexical_cast&)
-        { }
+        {
+            // Knob has never been moved and does not have a default value
+            knob.setValue(.5f);
+        }
         auto& textEditor = userKnobs[i].nameTextEditor();
         auto name = metadata[formula::processor::FormulaMetadataKeys::knobName(i)];
         if (!name.empty()) {

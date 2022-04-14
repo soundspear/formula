@@ -72,8 +72,9 @@ void formula::processor::FormulaLoader::unloadLibrary()
 }
 
 void formula::processor::FormulaLoader::formulaProcessBlock(
-    AudioBuffer<float>& buffer, 
-    const std::shared_ptr<PluginState>& pluginState,
+    AudioBuffer<float>& buffer,
+    float dryWet, float inGain, float outGain,
+    float* userKnobs, float* userSwitches,
     double sampleRate
 ) {
     if (buffer.getNumChannels() > 2) return;
@@ -83,26 +84,14 @@ void formula::processor::FormulaLoader::formulaProcessBlock(
     int numSamples = buffer.getNumSamples();
     int numChannels = buffer.getNumChannels();
 
-    float knobs[FORMULA_NUM_USER_KNOBS];
-    float switches[FORMULA_NUM_USER_SWITCHES];
-    for (auto i = 0; i < FORMULA_NUM_USER_KNOBS; i++) {
-        knobs[i] = pluginState->getKnobValue(i);
-    }
-    for (auto i = 0; i < FORMULA_NUM_USER_SWITCHES; i++) {
-        switches[i] = pluginState->getSwitchValue(i);
-    }
-
-    const auto wet = pluginState->getDryWet();
-    const auto inGain = powf(10, 0.05f*pluginState->getInGain());
-    const auto outGain = powf(10, 0.05f*pluginState->getOutGain());
     if (isMono) {
         for (int channel = 0; channel < numChannels; channel++) {
             singleChannelEntrypoints[channel](
                     writePointers[channel],
                     numSamples,
                     static_cast<float>(sampleRate),
-                    knobs, switches,
-                    wet, inGain, outGain,
+                    userKnobs, userSwitches,
+                    dryWet, inGain, outGain,
                     debugStackIdx, debugStack, debugStackSize
             );
         }
@@ -112,9 +101,9 @@ void formula::processor::FormulaLoader::formulaProcessBlock(
         twoChannelsEntrypoint(
             writePointers, 
             numSamples, 
-            static_cast<float>(sampleRate), 
-            knobs, switches,
-            wet, inGain, outGain,
+            static_cast<float>(sampleRate),
+            userKnobs, userSwitches,
+            dryWet, inGain, outGain,
             debugStackIdx, debugStack, debugStackSize
         );
     }

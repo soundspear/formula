@@ -4,6 +4,7 @@
 #include <string>
 #include <variant>
 
+#include <boost/lexical_cast.hpp>
 #include <boost/preprocessor/repetition/repeat_from_to.hpp>
 
 #include <JuceHeader.h>
@@ -23,11 +24,8 @@ namespace formula::processor {
 		PluginState(AudioProcessor& processor, String name);
         ~PluginState() override;
 
-		float getKnobValue(int knobId);
-		float getSwitchValue(int switchId);
-        float getDryWet();
-        float getInGain();
-        float getOutGain();
+        void setupListener(AudioProcessorValueTreeState::Listener* listener);
+
         std::string getDebugString() { return debugString; };
         void setDebugString(std::string newString) { debugString = newString; }
 

@@ -7,6 +7,7 @@ formula::processor::PluginProcessor::PluginProcessor()
                        .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                        ),
+       KnobsPanelListener(),
     eventHub(std::make_shared<formula::events::EventHub>()),
     pluginState(std::make_shared<formula::processor::PluginState>(*this, "Formula")),
     settings(std::make_shared<formula::storage::LocalSettings>()),
@@ -15,6 +16,8 @@ formula::processor::PluginProcessor::PluginProcessor()
     compiler(std::make_unique<formula::compiler::TccWrapper>(eventHub)),
     recompiled(false)
 {
+    pluginState->setupListener(this);
+
     eventHub->subscribe(EventType::compilationSuccess, [this](boost::any compilationId) {
         auto formulaMetadata = pluginState->getActiveFormulaMetadata();
         this->previousCompilationId = formulaMetadata[FormulaMetadataKeys::compilationId];
@@ -133,7 +136,9 @@ void formula::processor::PluginProcessor::processBlock (juce::AudioBuffer<float>
     if (formulaLoader.isReady()) {
         juce::ScopedNoDenormals noDenormals;
 
-        formulaLoader.formulaProcessBlock(buffer, pluginState, getSampleRate());
+        formulaLoader.formulaProcessBlock(buffer, dryWet, inGain, outGain,
+                                          userKnobs, userSwitches,
+                                          getSampleRate());
 
         pluginState->setDebugString(formulaLoader.getDebugString());
     }

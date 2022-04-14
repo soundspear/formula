@@ -28,10 +28,11 @@ namespace formula::processor {
 		void loadLibrary(std::string compilationId);
 		void unloadLibrary();
 		void formulaProcessBlock(
-			AudioBuffer<float>& buffer,
-            const std::shared_ptr<PluginState>& pluginState,
-			double sampleRate
-		);
+                AudioBuffer<float>& buffer,
+                float dryWet, float inGain, float outGain,
+                float* userKnobs, float* userSwitches,
+                double sampleRate
+        );
 		bool isReady() const { return isLoaded; };
         std::string getDebugString() { return lastDebugString; }
 	private:

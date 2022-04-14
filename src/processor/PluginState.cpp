@@ -16,27 +16,20 @@ formula::processor::PluginState::~PluginState() {
     std::scoped_lock lock(stateSaveMutex);
 }
 
-float formula::processor::PluginState::getKnobValue(int knobId)
-{
-    return getParameterAsValue("Knob " + std::to_string(knobId + 1)).getValue();
+void formula::processor::PluginState::setupListener(AudioProcessorValueTreeState::Listener *listener) {
+    addParameterListener("Dry Wet", listener);
+    addParameterListener("In Gain", listener);
+    addParameterListener("Out Gain", listener);
+
+    for (auto i = 1; i < FORMULA_NUM_USER_KNOBS + 1; i++) {
+        addParameterListener("Knob " + boost::lexical_cast<std::string>(i), listener);
+    }
+
+    for (auto i = 1; i < FORMULA_NUM_USER_KNOBS + 1; i++) {
+        addParameterListener("Switch " + boost::lexical_cast<std::string>(i), listener);
+    };
 }
 
-float formula::processor::PluginState::getSwitchValue(int switchId)
-{
-    return getParameterAsValue("Switch " + std::to_string(switchId + 1)).getValue();
-}
-
-float formula::processor::PluginState::getDryWet() {
-    return getParameterAsValue("Dry Wet").getValue();
-}
-
-float formula::processor::PluginState::getInGain() {
-    return getParameterAsValue("In Gain").getValue();
-}
-
-float formula::processor::PluginState::getOutGain() {
-    return getParameterAsValue("Out Gain").getValue();
-}
 void formula::processor::PluginState::setActiveFormulaMetadata(formula::processor::FormulaMetadata metadata)
 {
     std::scoped_lock lock(stateSaveMutex);

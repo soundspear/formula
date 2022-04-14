@@ -9,6 +9,7 @@
 #include <compiler/TccWrapper.hpp>
 #include <processor/FormulaLoader.hpp>
 #include <processor/PluginState.hpp>
+#include <processor/KnobsPanelListener.hpp>
 #include <storage/LocalIndex.hpp>
 #include <storage/CompilerStorage.hpp>
 #include <storage/LocalSettings.hpp>
@@ -16,7 +17,7 @@
 
 namespace formula::processor
 {
-    class PluginProcessor : public juce::AudioProcessor
+class PluginProcessor : public juce::AudioProcessor, public formula::processor::KnobsPanelListener
     {
     public:
         PluginProcessor();

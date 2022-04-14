@@ -92,6 +92,7 @@ target_sources(Formula
         "src/gui/components/RatingComponent.cpp"
         "src/gui/components/FormulaDetailsPanel.cpp"
         "src/processor/FormulaLoader.cpp"
+        "src/processor/KnobsPanelListener.cpp"
         "src/processor/PluginState.cpp"
         "src/processor/PluginProcessor.cpp"
         "src/compiler/CompilerWrapper.cpp"
