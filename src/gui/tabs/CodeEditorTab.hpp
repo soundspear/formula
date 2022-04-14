@@ -34,6 +34,8 @@ class CodeEditorTab : public juce::Component, public juce::CodeDocument::Listene
         ) override;
 
         void timerCallback() override;
+
+        juce::String findAutoTabulation();
     private:
         CodeDocument codeDocument;
         CPlusPlusCodeTokeniser cppTokeniser;

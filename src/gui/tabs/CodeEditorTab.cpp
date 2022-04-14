@@ -143,22 +143,16 @@ void formula::gui::CodeEditorTab::paint(Graphics& g)
 
 void formula::gui::CodeEditorTab::codeDocumentTextInserted(const String& newText, int insertIndex)
 {
-    /* -- Leads to insert/delete de-synchronisations
-    auto activeFormula = pluginState->getPropertyAsString(formula::processor::FormulaMetadataKeys::source);
-    activeFormula.insert(insertIndex, newText.toStdString());
-    pluginState->setActiveFormulaMetadataField(formula::processor::FormulaMetadataKeys::source, activeFormula);
-    */
+    if (newText.endsWithChar('\n')) {
+        const auto autoTab = findAutoTabulation();
+        codeDocument.insertText(editor->getCaretPos(), autoTab);
+    }
     auto source = codeDocument.getAllContent();
     pluginState->setActiveFormulaMetadataField(formula::processor::FormulaMetadataKeys::source, source.toStdString());
 }
 
 void formula::gui::CodeEditorTab::codeDocumentTextDeleted(int startIndex, int endIndex)
 {
-    /* -- Leads to insert/delete de-synchronisations
-    auto activeFormula = pluginState->getPropertyAsString(formula::processor::FormulaMetadataKeys::source);
-    activeFormula.erase(startIndex, static_cast<size_t>(endIndex) - startIndex);
-    pluginState->setActiveFormulaMetadataField(formula::processor::FormulaMetadataKeys::source, activeFormula);
-    */
     auto source = codeDocument.getAllContent();
     pluginState->setActiveFormulaMetadataField(formula::processor::FormulaMetadataKeys::source, source.toStdString());
 }
@@ -271,4 +265,19 @@ void formula::gui::CodeEditorTab::setCodeEditorComponentColourScheme()
 
 void formula::gui::CodeEditorTab::timerCallback() {
     debugSymbols.setText(pluginState->getDebugString());
+}
+
+juce::String formula::gui::CodeEditorTab::findAutoTabulation() {
+    auto previousLineBreakPos = editor->getCaretPos();
+    previousLineBreakPos.setLineAndIndex(previousLineBreakPos.getLineNumber() - 1, 0);
+
+    auto whiteSpaceStartPos = juce::CodeDocument::Position(previousLineBreakPos);
+    auto whiteSpaceEndPos = juce::CodeDocument::Position(previousLineBreakPos);
+
+    auto curChar = whiteSpaceEndPos.getCharacter();
+    while (curChar == '\t' || curChar == ' ') {
+        whiteSpaceEndPos.moveBy(1);
+        curChar = whiteSpaceEndPos.getCharacter();
+    }
+    return codeDocument.getTextBetween(whiteSpaceStartPos, whiteSpaceEndPos);;
 }
