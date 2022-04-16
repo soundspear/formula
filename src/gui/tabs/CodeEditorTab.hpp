@@ -5,7 +5,7 @@
 
 #include "Formula_artefacts/JuceLibraryCode/JuceHeader.h"
 
-#include "src/gui/components/SvgButton.hpp"
+#include "src/gui/components/IconButton.hpp"
 #include "src/gui/components/SaveLocalFormulaPopup.hpp"
 #include "src/gui/components/KnobsPanel.hpp"
 #include "src/events/EventHub.hpp"
@@ -40,13 +40,13 @@ class CodeEditorTab : public juce::Component, public juce::CodeDocument::Listene
         CodeDocument codeDocument;
         CPlusPlusCodeTokeniser cppTokeniser;
         std::unique_ptr<CodeEditorComponent> editor;
-        formula::gui::FormulaButton compileButton;
-        formula::gui::FormulaButton muteButton;
-        formula::gui::FormulaButton saveLocalButton;
-        formula::gui::FormulaButton showDebugButton;
-        formula::gui::FormulaButton showKnobsButton;
-        formula::gui::FormulaButton zoomInButton;
-        formula::gui::FormulaButton zoomOutButton;
+        formula::gui::IconButton compileButton;
+        formula::gui::IconButton muteButton;
+        formula::gui::IconButton saveLocalButton;
+        formula::gui::IconButton showDebugButton;
+        formula::gui::IconButton showKnobsButton;
+        formula::gui::IconButton zoomInButton;
+        formula::gui::IconButton zoomOutButton;
 
         formula::gui::SaveLocalFormulaPopup savePopup;
 

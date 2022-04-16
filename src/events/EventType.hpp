@@ -7,7 +7,7 @@ enum class EventType {
 	compilationSuccess,
 	compilationFail,
 	loadFormulaRequest,
-	saveLocalFormulaRequest,
+    searchFormulaRequest,
     // GUI
     scaleUp,
     scaleDown,

@@ -159,7 +159,9 @@ void formula::cloud::FormulaCloudClient::submitRating(std::string formulaId, dou
 
 void formula::cloud::FormulaCloudClient::requestWrapper(RequestFunction requestFunction, SuccessCallback successCallback, int numTries) {
     eventHub->publish(EventType::webRequestSent);
-    requestFunction().then(
+
+    requestFunction()
+    .then(
         [this, successCallback, requestFunction, numTries](const web::http::http_response& response) {
             if (response.status_code() < 299) {
                 try {
@@ -190,7 +192,22 @@ void formula::cloud::FormulaCloudClient::requestWrapper(RequestFunction requestF
                 }
             }
         }
-    );
+    )
+    .then([this, successCallback, requestFunction, numTries](const pplx::task<void>& previousTask) {
+        try {
+            previousTask.wait();
+            eventHub->publish(EventType::webRequestFinished);
+        } catch (std::exception& ex) {
+            if (numTries > 0) {
+                eventHub->publish(EventType::webRequestFinished);
+                eventHub->publish(EventType::unknownWebError);
+            }
+            else {
+                pplx::wait(15000);
+                requestWrapper(requestFunction, successCallback, numTries + 1);
+            }
+        }
+    });
 }
 
 

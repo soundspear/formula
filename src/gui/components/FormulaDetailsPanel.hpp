@@ -27,6 +27,7 @@ namespace formula::gui {
         CPlusPlusCodeTokeniser cppTokeniser;
         Label descriptionLabel;
         Label ratingsHeadingLabel;
+        TextButton loadFormulaButton;
         std::vector<std::unique_ptr<RatingComponent>> ratingComponents;
         std::vector<std::unique_ptr<Label>> commentLabels;
     };

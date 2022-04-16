@@ -8,6 +8,7 @@
 #include <JuceHeader.h>
 
 #include <gui/components/LoginPopup.hpp>
+#include <gui/components/SearchBar.hpp>
 #include <events/EventHub.hpp>
 #include <cloud/FormulaCloudClient.hpp>
 #include <cloud/ListFormulaDto.hpp>
@@ -40,9 +41,11 @@ namespace formula::gui {
         std::shared_ptr<formula::events::EventHub> eventHub;
 
         formula::cloud::SearchParameters searchParams;
+        std::string sortColumn, sortDirection;
         std::vector<formula::cloud::ListFormulaDto> data;
         TableListBox table;
         formula::gui::FormulaDetailsPanel detailsPanel;
+        formula::gui::SearchBar searchBar;
 
         bool endOfResultsReached;
     };

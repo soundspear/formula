@@ -10,16 +10,16 @@ namespace formula::gui {
         FormulaLookAndFeel()
         : LookAndFeel_V4(createColourScheme()) {
             std::vector<std::pair<int, juce::uint32>> colorMapping {
-                    { juce::CodeEditorComponent::ColourIds::backgroundColourId, 0x2b2b2b },
-                    { juce::CodeEditorComponent::ColourIds::lineNumberBackgroundId, 0x313335 },
-                    { juce::TabbedComponent::ColourIds::backgroundColourId, backgroundColor },
-                    { juce::TextButton::ColourIds::buttonColourId, backgroundColor },
-                    { juce::TextButton::ColourIds::buttonOnColourId, darker(backgroundColor, 0.5f) },
-                    { juce::ListBox::ColourIds::backgroundColourId, backgroundColor },
-                    { FormulaButton::ColourIds::idleColourId, backgroundColor },
-                    { FormulaButton::ColourIds::highlightedColourId, brighter(backgroundColor, 0.2f) },
-                    { FormulaButton::ColourIds::downColourId, brighter(backgroundColor, 0.3f) },
-                    { FormulaButton::ColourIds::toggledColourId, darker(backgroundColor, 0.5f) },
+                    {juce::CodeEditorComponent::ColourIds::backgroundColourId,     0x2b2b2b },
+                    {juce::CodeEditorComponent::ColourIds::lineNumberBackgroundId, 0x313335 },
+                    {juce::TabbedComponent::ColourIds::backgroundColourId,         backgroundColor },
+                    {juce::TextButton::ColourIds::buttonColourId,                  backgroundColor },
+                    {juce::TextButton::ColourIds::buttonOnColourId,                darker(backgroundColor, 0.5f) },
+                    {juce::ListBox::ColourIds::backgroundColourId,                 backgroundColor },
+                    {IconButton::ColourIds::idleColourId,                          backgroundColor },
+                    {IconButton::ColourIds::highlightedColourId,                   brighter(backgroundColor, 0.2f) },
+                    {IconButton::ColourIds::downColourId,                          brighter(backgroundColor, 0.3f) },
+                    {IconButton::ColourIds::toggledColourId,                       darker(backgroundColor, 0.5f) },
             };
             this->mapColors(colorMapping);
         }
@@ -85,6 +85,7 @@ namespace formula::gui {
              0xff666666, 0xffffffff, 0xffba7272,
              0xff000000, 0xffffffff, 0xffffffff };
         }
+
     private:
         static constexpr juce::uint32 brighter(juce::uint32 color, float amount) {
             juce::uint32 result = 0;

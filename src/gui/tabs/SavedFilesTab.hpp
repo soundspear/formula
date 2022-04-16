@@ -9,7 +9,7 @@
 
 #include <JuceHeader.h>
 
-#include <gui/components/SvgButton.hpp>
+#include <gui/components/IconButton.hpp>
 #include <gui/components/LoginPopup.hpp>
 #include <events/EventHub.hpp>
 #include <processor/PluginState.hpp>

@@ -25,6 +25,10 @@ formula::gui::FormulaDetailsPanel::FormulaDetailsPanel() {
 
     codePreviewEditor = std::make_unique<CodeEditorComponent>(codePreview, &cppTokeniser);
     addAndMakeVisible(codePreviewEditor.get());
+
+    loadFormulaButton.setButtonText("Load formula");
+    addAndMakeVisible(loadFormulaButton);
+
     ratingsHeadingLabel.setText("User ratings", NotificationType::sendNotificationAsync);
 #ifdef __PREVIEW_SHOW_RATINGS
     addAndMakeVisible(ratingsHeadingLabel);
@@ -76,8 +80,9 @@ void formula::gui::FormulaDetailsPanel::resized()
 
     constexpr auto closeButtonSize = 32;
     constexpr auto nameHeight = 18;
-    constexpr auto descriptionHeight = 32;
-    constexpr auto editorPreviewHeight = 100;
+    constexpr auto descriptionHeight = 128;
+    constexpr auto editorPreviewHeight = 150;
+    constexpr auto loadButtonHeight = 32;
 
     auto area = getLocalBounds();
 
@@ -94,9 +99,17 @@ void formula::gui::FormulaDetailsPanel::resized()
     area.removeFromTop(componentsMargin);
 
     codePreviewEditor->setBounds(area.removeFromTop(editorPreviewHeight));
+    area.removeFromTop(componentsMargin);
 
     descriptionLabel.setBounds(area.removeFromTop(descriptionHeight));
     area.removeFromTop(componentsMargin);
+
+    auto buttonArea = getLocalBounds()
+            .withTrimmedBottom(componentsMargin);
+    auto buttonMarginX =  buttonArea.getWidth() * 0.4;
+    buttonArea = buttonArea.removeFromBottom(loadButtonHeight)
+            .withTrimmedLeft(buttonMarginX/2).withTrimmedRight(buttonMarginX/2);
+    loadFormulaButton.setBounds(buttonArea);
 
 #ifdef __PREVIEW_SHOW_RATINGS
     constexpr auto commentHeight = 32;

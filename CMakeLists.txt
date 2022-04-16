@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.11)
 
 project(Formula VERSION 0.1 LANGUAGES CXX)
 
-add_compile_definitions(FORMULA_LOCAL_ONLY)
+# add_compile_definitions(FORMULA_LOCAL_ONLY)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_CXX_STANDARD 20)
@@ -69,6 +69,7 @@ juce_add_binary_data(FormulaBinaryData
         assets/icons/mute.svg
         assets/icons/pause.svg
         assets/icons/save_local.svg
+        assets/icons/search.svg
         assets/icons/show_debug.svg
         assets/icons/show_knobs.svg
         assets/icons/unmute.svg
@@ -91,6 +92,7 @@ target_sources(Formula
         "src/gui/components/SpinnerOverlay.cpp"
         "src/gui/components/RatingComponent.cpp"
         "src/gui/components/FormulaDetailsPanel.cpp"
+        "src/gui/components/SearchBar.cpp"
         "src/processor/FormulaLoader.cpp"
         "src/processor/KnobsPanelListener.cpp"
         "src/processor/PluginState.cpp"

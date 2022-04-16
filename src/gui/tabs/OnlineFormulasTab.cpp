@@ -6,8 +6,12 @@ using namespace boost::assign;
 
 formula::gui::OnlineFormulasTab::OnlineFormulasTab(const std::shared_ptr<formula::events::EventHub>& eventHubRef,
                                                    const std::shared_ptr<formula::cloud::FormulaCloudClient>& cloudRef)
-        : eventHub(eventHubRef), cloud(cloudRef), detailsPanel()
+        : eventHub(eventHubRef), cloud(cloudRef), detailsPanel(),
+          searchBar(eventHubRef), endOfResultsReached(false),
+          sortColumn("last_modified"), sortDirection("desc")
 {
+    addAndMakeVisible(searchBar);
+
     table.setColour(ListBox::outlineColourId, Colours::grey);
     table.setOutlineThickness(2);
     table.setRowHeight(30);
@@ -45,6 +49,14 @@ formula::gui::OnlineFormulasTab::OnlineFormulasTab(const std::shared_ptr<formula
         thisPtr->detailsPanel.setFormulaDto(response);
         thisPtr->detailsPanel.setVisible(true);
         thisPtr->resized();
+    }, this);
+
+    eventHub->subscribeOnUiThread<OnlineFormulasTab>(
+            EventType::searchFormulaRequest, []([[maybe_unused]] boost::any arg, OnlineFormulasTab* thisPtr) {
+        thisPtr->data.clear();
+        thisPtr->endOfResultsReached = false;
+        thisPtr->searchParams.skip = 0;
+        thisPtr->makeSearchAsync();
     }, this);
 }
 
@@ -101,6 +113,28 @@ void formula::gui::OnlineFormulasTab::paintCell(Graphics &g, int rowNumber, int 
 }
 
 void formula::gui::OnlineFormulasTab::sortOrderChanged(int newSortColumnId, bool isForwards) {
+    switch (newSortColumnId) {
+        case OnlineFormulasColumnsIds::name:
+            sortColumn = "name";
+            break;
+        case OnlineFormulasColumnsIds::author:
+            sortColumn = "author";
+            break;
+        case OnlineFormulasColumnsIds::lastModified:
+            sortColumn = "last_modified";
+            break;
+        case OnlineFormulasColumnsIds::created:
+            sortColumn = "created";
+            break;
+        default:
+            return;
+    }
+    searchParams.skip = 0;
+    data.clear();
+    endOfResultsReached = false;
+    sortDirection = isForwards ? "asc" : "desc";
+
+    makeSearchAsync();
 }
 
 Component *formula::gui::OnlineFormulasTab::refreshComponentForCell(int rowNumber, int columnId, bool,
@@ -133,11 +167,19 @@ void formula::gui::OnlineFormulasTab::selectedRowsChanged(int lastRowSelected) {
 }
 
 void formula::gui::OnlineFormulasTab::resized() {
-    constexpr auto tableMargin = 8;
+    constexpr auto margin = 8;
+    constexpr auto searchBarHeight = 24;
 
-    auto area = getLocalBounds();
+    auto area = getLocalBounds()
+            .withTrimmedTop(margin)
+            .withTrimmedBottom(margin)
+            .withTrimmedLeft(margin)
+            .withTrimmedRight(margin);
 
-    table.setBounds(area.withTrimmedLeft(tableMargin).withTrimmedRight(tableMargin));
+    searchBar.setBounds(area.removeFromTop(searchBarHeight));
+    area.removeFromTop(margin);
+
+    table.setBounds(area);
 
     detailsPanel.setBounds(getLocalBounds().removeFromLeft(getLocalBounds().getWidth() / 3));
 }
@@ -157,5 +199,6 @@ void formula::gui::OnlineFormulasTab::scrollBarMoved(ScrollBar *scrollBarThatHas
 }
 
 void formula::gui::OnlineFormulasTab::makeSearchAsync() {
-    cloud->listFormulas(searchParams.skip, searchParams.take, "last_modified", "desc", false, "");
+    cloud->listFormulas(searchParams.skip, searchParams.take, sortColumn, sortDirection,
+                        searchBar.shouldSearchOnlyUserFormulas(), searchBar.getQuery());
 }

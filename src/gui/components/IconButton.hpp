@@ -7,9 +7,9 @@
 
 namespace formula::gui
 {
-	class FormulaButton : public DrawableButton {
+	class IconButton : public DrawableButton {
 	public:
-		FormulaButton()
+		IconButton()
 			: DrawableButton("", DrawableButton::ButtonStyle::ImageFitted) {}
 
         enum ColourIds : unsigned int

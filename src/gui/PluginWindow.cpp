@@ -54,6 +54,12 @@ formula::gui::PluginWindow::PluginWindow(
         thisPtr->setScaleFactor(thisPtr->scaleFactor);
     }, this);
 
+    eventHub->subscribeOnUiThread<PluginWindow>(
+            EventType::unknownWebError, [] ([[maybe_unused]] boost::any _, PluginWindow* thisPtr) {
+        juce::AlertWindow::showMessageBox(juce::MessageBoxIconType::WarningIcon,
+                                          "Network error", "An unknown network error happened");
+    }, this);
+
     addAndMakeVisible(spinner);
     spinner.hideSpinner();
 
