@@ -203,7 +203,7 @@ void formula::cloud::FormulaCloudClient::requestWrapper(RequestFunction requestF
                 eventHub->publish(EventType::unknownWebError);
             }
             else {
-                pplx::wait(15000);
+                std::this_thread::sleep_for(std::chrono::seconds(10));
                 requestWrapper(requestFunction, successCallback, numTries + 1);
             }
         }

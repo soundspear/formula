@@ -34,17 +34,13 @@ void formula::storage::LocalIndex::saveCurrentFormulaToIndex()
 {
     auto metadata = pluginState->getActiveFormulaMetadata();
 
-    auto t = std::time(nullptr);
-    auto timeInfo = std::make_unique<std::tm>();
-    ::localtime_s(timeInfo.get(), &t);
-    std::ostringstream oss;
-    oss << std::put_time(timeInfo.get(), "%d-%m-%Y %H:%M");
-    const auto dateNow = oss.str();
+    auto dateNow = boost::posix_time::second_clock::local_time();
+    const auto dateNowStr = boost::posix_time::to_simple_string(dateNow);
 
     if (index.get_child_optional(metadata[FormulaMetadataKeys::name]) == boost::none) {
-        metadata[FormulaMetadataKeys::created] = dateNow;
+        metadata[FormulaMetadataKeys::created] = dateNowStr;
     }
-    metadata[formula::processor::FormulaMetadataKeys::lastModified] = dateNow;
+    metadata[formula::processor::FormulaMetadataKeys::lastModified] = dateNowStr;
 
     addFormulaToIndex(metadata, true);
 

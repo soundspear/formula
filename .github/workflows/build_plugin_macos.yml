@@ -14,32 +14,59 @@ jobs:
     steps: 
     - name: Git Checkout
       uses: actions/checkout@v2
-      
-    - name: Configure
-      run: |
-        chmod +x configure-mac.sh
-        ./configure-mac.sh
         
     - name: Setup tmate session
       uses: mxschmitt/action-tmate@v3
       if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled }}
-        
-    - name: CMake
+      
+    - name: Configure x64
       run: |
-        cmake -G Ninja . 
+        chmod +x configure-mac.sh
+        ./configure-mac.sh
+        
+    - name: CMake x64
+      run: |
+        cmake -G Ninja . -DCMAKE_OSX_ARCHITECTURES="x86_64"
             
-    - name: CMake Build
+    - name: CMake Build x64
       run: |
-        cmake --build .
+        cmake --build . --target Formula_All
+        mv Formula_artefacts Formula_artefacts_x64
         
+    - name: Configure ARM64
+      run: |
+        ./configure-mac.sh --cross-compile arm64
+        
+    - name: CMake ARM64
+      run: |
+        cmake -G Ninja . -DCMAKE_OSX_ARCHITECTURES="arm64"
+            
+    - name: CMake Build ARM64
+      run: |
+        cmake --build . --target Formula_All
+        mv Formula_artefacts Formula_artefacts_arm64
+        
+    - name: Create fat binaries
+      run: |
+        mkdir /tmp/AU
+        cp -R Formula_artefacts_x64/AU/Formula.component /tmp/AU
+        lipo Formula_artefacts_x64/AU/Formula.component/Contents/MacOS/Formula \
+            Formula_artefacts_arm64/AU/Formula.component/Contents/MacOS/Formula \
+            -create -output /tmp/AU/Formula.component/Contents/MacOS/Formula
+        
+        mkdir /tmp/VST3
+        cp -R Formula_artefacts_x64/VST3/Formula.vst3 /tmp/VST3
+        lipo Formula_artefacts_x64/VST3/Formula.vst3/Contents/MacOS/Formula \
+            Formula_artefacts_arm64/VST3/Formula.vst3/Contents/MacOS/Formula \
+            -create -output /tmp/VST3/Formula.vst3/Contents/MacOS/Formula
+      
     - name: Create setup
       run: |
         export IDENTIFIER=com.soundspear.pkg.formula
         export SYSTEM_PLUGINS_DIR=/Library/Audio/Plug-Ins
-        export BUILD_DIR=Formula_artefacts
         
-        pkgbuild --root "$BUILD_DIR/VST3/" --identifier "$IDENTIFIER.vst3" --install-location "$SYSTEM_PLUGINS_DIR/VST3" Formula_VST3.pkg
-        pkgbuild --root "$BUILD_DIR/AU/" --identifier "$IDENTIFIER.component" --install-location "$SYSTEM_PLUGINS_DIR/Components" Formula_AU.pkg
+        pkgbuild --root "/tmp/VST3/" --identifier "$IDENTIFIER.vst3" --install-location "$SYSTEM_PLUGINS_DIR/VST3" Formula_VST3.pkg
+        pkgbuild --root "/tmp/AU/" --identifier "$IDENTIFIER.component" --install-location "$SYSTEM_PLUGINS_DIR/Components" Formula_AU.pkg
         
         zip -r formula-macos.zip *.pkg        
         

@@ -5,6 +5,9 @@
 #ifndef FORMULA_CLOUD_FORMULACLOUDCLIENT_INCLUDED
 #define FORMULA_CLOUD_FORMULACLOUDCLIENT_INCLUDED
 
+#include <chrono>
+#include <thread>
+
 #include <cpprest/http_client.h>
 
 #include "storage/LocalSettings.hpp"

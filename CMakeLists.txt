@@ -18,19 +18,20 @@ IF (WIN32)
         set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
         set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
     ENDIF ()
+	set(Boost_USE_STATIC_RUNTIME ON)
 ELSEIF (APPLE)
-  #set(CMAKE_OSX_ARCHITECTURES "x86_64;arm64")
-  set(OPENSSL_ROOT_DIR /usr/local/opt/openssl/)
+  set(OPENSSL_ROOT_DIR /usr/local/opt/openssl@1.1/)
+  set(OPENSSL_USE_STATIC_LIBS TRUE)
   find_package(OpenSSL REQUIRED)
   include_directories(Formula ${OPENSSL_INCLUDE_DIR})
 ENDIF()
 
 # DEPENDENCIES
-add_subdirectory(JUCE)
 set(Boost_USE_STATIC_LIBS ON)
-set(Boost_USE_STATIC_RUNTIME ON)
 find_package(Boost 1.74.0 COMPONENTS REQUIRED filesystem date_time)
 include_directories(Formula ${Boost_INCLUDE_DIR} SYSTEM)
+
+add_subdirectory(JUCE)
 
 
 find_package(cpprestsdk CONFIG REQUIRED)
