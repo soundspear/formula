@@ -30,7 +30,7 @@ formula::gui::PluginWindow::PluginWindow(
     tabs.addTab("Editor", colour, new CodeEditorTab(eventHub, pluginState, localIndexRef), true);
     tabs.addTab("Saved files", colour, new SavedFilesTab(eventHub, pluginState, localIndexRef), true);
 #ifndef FORMULA_LOCAL_ONLY
-    tabs.addTab("Browse", colour, new OnlineFormulasTab(eventHub, cloud), true);
+    tabs.addTab("Formula cloud", colour, new OnlineFormulasTab(eventHub, cloud), true);
 #endif
     tabs.addTab("Settings", colour, new Component(), true);
 
