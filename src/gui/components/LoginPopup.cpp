@@ -1,10 +1,8 @@
 #include "LoginPopup.hpp"
 
 formula::gui::LoginPopup::LoginPopup(
-	const std::shared_ptr<formula::events::EventHub>& eventHubRef,
-	const std::shared_ptr<formula::processor::PluginState>& pluginStateRef)
-	: eventHub(eventHubRef), pluginState(pluginStateRef),
-	subscribeButton("Subscribe now", juce::URL("https://soundspear.com/product/formula"))
+	const std::shared_ptr<formula::cloud::FormulaCloudClient>& cloudRef)
+	: cloud(cloudRef)
 {
 	auto labelFont = titleLabel.getFont();
 	labelFont.setHeight(20);
@@ -13,12 +11,7 @@ formula::gui::LoginPopup::LoginPopup(
 
 	addAndMakeVisible(descriptionLabel);
 
-	subscribeButton.onClick = [this] {
-	};
-	addAndMakeVisible(subscribeButton);
-
-	loginLabel.setText("Already have a subscription?\nLog-in to your Soundspear account:", NotificationType::dontSendNotification);
-	addAndMakeVisible(loginLabel);
+	addAndMakeVisible(linkButton);
 
 	emailLabel.setText("Email", NotificationType::dontSendNotification);
 	addAndMakeVisible(emailLabel);
@@ -27,42 +20,85 @@ formula::gui::LoginPopup::LoginPopup(
 	addAndMakeVisible(passwordLabel);
 	passwordEditor.setPasswordCharacter('*');
 	addAndMakeVisible(passwordEditor);
-	validateLoginButton.setButtonText("Log In");
-	addAndMakeVisible(validateLoginButton);
 
-	cancelButton.setButtonText("Cancel");
-	cancelButton.onClick = [this] {
-		this->setVisible(false);
-	};
-	addAndMakeVisible(cancelButton);
+    validateButton.onClick = [this] {
+        this->setVisible(false);
+        if (this->popupType == LoginPopupType::MissingSubscription) {
+            return;
+        }
+        cloud->login(emailEditor.getText().toStdString(), passwordEditor.getText().toStdString());
+    };
+	addAndMakeVisible(validateButton);
+
+    closeButton = std::unique_ptr<Button>(getLookAndFeel().createDocumentWindowButton(DocumentWindow::TitleBarButtons::closeButton));
+    addAndMakeVisible(closeButton.get());
+    closeButton->onClick = [this]() {
+        this->setVisible(false);
+    };
+	addAndMakeVisible(closeButton.get());
 }
 
-void formula::gui::LoginPopup::setType(LoginPopupType popupType)
+void formula::gui::LoginPopup::setType(LoginPopupType newPopupType)
 {
+    popupType = newPopupType;
 	switch (popupType) {
-	case LoginPopupType::Synchronize:
-		titleLabel.setText("Synchronize your formulas", NotificationType::sendNotification);
+	case LoginPopupType::FirstLogin:
+		titleLabel.setText("Formula Cloud login", NotificationType::sendNotification);
 		descriptionLabel.setText(
-			juce::String("A subscription to Formula Cloud allows you to continuously save your ")
-			+ juce::String("formulas to your account and synchronize them between your devices."),
+			juce::String("Please log in to your Soundspear account,\nor create one by clicking the link below."),
 			NotificationType::sendNotification
 		);
+        linkButton.setButtonText("Click here to create an account");
+        linkButton.setURL(juce::URL("https://soundspear.com/register"));
+        linkButton.setVisible(true);
+        emailLabel.setVisible(true); passwordLabel.setVisible(true);
+        emailEditor.setVisible(true); passwordEditor.setVisible(true);
+        validateButton.setButtonText("Log In");
 		descriptionLabelHeight = 60;
 		break;
-    case LoginPopupType::Download:
+    case LoginPopupType::LoginFailed:
+        titleLabel.setText("Login failed", NotificationType::sendNotification);
+        descriptionLabel.setText(
+                juce::String("Invalid username or email, please try again!"),
+                NotificationType::sendNotification
+        );
+        linkButton.setButtonText("Forgot your password?");
+        linkButton.setURL(juce::URL("https://soundspear.com/forgotpassword"));
+        linkButton.setVisible(true);
+        emailLabel.setVisible(true); passwordLabel.setVisible(true);
+        emailEditor.setVisible(true); passwordEditor.setVisible(true);
+        validateButton.setButtonText("Log In");
+        descriptionLabelHeight = 30;
+        break;
+    case LoginPopupType::MissingSubscription:
+        titleLabel.setText("Subscription not found or expired", NotificationType::sendNotification);
+        descriptionLabel.setText(
+                juce::String("You need a subscription in order to user Formula Cloud."),
+                NotificationType::sendNotification
+        );
+        linkButton.setButtonText("Subscribe now");
+        linkButton.setURL(juce::URL("https://soundspear.com/product/formula"));
+        linkButton.setVisible(true);
+        emailLabel.setVisible(false); passwordLabel.setVisible(false);
+        emailEditor.setVisible(false); passwordEditor.setVisible(false);
+        validateButton.setButtonText("Ok");
+        descriptionLabelHeight = 60;
         break;
     default:
         break;
 	}
+    resized();
 }
 
 juce::Rectangle<int> formula::gui::LoginPopup::getAreaToFit(juce::Point<int> parentCenter)
 {
+    int height = emailLabel.isVisible() ? 200 : 145;
+    height += descriptionLabelHeight;
 	return {
 		parentCenter.getX() - 200,
-		parentCenter.getY() - 175,
+		parentCenter.getY() - height/2,
 		400,
-		350
+        height
     };
 }
 
@@ -76,18 +112,23 @@ void formula::gui::LoginPopup::paint(Graphics& g)
 
 void formula::gui::LoginPopup::resized()
 {
+    constexpr auto closeButtonSize = 32;
+
 	constexpr auto pad = 12;
-	constexpr auto topMargin = 10;
-	constexpr auto componentsMargin = 14;
+	constexpr auto topMargin = 8;
+	constexpr auto componentsMargin = 12;
 	constexpr auto labelMargin = 4;
 
 	constexpr auto titleHeight = 18;
 	constexpr auto buttonHeight = 24;
 	constexpr auto buttonMarginX = 64;
-	constexpr auto loginLabelHeight = 48;
 	constexpr auto editorLabelWidth = 128;
 
-	auto area = getLocalBounds();
+    auto area = getLocalBounds();
+
+    closeButton->setBounds(area.getX() + area.getWidth() - closeButtonSize - 1, 1,
+                           closeButtonSize, closeButtonSize);
+
 	area = area.withTrimmedTop(pad).withTrimmedBottom(pad).withTrimmedLeft(pad).withTrimmedRight(pad);
 
 	area.removeFromTop(topMargin);
@@ -101,29 +142,28 @@ void formula::gui::LoginPopup::resized()
 	auto subArea = area.removeFromTop(buttonHeight);
 	subArea.removeFromLeft(buttonMarginX);
 	subArea.removeFromRight(buttonMarginX);
-	subscribeButton.setBounds(subArea);
+	linkButton.setBounds(subArea);
 	area.removeFromTop(componentsMargin);
 
-	loginLabel.setBounds(area.removeFromTop(loginLabelHeight));
-	area.removeFromTop(labelMargin);
+    if (emailLabel.isVisible()) {
+        subArea = area.removeFromTop(buttonHeight);
+        auto labelArea = subArea.removeFromLeft(editorLabelWidth);
+        emailLabel.setBounds(labelArea);
+        emailEditor.setBounds(subArea);
+        area.removeFromTop(componentsMargin);
+    }
 
-	subArea = area.removeFromTop(buttonHeight);
-	auto labelArea = subArea.removeFromLeft(editorLabelWidth);
-	emailLabel.setBounds(labelArea);
-	emailEditor.setBounds(subArea);
+    if (passwordLabel.isVisible()) {
+        subArea = area.removeFromTop(buttonHeight);
+        auto labelArea = subArea.removeFromLeft(editorLabelWidth);
+        passwordLabel.setBounds(labelArea);
+        passwordEditor.setBounds(subArea);
+        area.removeFromTop(componentsMargin);
+    }
 
-	subArea = area.removeFromTop(buttonHeight);
-	labelArea = subArea.removeFromLeft(editorLabelWidth);
-	passwordLabel.setBounds(labelArea);
-	passwordEditor.setBounds(subArea);
-
-	area.removeFromTop(componentsMargin);
-	validateLoginButton.setBounds(area.removeFromTop(buttonHeight));
-
-	subArea = area.removeFromBottom(buttonHeight);
-	subArea.removeFromLeft(buttonMarginX);
-	subArea.removeFromRight(buttonMarginX);
-	cancelButton.setBounds(subArea);
-
+    subArea = area.removeFromTop(buttonHeight);
+    subArea.removeFromLeft(buttonMarginX);
+    subArea.removeFromRight(buttonMarginX);
+    validateButton.setBounds(subArea);
 }
 

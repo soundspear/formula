@@ -55,8 +55,6 @@ namespace formula::gui
         TextButton exportButton;
         TextButton deleteButton;
 
-        formula::gui::LoginPopup loginPopup;
-
         std::shared_ptr<formula::events::EventHub> eventHub;
         std::shared_ptr<formula::processor::PluginState> pluginState;
         std::shared_ptr<formula::storage::LocalIndex> localIndex;

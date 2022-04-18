@@ -16,6 +16,8 @@ namespace formula::storage {
         inline static const std::string accessToken = "accessToken";
         inline static const std::string refreshToken = "refreshToken";
         inline static const std::string expiresAt = "expiresAt";
+        inline static const std::string username = "username";
+        inline static const std::string email = "email";
     };
 
     class LocalSettings : public LocalStorage {

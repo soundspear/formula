@@ -179,7 +179,7 @@ void formula::cloud::FormulaCloudClient::requestWrapper(RequestFunction requestF
                         eventHub->publish(EventType::subscriptionExpired);
                     }
                     else if (response.status_code() == 401) {
-                        eventHub->publish(EventType::loginFail);
+                        eventHub->publish(EventType::needLogin);
                     }
                     else {
                         eventHub->publish(EventType::unknownWebError);

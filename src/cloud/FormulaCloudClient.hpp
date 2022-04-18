@@ -19,7 +19,7 @@ namespace formula::cloud {
     using RequestFunction = std::function<pplx::task<web::http::http_response>()>;
     using SuccessCallback = std::function<void(web::json::value)>;
 
-    class FormulaCloudClient : AuthenticatedClient {
+    class FormulaCloudClient : public AuthenticatedClient {
     public:
         explicit FormulaCloudClient(const std::shared_ptr<formula::storage::LocalSettings>& settings,
                                     const std::shared_ptr<formula::events::EventHub>& eventHub);

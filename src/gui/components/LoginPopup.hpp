@@ -9,43 +9,40 @@
 #include <JuceHeader.h>
 
 #include <events/EventHub.hpp>
-#include <processor/PluginState.hpp>
-#include <processor/FormulaMetadata.hpp>
+#include <cloud/FormulaCloudClient.hpp>
 
 namespace formula::gui
 {
     enum LoginPopupType {
-        Synchronize, Download
+        FirstLogin, LoginFailed, MissingSubscription
     };
 
     class LoginPopup : public juce::Component
     {
     public:
-        LoginPopup(
-            const std::shared_ptr<formula::events::EventHub>& eventHubRef,
-            const std::shared_ptr<formula::processor::PluginState>& pluginStateRef);
+        LoginPopup(const std::shared_ptr<formula::cloud::FormulaCloudClient>& cloudRef);
         void setType(LoginPopupType popupType);
-        static juce::Rectangle<int> getAreaToFit(juce::Point<int> parentCenter);
+        juce::Rectangle<int> getAreaToFit(juce::Point<int> parentCenter);
 
         void paint(Graphics& g) override;
         void resized() override;
     private:
+        LoginPopupType popupType;
+
         Label titleLabel;
         Label descriptionLabel;
-        Label loginLabel;
-        HyperlinkButton subscribeButton;
-        TextButton cancelButton;
+        HyperlinkButton linkButton;
+        std::unique_ptr<juce::Button> closeButton;
 
         Label emailLabel;
         Label passwordLabel;
         TextEditor emailEditor;
         TextEditor passwordEditor;
-        TextButton validateLoginButton;
+        TextButton validateButton;
 
         int descriptionLabelHeight = 0;
 
-        std::shared_ptr<formula::events::EventHub> eventHub;
-        std::shared_ptr<formula::processor::PluginState> pluginState;
+        std::shared_ptr<formula::cloud::FormulaCloudClient> cloud;
 
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(LoginPopup)
     };

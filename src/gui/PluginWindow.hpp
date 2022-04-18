@@ -40,6 +40,7 @@ namespace formula::gui
         juce::TabbedComponent tabs;
         SpinnerOverlay spinner;
         static std::unique_ptr<juce::TooltipWindow> tooltipWindow;
+        formula::gui::LoginPopup loginPopup;
         std::unique_ptr<formula::gui::FormulaLookAndFeel> laf;
 
         float scaleFactor = 1;

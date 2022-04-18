@@ -10,10 +10,6 @@ formula::cloud::AuthenticatedClient::AuthenticatedClient(const std::shared_ptr<f
 }
 
 void formula::cloud::AuthenticatedClient::login(std::string user, std::string password) {
-    if (isTokenValid()) {
-        return;
-    }
-
     web::json::value body;
     body[W("username")] = web::json::value::string(W(user));
     body[W("password")] = web::json::value::string(W(password));
@@ -45,7 +41,7 @@ pplx::task<void> formula::cloud::AuthenticatedClient::refreshAccessToken() {
     return client.request(web::http::methods::POST, U("/api/auth/refreshAccessToken"), body, destructorCts.get_token())
             .then([this](const web::http::http_response& response) {
                 if (response.status_code() == 400) {
-                    eventHub->publish(EventType::refreshAccessTokenFail);
+                    eventHub->publish(EventType::needLogin);
                     return;
                 }
                 try {

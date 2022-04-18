@@ -16,7 +16,7 @@ enum class EventType {
     webRequestFinished,
     loginSuccess,
     loginFail,
-    refreshAccessTokenFail,
+    needLogin,
     subscriptionExpired,
     listFormulaResponse,
     getFormulaResponse,

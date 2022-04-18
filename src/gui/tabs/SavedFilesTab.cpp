@@ -9,8 +9,7 @@ formula::gui::SavedFilesTab::SavedFilesTab(
     const std::shared_ptr<formula::processor::PluginState>& pluginStateRef,
     const std::shared_ptr<formula::storage::LocalIndex>& localIndexRef
 )
-    : eventHub(eventHubRef), pluginState(pluginStateRef), localIndex(localIndexRef),
-    loginPopup(eventHubRef, pluginStateRef)
+    : eventHub(eventHubRef), pluginState(pluginStateRef), localIndex(localIndexRef)
 {
     importButton.setButtonText("Import formula from file");
     importButton.onClick = [this] {
@@ -65,9 +64,6 @@ formula::gui::SavedFilesTab::SavedFilesTab(
         changeBottomBarVisibility(false);
         exportFormulaToFile();
     };
-
-    loginPopup.setType(LoginPopupType::Synchronize);
-    addChildComponent(loginPopup);
 }
 
 void formula::gui::SavedFilesTab::refreshData()
@@ -265,9 +261,6 @@ void formula::gui::SavedFilesTab::resized()
     constexpr auto tableMargin = 8;
 
     auto area = getLocalBounds();
-    const auto areaCenter = area.getCentre();
-
-    loginPopup.setBounds(loginPopup.getAreaToFit(areaCenter));
 
     auto topBarArea = area.removeFromTop(topBarHeight);
     importButton.setBounds(

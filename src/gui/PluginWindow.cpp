@@ -15,7 +15,8 @@ formula::gui::PluginWindow::PluginWindow(
       pluginState(pluginStateRef),
       cloud(cloudRef),
       tabs(TabbedButtonBar::TabsAtTop),
-      spinner(eventHubRef)
+      spinner(eventHubRef),
+      loginPopup(cloud)
 {
     if (!laf) {
         laf = std::make_unique<FormulaLookAndFeel>();
@@ -44,6 +45,26 @@ formula::gui::PluginWindow::PluginWindow(
     versionFont.setHeight(12);
     versionLabel.setFont(versionFont);
     addAndMakeVisible(versionLabel);
+
+    addChildComponent(loginPopup);
+
+    eventHub->subscribeOnUiThread<PluginWindow>(
+            EventType::loginFail, [] ([[maybe_unused]] boost::any _, PluginWindow* thisPtr) {
+        thisPtr->loginPopup.setType(LoginPopupType::LoginFailed);
+        thisPtr->loginPopup.setVisible(true); thisPtr->resized();
+    }, this);
+
+    eventHub->subscribeOnUiThread<PluginWindow>(
+            EventType::needLogin, [] ([[maybe_unused]] boost::any _, PluginWindow* thisPtr) {
+        thisPtr->loginPopup.setType(LoginPopupType::FirstLogin);
+        thisPtr->loginPopup.setVisible(true); thisPtr->resized();
+    }, this);
+
+    eventHub->subscribeOnUiThread<PluginWindow>(
+            EventType::subscriptionExpired, [] ([[maybe_unused]] boost::any _, PluginWindow* thisPtr) {
+        thisPtr->loginPopup.setType(LoginPopupType::MissingSubscription);
+        thisPtr->loginPopup.setVisible(true); thisPtr->resized();
+    }, this);
 
     eventHub->subscribeOnUiThread<PluginWindow>(
             EventType::loadFormulaRequest, [] ([[maybe_unused]] boost::any _, PluginWindow* thisPtr) {
@@ -108,4 +129,7 @@ void formula::gui::PluginWindow::resized()
     }
     versionLabel.setBounds(getLocalBounds().removeFromRight(45).removeFromTop(31)
                                    .withTrimmedBottom(11).withTrimmedTop(10));
+
+    const auto areaCenter = area.getCentre();
+    loginPopup.setBounds(loginPopup.getAreaToFit(areaCenter));
 }

@@ -43,6 +43,7 @@ namespace formula::gui {
         formula::cloud::SearchParameters searchParams;
         std::string sortColumn, sortDirection;
         std::vector<formula::cloud::ListFormulaDto> data;
+
         TableListBox table;
         formula::gui::FormulaDetailsPanel detailsPanel;
         formula::gui::SearchBar searchBar;
