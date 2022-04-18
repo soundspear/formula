@@ -1,1 +1,1 @@
-# formula
+![Formula](assets/logo.svg)

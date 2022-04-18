@@ -24,7 +24,6 @@ formula::gui::PluginWindow::PluginWindow(
 
     setResizable(true, false);
     setSize(900, 450);
-
     auto colour = findColour(ResizableWindow::backgroundColourId);
 
     tabs.addTab("Editor", colour, new CodeEditorTab(eventHub, pluginState, localIndexRef), true);
@@ -35,6 +34,16 @@ formula::gui::PluginWindow::PluginWindow(
     tabs.addTab("Settings", colour, new Component(), true);
 
     addAndMakeVisible(tabs);
+
+    logoDrawable = Drawable::createFromImageData(formula::binary::logo_svg, formula::binary::logo_svgSize);
+    addAndMakeVisible(logoDrawable.get());
+
+    versionLabel.setText("v" + juce::String(FORMULA_VERSION), NotificationType::dontSendNotification);
+    versionLabel.setAlpha(0.6);
+    versionFont = versionLabel.getFont();
+    versionFont.setHeight(12);
+    versionLabel.setFont(versionFont);
+    addAndMakeVisible(versionLabel);
 
     eventHub->subscribeOnUiThread<PluginWindow>(
             EventType::loadFormulaRequest, [] ([[maybe_unused]] boost::any _, PluginWindow* thisPtr) {
@@ -67,7 +76,7 @@ formula::gui::PluginWindow::PluginWindow(
         tooltipWindow = std::make_unique<TooltipWindow>(nullptr, 200);
     }
 
-    repaint();
+    resized();
 }
 
 formula::gui::PluginWindow::~PluginWindow() {
@@ -91,4 +100,12 @@ void formula::gui::PluginWindow::resized()
     auto area = getLocalBounds();
     tabs.setBounds(area);
     spinner.setBounds(area);
+
+    logoPos = area.withTrimmedRight(45).removeFromRight(55).removeFromTop(31)
+            .withTrimmedBottom(15).withTrimmedTop(15).toFloat();
+    if (logoDrawable) {
+        logoDrawable->setTransformToFit(logoPos, RectanglePlacement::centred | RectanglePlacement::fillDestination);
+    }
+    versionLabel.setBounds(getLocalBounds().removeFromRight(45).removeFromTop(31)
+                                   .withTrimmedBottom(11).withTrimmedTop(10));
 }

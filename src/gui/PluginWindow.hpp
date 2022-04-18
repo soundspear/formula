@@ -32,9 +32,14 @@ namespace formula::gui
         std::shared_ptr<formula::processor::PluginState> pluginState;
         std::shared_ptr<formula::cloud::FormulaCloudClient> cloud;
 
-        TabbedComponent tabs;
+        std::unique_ptr<juce::Drawable> logoDrawable;
+        juce::Rectangle<float> logoPos;
+        juce::Label versionLabel;
+        juce::Font versionFont;
+
+        juce::TabbedComponent tabs;
         SpinnerOverlay spinner;
-        static std::unique_ptr<TooltipWindow> tooltipWindow;
+        static std::unique_ptr<juce::TooltipWindow> tooltipWindow;
         std::unique_ptr<formula::gui::FormulaLookAndFeel> laf;
 
         float scaleFactor = 1;

@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.11)
 
 project(Formula VERSION 0.1 LANGUAGES CXX)
 
+add_compile_definitions(FORMULA_VERSION="${CMAKE_PROJECT_VERSION}")
 # add_compile_definitions(FORMULA_LOCAL_ONLY)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -66,6 +67,7 @@ juce_add_binary_data(FormulaBinaryData
     SOURCES
         assets/build/FormulaBaseMono.c
         assets/build/FormulaBaseStereo.c
+        assets/logo.svg
         assets/icons/compile.svg
         assets/icons/mute.svg
         assets/icons/pause.svg
