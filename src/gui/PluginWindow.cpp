@@ -38,9 +38,10 @@ formula::gui::PluginWindow::PluginWindow(
 
     logoDrawable = Drawable::createFromImageData(formula::binary::logo_svg, formula::binary::logo_svgSize);
     addAndMakeVisible(logoDrawable.get());
+    logoDrawable->setAlpha(0.6);
 
     versionLabel.setText("v" + juce::String(FORMULA_VERSION), NotificationType::dontSendNotification);
-    versionLabel.setAlpha(0.6);
+    versionLabel.setAlpha(0.4);
     versionFont = versionLabel.getFont();
     versionFont.setHeight(12);
     versionLabel.setFont(versionFont);
