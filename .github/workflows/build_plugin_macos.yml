@@ -19,27 +19,24 @@ jobs:
       uses: mxschmitt/action-tmate@v3
       if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled }}
       
-    - name: Configure x64
+    - name: Configure
       run: |
         chmod +x configure-mac.sh
         ./configure-mac.sh
         
     - name: CMake x64
       run: |
-        cmake -G Ninja . -DCMAKE_OSX_ARCHITECTURES="x86_64"
+        cmake -G Ninja . -DCMAKE_OSX_ARCHITECTURES="x86_64" -DCMAKE_TOOLCHAIN_FILE="./vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET="x64-osx"
             
     - name: CMake Build x64
       run: |
         cmake --build . --target Formula_All
         mv Formula_artefacts Formula_artefacts_x64
         
-    - name: Configure ARM64
-      run: |
-        ./configure-mac.sh --cross-compile arm64
-        
     - name: CMake ARM64
       run: |
-        cmake -G Ninja . -DCMAKE_OSX_ARCHITECTURES="arm64"
+        rm -rf CMakeFiles CMakeCache.txt
+        cmake -G Ninja . -DCMAKE_OSX_ARCHITECTURES="arm64" -DCMAKE_TOOLCHAIN_FILE="./vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET="arm64-osx"
             
     - name: CMake Build ARM64
       run: |

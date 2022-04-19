@@ -21,10 +21,7 @@ IF (WIN32)
     ENDIF ()
 	set(Boost_USE_STATIC_RUNTIME ON)
 ELSEIF (APPLE)
-  set(OPENSSL_ROOT_DIR /usr/local/opt/openssl@1.1/)
-  set(OPENSSL_USE_STATIC_LIBS TRUE)
-  find_package(OpenSSL REQUIRED)
-  include_directories(Formula ${OPENSSL_INCLUDE_DIR})
+  set(VCPKG_LIBRARY_LINKAGE static CACHE STRING "VCPKG_Library_Linkage")
 ENDIF()
 
 # DEPENDENCIES
@@ -133,6 +130,4 @@ IF (WIN32)
             cpprestsdk::cpprestsdk_zlib_internal
             cpprestsdk::cpprestsdk_brotli_internal
             bcrypt.lib winhttp.lib crypt32.lib)
-ELSEIF (APPLE)
-  target_link_libraries(Formula PRIVATE ${OPENSSL_LIBRARIES})
 ENDIF()
