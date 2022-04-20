@@ -20,6 +20,7 @@ namespace formula::gui {
     public:
         OnlineFormulasTab(const std::shared_ptr<formula::events::EventHub>& eventHubRef,
                           const std::shared_ptr<formula::cloud::FormulaCloudClient>& cloudRef);
+        ~OnlineFormulasTab();
 
         int getNumRows() override;
         void paintRowBackground(Graphics& g, int rowNumber, int, int, bool rowIsSelected) override;

@@ -3,7 +3,7 @@
 using namespace boost::assign;
 
 formula::gui::SpinnerOverlay::SpinnerOverlay(const std::shared_ptr<formula::events::EventHub>& eventHubRef)
-    : spinner(progress) {
+    : spinner(progress), eventHub(eventHubRef) {
     std::vector<EventType> spinnerStartEvents;
     spinnerStartEvents += EventType::webRequestSent, EventType::compilationRequest;
 
@@ -27,6 +27,10 @@ formula::gui::SpinnerOverlay::SpinnerOverlay(const std::shared_ptr<formula::even
     spinner.setPercentageDisplay(false);
     addAndMakeVisible(spinner);
     hideSpinner();
+}
+
+formula::gui::SpinnerOverlay::~SpinnerOverlay() {
+    eventHub->unsubscribe(this);
 }
 
 void formula::gui::SpinnerOverlay::showSpinner() {

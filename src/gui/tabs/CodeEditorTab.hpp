@@ -21,6 +21,8 @@ class CodeEditorTab : public juce::Component, public juce::CodeDocument::Listene
             const std::shared_ptr<formula::events::EventHub>& eventHubRef,
             const std::shared_ptr<formula::processor::PluginState>& pluginStateRef,
             const std::shared_ptr<formula::storage::LocalIndex>& localIndexRef);
+        ~CodeEditorTab();
+
         void paint(Graphics& g) override;
         void resized() override;
 

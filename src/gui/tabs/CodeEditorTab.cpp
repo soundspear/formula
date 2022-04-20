@@ -134,6 +134,10 @@ formula_main {
     startTimer(500);
 }
 
+formula::gui::CodeEditorTab::~CodeEditorTab() {
+    eventHub->unsubscribe(this);
+}
+
 void formula::gui::CodeEditorTab::paint(Graphics& g)
 {
     const auto backgroundColour = Colour::fromRGB(0x3c, 0x3f, 0x41);

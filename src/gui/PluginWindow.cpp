@@ -119,6 +119,7 @@ formula::gui::PluginWindow::~PluginWindow() {
     if (laf) {
         laf.reset(nullptr);
     }
+    eventHub->unsubscribe(this);
 }
 
 void formula::gui::PluginWindow::paint (juce::Graphics& g)

@@ -60,6 +60,10 @@ formula::gui::OnlineFormulasTab::OnlineFormulasTab(const std::shared_ptr<formula
     }, this);
 }
 
+formula::gui::OnlineFormulasTab::~OnlineFormulasTab() {
+    eventHub->unsubscribe(this);
+}
+
 int formula::gui::OnlineFormulasTab::getNumRows() {
     return static_cast<int>(data.size());
 }

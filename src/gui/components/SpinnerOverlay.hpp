@@ -12,12 +12,15 @@ namespace formula::gui {
     class SpinnerOverlay : public Component {
     public:
         explicit SpinnerOverlay(const std::shared_ptr<formula::events::EventHub>& eventHub);
+        ~SpinnerOverlay();
         void showSpinner();
         void hideSpinner();
 
         void paint(juce::Graphics&) override;
         void resized() override;
     private:
+        std::shared_ptr<formula::events::EventHub> eventHub;
+
         juce::ProgressBar spinner;
         double progress = -1.0;
     };
