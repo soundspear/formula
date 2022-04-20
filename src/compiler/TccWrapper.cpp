@@ -2,8 +2,8 @@
 
 using namespace boost::assign;
 
-formula::compiler::TccWrapper::TccWrapper(const std::shared_ptr<formula::events::EventHub>& eventHub)
-    : formula::compiler::CompilerWrapper(eventHub)
+formula::compiler::TccWrapper::TccWrapper(const std::shared_ptr<formula::events::EventHub>& eventHubRef)
+    : formula::compiler::CompilerWrapper(eventHubRef)
 {
 }
 
@@ -48,7 +48,16 @@ std::string formula::compiler::TccWrapper::getCompilerPath()
         if (!boost::filesystem::exists(tccPath)) {
             tccPath = boost::filesystem::path(R"(C:\tcc\tcc.exe)");
         }
+#       elif defined(__APPLE__)
+        tccPath = boost::filesystem::path(R"(/usr/bin/tcc)");
+        if (!boost::filesystem::exists(tccPath)) {
+            tccPath = boost::filesystem::path(R"(/usr/local/bin/tcc)");
+        }
 #       endif
+    }
+
+    if (!boost::filesystem::exists(tccPath)) {
+        return "";
     }
 
     return tccPath.string();
@@ -58,13 +67,7 @@ std::vector<std::string> formula::compiler::TccWrapper::getCompilerArgs(std::str
 {
     std::vector<std::string> args;
 
-#if defined (_WIN32)
     args += "-shared";
-#elif defined(__APPLE__ )
-    args += "-dynamiclib";
-#endif
-    args += "-fvisibility=hidden";
-
     args += "-o", outPath;
     args += sourcePath;
 

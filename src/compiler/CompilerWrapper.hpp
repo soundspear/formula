@@ -26,9 +26,10 @@ namespace formula::compiler {
 	class CompilerWrapper
 	{
 	public:
-		explicit CompilerWrapper(const std::shared_ptr<formula::events::EventHub>& eventHub);
-		~CompilerWrapper();
+		explicit CompilerWrapper(const std::shared_ptr<formula::events::EventHub>& eventHubRef);
+		virtual ~CompilerWrapper();
 		void compileFormula(const std::string& sourceCode);
+        bool isCompilerAvailable() { return !(getCompilerPath().empty()); }
 
 	protected:
 		virtual void sanitizeErrorString(std::string& errStr, bool isMono) = 0;

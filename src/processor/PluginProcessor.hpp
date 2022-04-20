@@ -7,6 +7,7 @@
 
 #include <events/EventHub.hpp>
 #include <compiler/TccWrapper.hpp>
+#include <compiler/ClangWrapper.hpp>
 #include <processor/FormulaLoader.hpp>
 #include <processor/PluginState.hpp>
 #include <processor/KnobsPanelListener.hpp>
@@ -22,11 +23,12 @@ class PluginProcessor : public juce::AudioProcessor, public formula::processor::
     public:
         PluginProcessor();
         ~PluginProcessor() override;
+
+        bool instanciateCompiler();
+
         void prepareToPlay (double sampleRate, int samplesPerBlock) override;
         void releaseResources() override;
-
         bool isBusesLayoutSupported (const BusesLayout& layouts) const override;
-
         void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
         using AudioProcessor::processBlock;
         juce::AudioProcessorEditor* createEditor() override;

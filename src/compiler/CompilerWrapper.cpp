@@ -4,8 +4,8 @@
 
 using namespace boost::assign;
 
-formula::compiler::CompilerWrapper::CompilerWrapper(const std::shared_ptr<formula::events::EventHub>& eventHub)
-    : eventHub(eventHub)
+formula::compiler::CompilerWrapper::CompilerWrapper(const std::shared_ptr<formula::events::EventHub>& eventHubRef)
+    : eventHub(eventHubRef)
 {
     eventHub->subscribe(EventType::compilationRequest, [this](boost::any arg) {
         std::lock_guard<std::mutex> lock { compileMutex };
@@ -17,7 +17,9 @@ formula::compiler::CompilerWrapper::CompilerWrapper(const std::shared_ptr<formul
     });
 
     formulaBaseCodeMono = std::string(formula::binary::FormulaBaseMono_c, formula::binary::FormulaBaseMono_cSize);
+    boost::replace_all(formulaBaseCodeMono, "\r\n", "\n");
     formulaBaseCodeStereo = std::string(formula::binary::FormulaBaseStereo_c, formula::binary::FormulaBaseStereo_cSize);
+    boost::replace_all(formulaBaseCodeStereo, "\r\n", "\n");
 }
 
 void formula::compiler::CompilerWrapper::compileFormula(const std::string& sourceCode)

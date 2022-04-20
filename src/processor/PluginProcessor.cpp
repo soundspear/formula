@@ -13,10 +13,11 @@ formula::processor::PluginProcessor::PluginProcessor()
     settings(std::make_shared<formula::storage::LocalSettings>()),
     cloud(std::make_shared<formula::cloud::FormulaCloudClient>(settings, eventHub)),
     localIndex(std::make_shared<formula::storage::LocalIndex>(pluginState)),
-    compiler(std::make_unique<formula::compiler::TccWrapper>(eventHub)),
     recompiled(false)
 {
     pluginState->setupListener(this);
+
+    instanciateCompiler();
 
     eventHub->subscribe(EventType::compilationSuccess, [this](boost::any compilationId) {
         auto formulaMetadata = pluginState->getActiveFormulaMetadata();
@@ -29,6 +30,20 @@ formula::processor::PluginProcessor::PluginProcessor()
 
 formula::processor::PluginProcessor::~PluginProcessor()
 {
+}
+
+bool formula::processor::PluginProcessor::instanciateCompiler() {
+    compiler = std::make_unique<formula::compiler::ClangWrapper>(eventHub);
+    if (compiler->isCompilerAvailable()) {
+        return true;
+    }
+
+    compiler = std::make_unique<formula::compiler::TccWrapper>(eventHub);
+    if (compiler->isCompilerAvailable()) {
+        return true;
+    }
+
+    return false;
 }
 
 const juce::String formula::processor::PluginProcessor::getName() const
