@@ -30,35 +30,45 @@ namespace formula::events {
 			}
 		}
 
-		void subscribe(EventType eventType, boost::function<void(boost::any)> callback) {
+        template <typename Type>
+		void subscribe(EventType eventType, boost::function<void(boost::any)> callback, Type* owner) {
             callbacks.push_back(std::move(callback));
             if (!events.contains(eventType)) {
                 events[eventType] = boost::signals2::signal<void(boost::any)>();
             }
-            events[eventType].connect(callbacks.back());
+
+            connections[owner] = events[eventType].connect(callbacks.back());
         }
 
         template <typename ComponentType>
         void subscribeOnUiThread(EventType eventType,
                                  boost::function<void(boost::any, ComponentType*)> callback,
-                                 ComponentType* componentToUse) {
+                                 ComponentType* owner) {
             if (!events.contains(eventType)) {
                 events[eventType] = boost::signals2::signal<void(boost::any)>();
             }
 
-            auto sp = juce::Component::SafePointer<ComponentType> (componentToUse);
-            uiCallbacks.push_back([=] (boost::any arg) {
+            auto sp = juce::Component::SafePointer<ComponentType> (owner);
+            callbacks.push_back([=] (boost::any arg) {
                 if (sp == nullptr) return;
                 MessageManager::callAsync([=] {
                     callback(arg, sp.getComponent());
                 });
             });
-            events[eventType].connect(uiCallbacks.back());
+            connections[owner] = events[eventType].connect(callbacks.back());
         }
+
+        template <typename Type>
+        void unsubscribe(Type* owner) {
+            if (connections.contains((void*)owner)) {
+                connections[(void*)owner].disconnect();
+            }
+        }
+
 	private:
 		std::map<EventType, boost::signals2::signal<void(boost::any)>> events;
         std::vector<boost::function<void(boost::any)>> callbacks;
-        std::vector<boost::function<void(boost::any)>> uiCallbacks;
+        std::map<void*, boost::signals2::connection> connections;
 	};
 }
 

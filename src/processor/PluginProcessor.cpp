@@ -25,7 +25,7 @@ formula::processor::PluginProcessor::PluginProcessor()
         formulaMetadata[FormulaMetadataKeys::compilationId] = boost::any_cast<std::string>(compilationId);
         pluginState->setActiveFormulaMetadata(formulaMetadata);
         this->recompiled = true;
-    });
+    }, this);
 }
 
 formula::processor::PluginProcessor::~PluginProcessor()

@@ -50,6 +50,16 @@ formula::gui::PluginWindow::PluginWindow(
     addChildComponent(loginPopup);
 
     eventHub->subscribeOnUiThread<PluginWindow>(
+            EventType::noCompilerFound, [] ([[maybe_unused]] boost::any _, PluginWindow* thisPtr) {
+        auto alert = juce::AlertWindow("No compiler found", "Mandatory dependencies are missing", MessageBoxIconType::WarningIcon);
+#       if defined(__APPLE__) || defined(_WIN32)
+        alert.addCustomComponent(new HyperlinkButton("Click here to download XCode from the App Store",
+                                                     juce::URL("https://apps.apple.com/app/xcode/id497799835")));
+#       endif
+        alert.show(MessageBoxOptions());
+    }, this);
+
+    eventHub->subscribeOnUiThread<PluginWindow>(
             EventType::loginFail, [] ([[maybe_unused]] boost::any _, PluginWindow* thisPtr) {
         thisPtr->loginPopup.setType(LoginPopupType::LoginFailed);
         thisPtr->loginPopup.setVisible(true); thisPtr->resized();

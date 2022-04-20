@@ -3,6 +3,7 @@
 
 enum class EventType {
     // Formula management
+    noCompilerFound,
 	compilationRequest,
 	compilationSuccess,
 	compilationFail,

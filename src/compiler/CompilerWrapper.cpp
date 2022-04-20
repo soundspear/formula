@@ -7,6 +7,11 @@ using namespace boost::assign;
 formula::compiler::CompilerWrapper::CompilerWrapper(const std::shared_ptr<formula::events::EventHub>& eventHubRef)
     : eventHub(eventHubRef)
 {
+    formulaBaseCodeMono = std::string(formula::binary::FormulaBaseMono_c, formula::binary::FormulaBaseMono_cSize);
+    boost::replace_all(formulaBaseCodeMono, "\r\n", "\n");
+    formulaBaseCodeStereo = std::string(formula::binary::FormulaBaseStereo_c, formula::binary::FormulaBaseStereo_cSize);
+    boost::replace_all(formulaBaseCodeStereo, "\r\n", "\n");
+
     eventHub->subscribe(EventType::compilationRequest, [this](boost::any arg) {
         std::lock_guard<std::mutex> lock { compileMutex };
         if (compileThread.joinable()) {
@@ -14,12 +19,13 @@ formula::compiler::CompilerWrapper::CompilerWrapper(const std::shared_ptr<formul
         }
         auto sourceCode = boost::any_cast<std::string>(arg);
         compileThread = std::thread{&formula::compiler::CompilerWrapper::compileFormula, this, sourceCode };
-    });
+    }, this);
+}
 
-    formulaBaseCodeMono = std::string(formula::binary::FormulaBaseMono_c, formula::binary::FormulaBaseMono_cSize);
-    boost::replace_all(formulaBaseCodeMono, "\r\n", "\n");
-    formulaBaseCodeStereo = std::string(formula::binary::FormulaBaseStereo_c, formula::binary::FormulaBaseStereo_cSize);
-    boost::replace_all(formulaBaseCodeStereo, "\r\n", "\n");
+formula::compiler::CompilerWrapper::~CompilerWrapper() {
+    if (compileThread.joinable())
+        compileThread.join();
+    eventHub->unsubscribe<CompilerWrapper>(this);
 }
 
 void formula::compiler::CompilerWrapper::compileFormula(const std::string& sourceCode)
@@ -110,9 +116,4 @@ bool formula::compiler::CompilerWrapper::launchCompiler
     reader.join();
 
     return c.exit_code() == 0;
-}
-
-formula::compiler::CompilerWrapper::~CompilerWrapper() {
-    if (compileThread.joinable()) 
-        compileThread.join();
 }
