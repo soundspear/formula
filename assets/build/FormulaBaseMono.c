@@ -12,8 +12,9 @@
 #	define FORMULA_EXPORT __attribute__ ((visibility("default")))
 #endif
 
-#define formula_main inline float _formula_main(float input, float sampleRate, const float* knobs, const float* switches)
-formula_main;
+#define _formula_main_decl float _formula_main(float input, float sampleRate, const float* knobs, const float* switches)
+_formula_main_decl;
+#define formula_main inline _formula_main_decl;
 
 char** __debug_stack;
 int* __debug_idx;

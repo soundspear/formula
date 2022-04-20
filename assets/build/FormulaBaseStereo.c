@@ -17,8 +17,9 @@ typedef struct Stereo {
     float right;
 } Stereo;
 
-#define formula_main_stereo inline Stereo _formula_main(Stereo input, float sampleRate, const float* knobs, const float* switches)
-formula_main_stereo;
+#define _formula_main_stereo_decl Stereo _formula_main(Stereo input, float sampleRate, const float* knobs, const float* switches)
+_formula_main_stereo_decl;
+#define formula_main_stereo inline _formula_main_stereo_decl;
 
 char** __debug_stack;
 int* __debug_idx;
