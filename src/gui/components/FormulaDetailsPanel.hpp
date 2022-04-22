@@ -4,18 +4,20 @@
 #include <JuceHeader.h>
 #include <events/EventHub.hpp>
 #include <cloud/GetFormulaDto.hpp>
+#include <processor/FormulaMetadata.hpp>
 #include <gui/components/RatingComponent.hpp>
 
 namespace formula::gui {
     class FormulaDetailsPanel : public juce::Component {
     public:
-        explicit FormulaDetailsPanel();
+        explicit FormulaDetailsPanel(const std::shared_ptr<formula::events::EventHub>& eventHubRef);
         void setFormulaDto(formula::cloud::GetFormulaDto dto);
 
         void paint(Graphics& g) override;
         void resized() override;
     private:
         cloud::GetFormulaDto dto;
+        std::shared_ptr<formula::events::EventHub> eventHub;
 
         Font nameFont, authorFont, descriptionFont;
 

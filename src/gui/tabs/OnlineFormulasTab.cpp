@@ -6,9 +6,9 @@ using namespace boost::assign;
 
 formula::gui::OnlineFormulasTab::OnlineFormulasTab(const std::shared_ptr<formula::events::EventHub>& eventHubRef,
                                                    const std::shared_ptr<formula::cloud::FormulaCloudClient>& cloudRef)
-        : eventHub(eventHubRef), cloud(cloudRef), detailsPanel(),
-          searchBar(eventHubRef), endOfResultsReached(false),
-          sortColumn("last_modified"), sortDirection("desc")
+        : eventHub(eventHubRef), cloud(cloudRef),
+          detailsPanel(eventHubRef), searchBar(eventHubRef),
+          endOfResultsReached(false), sortColumn("last_modified"), sortDirection("desc")
 {
     addAndMakeVisible(searchBar);
 

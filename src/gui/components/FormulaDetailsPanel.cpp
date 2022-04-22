@@ -2,7 +2,9 @@
 
 #include <memory>
 
-formula::gui::FormulaDetailsPanel::FormulaDetailsPanel() {
+formula::gui::FormulaDetailsPanel::FormulaDetailsPanel(
+        const std::shared_ptr<formula::events::EventHub>& eventHubRef
+) : eventHub(eventHubRef) {
     nameFont = nameLabel.getFont();
     nameFont.setHeight(20);
     nameLabel.setFont(nameFont);
@@ -27,6 +29,14 @@ formula::gui::FormulaDetailsPanel::FormulaDetailsPanel() {
     addAndMakeVisible(codePreviewEditor.get());
 
     loadFormulaButton.setButtonText("Load formula");
+    loadFormulaButton.onClick = [this]() {
+        using namespace formula::processor;
+        FormulaMetadata metadata;
+        metadata[FormulaMetadataKeys::name] = dto.name;
+        metadata[FormulaMetadataKeys::description] = dto.description;
+        metadata[FormulaMetadataKeys::source] = dto.source;
+        eventHub->publish(EventType::loadFormulaRequest, metadata);
+    };
     addAndMakeVisible(loadFormulaButton);
 
     ratingsHeadingLabel.setText("User ratings", NotificationType::sendNotificationAsync);
