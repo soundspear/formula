@@ -6,22 +6,24 @@
 
 #include <boost/any.hpp>
 
-#include <JuceHeader.h>
+#include "JuceHeader.h"
 
-#include <events/EventHub.hpp>
-#include <storage/LocalIndex.hpp>
-#include <processor/PluginState.hpp>
-#include <processor/FormulaMetadata.hpp>
+#include "src/gui/components/popups/FormulaPopup.hpp"
+#include "src/events/EventHub.hpp"
+#include "src/storage/LocalIndex.hpp"
+#include "src/processor/PluginState.hpp"
+#include "src/processor/FormulaMetadata.hpp"
 
 namespace formula::gui
 {
-    class SaveLocalFormulaPopup : public juce::Component
+    class SaveLocalFormulaPopup : public formula::gui::FormulaPopup
     {
     public:
         SaveLocalFormulaPopup(
             const std::shared_ptr<formula::storage::LocalIndex>& localIndexRef,
             const std::shared_ptr<formula::processor::PluginState>& pluginStateRef);
-        void paint(Graphics& g) override;
+
+        juce::Point<int> getPopupSize() override;
         void resized() override;
         void resetContent();
         void visibilityChanged() override;

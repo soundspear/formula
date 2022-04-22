@@ -32,18 +32,18 @@ formula::processor::PluginProcessor::~PluginProcessor()
 {
 }
 
-bool formula::processor::PluginProcessor::instanciateCompiler() {
+void formula::processor::PluginProcessor::instanciateCompiler() {
     compiler = std::make_unique<formula::compiler::ClangWrapper>(eventHub);
     if (compiler->isCompilerAvailable()) {
-        return true;
+        return;
     }
 
     compiler = std::make_unique<formula::compiler::TccWrapper>(eventHub);
     if (compiler->isCompilerAvailable()) {
-        return true;
+        return;
     }
 
-    return false;
+    compiler = nullptr;
 }
 
 const juce::String formula::processor::PluginProcessor::getName() const
@@ -166,7 +166,11 @@ bool formula::processor::PluginProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* formula::processor::PluginProcessor::createEditor()
 {
-    return new formula::gui::PluginWindow(*this, eventHub, pluginState, cloud, localIndex);
+    auto* editor = new formula::gui::PluginWindow(*this, eventHub, pluginState, cloud, localIndex);
+    if (!compiler) {
+        eventHub->publish(EventType::noCompilerFound);
+    }
+    return editor;
 }
 
 void formula::processor::PluginProcessor::getStateInformation (juce::MemoryBlock& destData)

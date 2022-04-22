@@ -7,7 +7,7 @@
 
 #include <JuceHeader.h>
 
-#include <gui/components/LoginPopup.hpp>
+#include "src/gui/components/popups/LoginPopup.hpp"
 #include <gui/components/SearchBar.hpp>
 #include <events/EventHub.hpp>
 #include <cloud/FormulaCloudClient.hpp>

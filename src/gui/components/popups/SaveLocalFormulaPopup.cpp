@@ -46,12 +46,8 @@ formula::gui::SaveLocalFormulaPopup::SaveLocalFormulaPopup(
 	addAndMakeVisible(cancelButton);
 }
 
-void formula::gui::SaveLocalFormulaPopup::paint(Graphics& g)
-{
-	g.fillAll(getLookAndFeel().findColour(ListBox::backgroundColourId).brighter(0.1f));
-	auto area = getLocalBounds();
-	g.setColour(getLookAndFeel().findColour(ListBox::outlineColourId));
-	g.drawRect(area);
+juce::Point<int> formula::gui::SaveLocalFormulaPopup::getPopupSize() {
+    return { 400, 350 };
 }
 
 void formula::gui::SaveLocalFormulaPopup::resized()

@@ -48,15 +48,13 @@ formula::gui::PluginWindow::PluginWindow(
     addAndMakeVisible(versionLabel);
 
     addChildComponent(loginPopup);
+    addChildComponent(noCompilerFoundPopup);
 
     eventHub->subscribeOnUiThread<PluginWindow>(
             EventType::noCompilerFound, [] ([[maybe_unused]] boost::any _, PluginWindow* thisPtr) {
-        auto alert = juce::AlertWindow("No compiler found", "Mandatory dependencies are missing", MessageBoxIconType::WarningIcon);
-#       if defined(__APPLE__) || defined(_WIN32)
-        alert.addCustomComponent(new HyperlinkButton("Click here to download XCode from the App Store",
-                                                     juce::URL("https://apps.apple.com/app/xcode/id497799835")));
-#       endif
-        alert.show(MessageBoxOptions());
+        thisPtr->noCompilerFoundPopup.setVisible(true);
+        thisPtr->tabs.setInterceptsMouseClicks(false, false);
+        thisPtr->resized();
     }, this);
 
     eventHub->subscribeOnUiThread<PluginWindow>(
@@ -144,4 +142,5 @@ void formula::gui::PluginWindow::resized()
 
     const auto areaCenter = area.getCentre();
     loginPopup.setBounds(loginPopup.getAreaToFit(areaCenter));
+    noCompilerFoundPopup.setBounds(noCompilerFoundPopup.getAreaToFit(areaCenter));
 }

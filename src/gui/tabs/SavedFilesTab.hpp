@@ -10,7 +10,7 @@
 #include <JuceHeader.h>
 
 #include <gui/components/IconButton.hpp>
-#include <gui/components/LoginPopup.hpp>
+#include "src/gui/components/popups/LoginPopup.hpp"
 #include <events/EventHub.hpp>
 #include <processor/PluginState.hpp>
 #include <processor/FormulaMetadata.hpp>

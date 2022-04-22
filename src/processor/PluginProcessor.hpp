@@ -24,7 +24,7 @@ class PluginProcessor : public juce::AudioProcessor, public formula::processor::
         PluginProcessor();
         ~PluginProcessor() override;
 
-        bool instanciateCompiler();
+        void instanciateCompiler();
 
         void prepareToPlay (double sampleRate, int samplesPerBlock) override;
         void releaseResources() override;

@@ -6,10 +6,11 @@
 
 #include <boost/any.hpp>
 
-#include <JuceHeader.h>
+#include "JuceHeader.h"
 
-#include <events/EventHub.hpp>
-#include <cloud/FormulaCloudClient.hpp>
+#include "src/gui/components/popups/FormulaPopup.hpp"
+#include "src/events/EventHub.hpp"
+#include "src/cloud/FormulaCloudClient.hpp"
 
 namespace formula::gui
 {
@@ -17,14 +18,13 @@ namespace formula::gui
         FirstLogin, LoginFailed, MissingSubscription
     };
 
-    class LoginPopup : public juce::Component
+    class LoginPopup : public formula::gui::FormulaPopup
     {
     public:
-        LoginPopup(const std::shared_ptr<formula::cloud::FormulaCloudClient>& cloudRef);
+        explicit LoginPopup(const std::shared_ptr<formula::cloud::FormulaCloudClient>& cloudRef);
         void setType(LoginPopupType popupType);
-        juce::Rectangle<int> getAreaToFit(juce::Point<int> parentCenter);
 
-        void paint(Graphics& g) override;
+        juce::Point<int> getPopupSize() override;
         void resized() override;
     private:
         LoginPopupType popupType;

@@ -174,12 +174,7 @@ void formula::gui::CodeEditorTab::resized()
     auto area = getLocalBounds();
 
     const auto editorCenter = area.getCentre();
-    savePopup.setBounds(Rectangle<int>(
-        editorCenter.getX() - 200,
-        editorCenter.getY() - 175,
-        400,
-        350
-        ));
+    savePopup.setBounds(savePopup.getAreaToFit(editorCenter));
 
     auto toolbarArea = area.removeFromLeft(toolbarSizePixels);
     toolbarArea.removeFromTop(buttonMarginBottomPixels);

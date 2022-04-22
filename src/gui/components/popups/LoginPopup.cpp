@@ -90,24 +90,9 @@ void formula::gui::LoginPopup::setType(LoginPopupType newPopupType)
     resized();
 }
 
-juce::Rectangle<int> formula::gui::LoginPopup::getAreaToFit(juce::Point<int> parentCenter)
-{
+juce::Point<int> formula::gui::LoginPopup::getPopupSize() {
     int height = emailLabel.isVisible() ? 200 : 145;
-    height += descriptionLabelHeight;
-	return {
-		parentCenter.getX() - 200,
-		parentCenter.getY() - height/2,
-		400,
-        height
-    };
-}
-
-void formula::gui::LoginPopup::paint(Graphics& g)
-{
-	g.fillAll(getLookAndFeel().findColour(ListBox::backgroundColourId).brighter(0.1f));
-	auto area = getLocalBounds();
-	g.setColour(getLookAndFeel().findColour(ListBox::outlineColourId));
-	g.drawRect(area);
+    return { 400, height };
 }
 
 void formula::gui::LoginPopup::resized()

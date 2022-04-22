@@ -7,6 +7,7 @@
 #include <gui/tabs/CodeEditorTab.hpp>
 #include <gui/tabs/SavedFilesTab.hpp>
 #include <gui/tabs/OnlineFormulasTab.hpp>
+#include <gui/components/popups/NoCompilerFoundPopup.hpp>
 #include <gui/components/SpinnerOverlay.hpp>
 #include <gui/FormulaLookAndFeel.hpp>
 
@@ -41,6 +42,7 @@ namespace formula::gui
         SpinnerOverlay spinner;
         static std::unique_ptr<juce::TooltipWindow> tooltipWindow;
         formula::gui::LoginPopup loginPopup;
+        formula::gui::NoCompilerFoundPopup noCompilerFoundPopup;
         std::unique_ptr<formula::gui::FormulaLookAndFeel> laf;
 
         float scaleFactor = 1;
