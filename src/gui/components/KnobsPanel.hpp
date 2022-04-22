@@ -154,6 +154,9 @@ inline void formula::gui::KnobsPanel<NumKnobs, NumSwitches>::restoreFromState(fo
         if (!name.empty()) {
             textEditor.setText(name);
         }
+        else {
+            textEditor.setText("...");
+        }
     }
 
     for (auto i = 0; i < NumKnobs; i++) {
@@ -172,6 +175,9 @@ inline void formula::gui::KnobsPanel<NumKnobs, NumSwitches>::restoreFromState(fo
         auto name = metadata[formula::processor::FormulaMetadataKeys::knobName(i)];
         if (!name.empty()) {
             textEditor.setText(name);
+        }
+        else {
+            textEditor.setText("...");
         }
     }
 }
