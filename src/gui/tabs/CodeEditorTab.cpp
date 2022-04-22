@@ -125,10 +125,12 @@ formula_main {
     eventHub->subscribeOnUiThread<CodeEditorTab>(
             EventType::loadFormulaRequest, [](boost::any metadata, CodeEditorTab* thisPtr) {
         auto formulaMetadata = boost::any_cast<formula::processor::FormulaMetadata>(metadata);
-        thisPtr->editor->loadContent(formulaMetadata[formula::processor::FormulaMetadataKeys::source]);
+        auto formulaSource = formulaMetadata[formula::processor::FormulaMetadataKeys::source];
+        thisPtr->editor->loadContent(formulaSource);
         thisPtr->knobsPanel.restoreFromState(formulaMetadata);
         thisPtr->pluginState->setActiveFormulaMetadata(formulaMetadata);
         thisPtr->resized();
+        thisPtr->eventHub->publish(EventType::compilationRequest, formulaSource);
     }, this);
 
     startTimer(500);
