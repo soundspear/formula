@@ -31,11 +31,7 @@ formula::gui::FormulaDetailsPanel::FormulaDetailsPanel(
     loadFormulaButton.setButtonText("Load formula");
     loadFormulaButton.onClick = [this]() {
         using namespace formula::processor;
-        FormulaMetadata metadata;
-        metadata[FormulaMetadataKeys::name] = dto.name;
-        metadata[FormulaMetadataKeys::description] = dto.description;
-        metadata[FormulaMetadataKeys::source] = dto.source;
-        eventHub->publish(EventType::loadFormulaRequest, metadata);
+        eventHub->publish(EventType::loadFormulaRequest, dto.metadata);
     };
     addAndMakeVisible(loadFormulaButton);
 
@@ -49,7 +45,7 @@ formula::gui::FormulaDetailsPanel::FormulaDetailsPanel(
 void formula::gui::FormulaDetailsPanel::setFormulaDto(formula::cloud::GetFormulaDto newDto) {
     nameLabel.setText(newDto.name, NotificationType::sendNotificationAsync);
     authorLabel.setText("by " + newDto.author, NotificationType::sendNotificationAsync);
-    codePreviewEditor->loadContent(newDto.source);
+    codePreviewEditor->loadContent(newDto.metadata[formula::processor::FormulaMetadataKeys::source]);
     descriptionLabel.setText(newDto.description, NotificationType::sendNotificationAsync);
     this->dto = newDto;
 

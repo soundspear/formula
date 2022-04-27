@@ -5,11 +5,13 @@
 #include <cpprest/json.h>
 #include <boost/format.hpp>
 #include <iostream>
+#include <boost/property_tree/json_parser.hpp>
 
 #include "cloud/FormulaCloudClient.hpp"
 #include "cloud/ListFormulaDto.hpp"
 #include "processor/FormulaMetadata.hpp"
 #include "GetFormulaDto.hpp"
+#include "storage/LocalIndex.hpp"
 
 using formula::processor::FormulaMetadataKeys;
 
@@ -64,6 +66,7 @@ void formula::cloud::FormulaCloudClient::getFormula(std::string formulaId) {
     };
 
     const auto successCallback = [this](web::json::value response) {
+        auto resp = response.serialize();
         formula::cloud::GetFormulaDto dto;
         dto.author = S(response[W("author")].as_string());
         dto.name = S(response[W("name")].as_string());
@@ -73,7 +76,10 @@ void formula::cloud::FormulaCloudClient::getFormula(std::string formulaId) {
             dto.rating = response[W("rating")].as_double();
         }
         dto.numRatings = response[W("numRatings")].as_integer();
-        dto.source = S(response[W("source")].as_string());
+        auto metadataStr = S(response[W("metadata")].as_string());
+        auto metadata = formula::storage::LocalIndex::deserializeMetadata(metadataStr);
+        metadata[formula::processor::FormulaMetadataKeys::name] = dto.name;
+        dto.metadata = metadata;
 
         const auto userRatingsList = response[W("userRatings")].as_array();
         for (auto userRating : userRatingsList) {
@@ -169,7 +175,7 @@ void formula::cloud::FormulaCloudClient::requestWrapper(RequestFunction requestF
                     successCallback(jsonResponse);
                 }
                 catch (const std::exception&) {
-                    eventHub->publish(EventType::unknownWebError);
+                    eventHub->publish(EventType::unexpectedError, formula::gui::ErrorCodes::cannotParseJson);
                 }
                 eventHub->publish(EventType::webRequestFinished);
             }
@@ -182,7 +188,7 @@ void formula::cloud::FormulaCloudClient::requestWrapper(RequestFunction requestF
                         eventHub->publish(EventType::needLogin);
                     }
                     else {
-                        eventHub->publish(EventType::unknownWebError);
+                        eventHub->publish(EventType::unexpectedError, formula::gui::ErrorCodes::webResponseError);
                     }
                     eventHub->publish(EventType::webRequestFinished);
                 }
@@ -200,7 +206,7 @@ void formula::cloud::FormulaCloudClient::requestWrapper(RequestFunction requestF
         } catch (std::exception& ex) {
             if (numTries > 0) {
                 eventHub->publish(EventType::webRequestFinished);
-                eventHub->publish(EventType::unknownWebError);
+                eventHub->publish(EventType::unexpectedError, formula::gui::ErrorCodes::networkError);
             }
             else {
                 std::this_thread::sleep_for(std::chrono::seconds(10));

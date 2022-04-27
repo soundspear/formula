@@ -28,7 +28,7 @@ void formula::cloud::AuthenticatedClient::login(std::string user, std::string pa
                     eventHub->publish(EventType::loginSuccess);
                 }
                 catch (const std::exception&) {
-                    eventHub->publish(EventType::unknownWebError);
+                    eventHub->publish(EventType::unexpectedError);
                 }
             });
 }
@@ -50,7 +50,7 @@ pplx::task<void> formula::cloud::AuthenticatedClient::refreshAccessToken() {
                     processRefreshedTokenResponse(jsonResponse);
                 }
                 catch (const std::exception&) {
-                    eventHub->publish(EventType::unknownWebError);
+                    eventHub->publish(EventType::unexpectedError);
                 }
             });
 }

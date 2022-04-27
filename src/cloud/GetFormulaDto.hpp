@@ -5,6 +5,7 @@
 #ifndef FORMULA_CLOUD_GETFORMULADTO_HPP
 #define FORMULA_CLOUD_GETFORMULADTO_HPP
 
+#include <processor/FormulaMetadata.hpp>
 #include <string>
 
 namespace formula::cloud {
@@ -20,7 +21,7 @@ namespace formula::cloud {
         int numDownloads;
         std::optional<double> rating;
         int numRatings;
-        std::string source;
+        formula::processor::FormulaMetadata metadata;
         std::vector<GetUserRatingDto> ratings;
     };
 }

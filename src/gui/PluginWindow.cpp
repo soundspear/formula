@@ -94,9 +94,14 @@ formula::gui::PluginWindow::PluginWindow(
     }, this);
 
     eventHub->subscribeOnUiThread<PluginWindow>(
-            EventType::unknownWebError, [] ([[maybe_unused]] boost::any _, PluginWindow* thisPtr) {
+            EventType::unexpectedError, [] ([[maybe_unused]] boost::any arg, PluginWindow* thisPtr) {
+        formula::gui::ErrorCodes errCode = formula::gui::ErrorCodes::unknownError;
+        if (!arg.empty()) {
+            errCode = boost::any_cast<formula::gui::ErrorCodes>(arg);
+        }
         juce::AlertWindow::showMessageBox(juce::MessageBoxIconType::WarningIcon,
-                                          "Network error", "An unknown network error happened");
+                                          "Network error", juce::String("An unexpected error happened.")
+                                          + " (Error code " + juce::String(errCode) + ")");
     }, this);
 
     addAndMakeVisible(spinner);

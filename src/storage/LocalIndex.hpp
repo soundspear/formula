@@ -56,6 +56,9 @@ namespace formula::storage {
 		LocalIndex(
 			const std::shared_ptr<formula::processor::PluginState>& pluginStateRef
 		);
+        static std::string serializeMetadata(const formula::processor::FormulaMetadata& metadata);
+        static formula::processor::FormulaMetadata deserializeMetadata(const std::string& metadata);
+
 		void refreshIndex();
 		void saveIndex();
 		void saveCurrentFormulaToIndex();

@@ -73,7 +73,7 @@ void formula::gui::LoginPopup::setType(LoginPopupType newPopupType)
     case LoginPopupType::MissingSubscription:
         titleLabel.setText("Subscription not found or expired", NotificationType::sendNotification);
         descriptionLabel.setText(
-                juce::String("You need a subscription in order to user Formula Cloud."),
+                juce::String("You need a subscription in order to use Formula Cloud."),
                 NotificationType::sendNotification
         );
         linkButton.setButtonText("Subscribe now");
@@ -91,7 +91,7 @@ void formula::gui::LoginPopup::setType(LoginPopupType newPopupType)
 }
 
 juce::Point<int> formula::gui::LoginPopup::getPopupSize() {
-    int height = emailLabel.isVisible() ? 200 : 145;
+    int height = emailLabel.isVisible() ? 275 : 145;
     return { 400, height };
 }
 

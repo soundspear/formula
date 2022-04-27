@@ -88,10 +88,35 @@ void formula::storage::LocalIndex::deleteFormula(std::string name)
 
 formula::storage::LocalIndexIterator formula::storage::LocalIndex::begin()
 {
-    return LocalIndexIterator(index.begin());
+    return { index.begin() };
 }
 
 formula::storage::LocalIndexIterator formula::storage::LocalIndex::end()
 {
-    return LocalIndexIterator(index.end());
+    return { index.end() };
+}
+
+std::string formula::storage::LocalIndex::serializeMetadata(const formula::processor::FormulaMetadata& metadata) {
+    boost::property_tree::ptree exportedProperties;
+    for (const auto& keyPair : metadata) {
+        exportedProperties.add(std::string(keyPair.first), keyPair.second);
+    }
+    std::stringstream ss;
+    boost::property_tree::write_json(ss, exportedProperties);
+
+    return ss.str();
+}
+
+formula::processor::FormulaMetadata formula::storage::LocalIndex::deserializeMetadata(const std::string& metadataStr) {
+    std::stringstream ss;
+    ss.str(metadataStr);
+    boost::property_tree::ptree importedProperties;
+    boost::property_tree::read_json(ss, importedProperties);
+    formula::processor::FormulaMetadata metadata;
+
+    for (auto it = importedProperties.begin(); it != importedProperties.end(); ++it) {
+        metadata[it->first] = it->second.data();
+    }
+
+    return metadata;
 }

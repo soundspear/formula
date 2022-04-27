@@ -98,12 +98,13 @@ void formula::gui::SavedFilesTab::exportFormulaToFile()
 
     auto fileInfo = chooser.getResult();
 
-    boost::property_tree::ptree exportedProperties;
-    for (const auto& keyPair : metadata) {
-        exportedProperties.add(std::string(keyPair.first), keyPair.second);
-    }
+    auto serialized = formula::storage::LocalIndex::serializeMetadata(metadata);
 
-    boost::property_tree::write_json(fileInfo.getFullPathName().toStdString(), exportedProperties);
+    try {
+        boost::filesystem::save_string_file(fileInfo.getFullPathName().toStdString(), serialized);
+    } catch (std::exception&) {
+        eventHub->publish(EventType::unexpectedError, ErrorCodes::cannotExportFile);
+    }
 }
 
 void formula::gui::SavedFilesTab::importFormulaFromFile()
@@ -117,15 +118,16 @@ void formula::gui::SavedFilesTab::importFormulaFromFile()
     if (!fileChosen) return;
 
     auto fileInfo = chooser.getResult();
+    std::string content;
+    boost::filesystem::load_string_file(fileInfo.getFullPathName().toStdString(), content);
 
-    FormulaMetadata metadata;
-    boost::property_tree::ptree importedProperties;
-    boost::property_tree::read_json(fileInfo.getFullPathName().toStdString(), importedProperties);
-    for (auto it = importedProperties.begin(); it != importedProperties.end(); ++it) {
-        metadata[it->first] = it->second.data();
+    try {
+        FormulaMetadata metadata = formula::storage::LocalIndex::deserializeMetadata(content);
+        localIndex->addFormulaToIndex(metadata, false);
+    } catch (std::exception&) {
+        eventHub->publish(EventType::unexpectedError, ErrorCodes::cannotImportFile);
     }
 
-    localIndex->addFormulaToIndex(metadata, false);
     refreshData();
 }
 

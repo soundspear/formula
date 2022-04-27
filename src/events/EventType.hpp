@@ -23,7 +23,8 @@ enum class EventType {
     getFormulaResponse,
     createFormulaSuccess,
     ratingSubmitted,
-    unknownWebError,
+    // Miscellaneous
+    unexpectedError,
 };
 
 #endif // FORMULA_EVENTS_EVENT_TYPE
