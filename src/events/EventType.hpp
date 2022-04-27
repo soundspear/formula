@@ -21,6 +21,7 @@ enum class EventType {
     subscriptionExpired,
     listFormulaResponse,
     getFormulaResponse,
+    formulaAlreadyExists,
     createFormulaSuccess,
     ratingSubmitted,
     // Miscellaneous

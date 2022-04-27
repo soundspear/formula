@@ -6,10 +6,11 @@ using FormulaMetadataKeys = formula::processor::FormulaMetadataKeys;
 
 formula::gui::SavedFilesTab::SavedFilesTab(
     const std::shared_ptr<formula::events::EventHub>& eventHubRef,
+    const std::shared_ptr<formula::cloud::FormulaCloudClient>& cloudRef,
     const std::shared_ptr<formula::processor::PluginState>& pluginStateRef,
     const std::shared_ptr<formula::storage::LocalIndex>& localIndexRef
 )
-    : eventHub(eventHubRef), pluginState(pluginStateRef), localIndex(localIndexRef)
+    : eventHub(eventHubRef), cloud(cloudRef), pluginState(pluginStateRef), localIndex(localIndexRef)
 {
     importButton.setButtonText("Import formula from file");
     importButton.onClick = [this] {
@@ -55,6 +56,7 @@ formula::gui::SavedFilesTab::SavedFilesTab(
     addChildComponent(publishButton);
     publishButton.onClick = [this] {
         changeBottomBarVisibility(false);
+        publishFormula();
     };
 
     exportButton.setButtonText("Export to file");
@@ -64,6 +66,19 @@ formula::gui::SavedFilesTab::SavedFilesTab(
         changeBottomBarVisibility(false);
         exportFormulaToFile();
     };
+
+    eventHub->subscribeOnUiThread<SavedFilesTab>(EventType::formulaAlreadyExists,
+                                  [](boost::any arg, SavedFilesTab* thisPtr) {
+        auto pair = boost::any_cast<std::pair<std::string, FormulaMetadata>>(arg);
+        auto conflictingFormulaId = pair.first;
+        auto metadata = pair.second;
+        thisPtr->askOverwriteFormula(conflictingFormulaId, metadata);
+    }, this);
+
+    eventHub->subscribeOnUiThread<SavedFilesTab>(EventType::createFormulaSuccess,
+                                  [](boost::any arg, SavedFilesTab* thisPtr) {
+        AlertWindow::showMessageBox(MessageBoxIconType::NoIcon, "Success", "Your formula was successfully uploaded");
+    }, this);
 }
 
 void formula::gui::SavedFilesTab::refreshData()
@@ -133,9 +148,6 @@ void formula::gui::SavedFilesTab::importFormulaFromFile()
 
 void formula::gui::SavedFilesTab::deleteFormula()
 {
-    AlertWindow confirmAlert("Confirmation", "Are you sure you want to delete this formula?", MessageBoxIconType::WarningIcon);
-    confirmAlert.addButton("Yes", 0);
-    confirmAlert.addButton("No", 1);
     auto result = AlertWindow::showYesNoCancelBox(
         MessageBoxIconType::WarningIcon,
         "Confirmation",
@@ -150,6 +162,37 @@ void formula::gui::SavedFilesTab::deleteFormula()
     auto &metadata = this->data[this->table.getSelectedRow()];
     localIndex->deleteFormula(metadata[FormulaMetadataKeys::name]);
     refreshData();
+}
+
+void formula::gui::SavedFilesTab::publishFormula() {
+    auto result = AlertWindow::showYesNoCancelBox(
+            MessageBoxIconType::WarningIcon,
+            "Confirmation",
+            "You will publish this formula on Formula Cloud, and it will be publicly available. Continue?",
+            "Yes",
+            "No",
+            "Cancel"
+    );
+
+    if (result != 1) return;
+
+    auto &metadata = this->data[this->table.getSelectedRow()];
+    cloud->createFormula(metadata);
+}
+
+void formula::gui::SavedFilesTab::askOverwriteFormula(std::string formulaId, formula::processor::FormulaMetadata metadata) {
+    auto result = AlertWindow::showYesNoCancelBox(
+            MessageBoxIconType::WarningIcon,
+            "Confirmation",
+            "You already published a formula with the same name. Overwrite?",
+            "Yes",
+            "No",
+            "Cancel"
+    );
+
+    if (result != 1) return;
+
+    cloud->updateFormula(formulaId, metadata);
 }
 
 int formula::gui::SavedFilesTab::getNumRows()
@@ -301,3 +344,4 @@ void formula::gui::SavedFilesTab::visibilityChanged()
         table.updateContent();
     }
 }
+

@@ -1,11 +1,6 @@
-//
-// Created by antoi on 23/03/2022.
-//
-
 #include <cpprest/json.h>
 #include <boost/format.hpp>
 #include <iostream>
-#include <boost/property_tree/json_parser.hpp>
 
 #include "cloud/FormulaCloudClient.hpp"
 #include "cloud/ListFormulaDto.hpp"
@@ -39,14 +34,20 @@ void formula::cloud::FormulaCloudClient::listFormulas(int skip, int take, std::s
         for (auto formula : response.as_array()) {
             ListFormulaDto dto;
             dto.id = S(formula[W("id")].as_string());
-            dto.author = S(formula[W("author")].as_string());
+            if (!formula[W("author")].is_null()) {
+                dto.author = S(formula[W("author")].as_string());
+            }
             dto.name = S(formula[W("name")].as_string());
             dto.description = S(formula[W("description")].as_string());
             if (!formula[W("rating")].is_null()) {
                 dto.rating = formula[W("rating")].as_double();
             }
-            dto.created = boost::posix_time::from_iso_extended_string(S(formula[W("created")].as_string()));
-            dto.lastModified = boost::posix_time::from_iso_extended_string(S(formula[W("lastModified")].as_string()));
+            if (!formula[W("created")].is_null()) {
+                dto.created = boost::posix_time::from_iso_extended_string(S(formula[W("created")].as_string()));
+            }
+            if (!formula[W("lastModified")].is_null()) {
+                dto.lastModified = boost::posix_time::from_iso_extended_string(S(formula[W("lastModified")].as_string()));
+            }
             formulaList.push_back(dto);
         }
 
@@ -96,19 +97,30 @@ void formula::cloud::FormulaCloudClient::getFormula(std::string formulaId) {
     requestWrapper(requestFunction, successCallback);
 }
 
-void formula::cloud::FormulaCloudClient::createFormula(std::string name, std::string description, std::string source, std::string author) {
+void formula::cloud::FormulaCloudClient::createFormula(formula::processor::FormulaMetadata metadata) {
     const auto uri = std::string("/api/Formula");
 
-    web::json::value body ;
-    body[W("name")] = web::json::value::string(W(name));
-    body[W("description")] = web::json::value::string(W(description));
-    body[W("source")] = web::json::value::string(W(source));
-    body[W("author")] = web::json::value::string(W(author));
+    web::json::value body;
 
-    const auto requestFunction = [this, uri, body]() {
+    using formula::processor::FormulaMetadataKeys;
+    body[W("name")] = web::json::value::string(W(metadata[FormulaMetadataKeys::name]));
+    body[W("description")] = web::json::value::string(W(metadata[FormulaMetadataKeys::description]));
+    auto serializedMetadata = formula::storage::LocalIndex::serializeMetadata(metadata);
+    body[W("metadata")] = web::json::value::string(W(serializedMetadata));
+
+    const auto requestFunction = [this, uri, body, metadata]() {
         auto req = forgeAuthenticatedRequest(web::http::methods::POST, uri);
         req.set_body(body);
-        return client.request(req ,destructorCts.get_token());
+        return client.request(req, destructorCts.get_token()).then([this, metadata](
+            const web::http::http_response& response) {
+                if (response.status_code() == 409) {
+                    auto body = response.extract_json().get();
+                    auto conflictingFormulaId = S(body[W("conflictingFormulaId")].as_string());
+                    this->eventHub->publish(EventType::formulaAlreadyExists, std::pair(conflictingFormulaId, metadata));
+                    response.set_status_code(web::http::status_codes::NonAuthInfo);
+                }
+                return response;
+        });
     };
 
     const auto successCallback = [this](web::json::value response) {
@@ -118,16 +130,15 @@ void formula::cloud::FormulaCloudClient::createFormula(std::string name, std::st
     requestWrapper(requestFunction, successCallback);
 }
 
-void formula::cloud::FormulaCloudClient::updateFormula(std::string formulaId, std::string name, std::string description,
-                                                       std::string source, std::string author) {
+void formula::cloud::FormulaCloudClient::updateFormula(std::string formulaId, formula::processor::FormulaMetadata metadata) {
     const auto uri = (boost::format("/api/Formula/%1%")
                       % formulaId ).str();
 
-    web::json::value body ;
-    body[W("name")] = web::json::value::string(W(name));
-    body[W("description")] = web::json::value::string(W(description));
-    body[W("source")] = web::json::value::string(W(source));
-    body[W("author")] = web::json::value::string(W(author));
+    web::json::value body;
+    using formula::processor::FormulaMetadataKeys;
+    body[W("description")] = web::json::value::string(W(metadata[FormulaMetadataKeys::description]));
+    auto serializedMetadata = formula::storage::LocalIndex::serializeMetadata(metadata);
+    body[W("metadata")] = web::json::value::string(W(serializedMetadata));
 
     const auto requestFunction = [this, uri, body]() {
         auto req = forgeAuthenticatedRequest(web::http::methods::PATCH, uri);
@@ -169,6 +180,13 @@ void formula::cloud::FormulaCloudClient::requestWrapper(RequestFunction requestF
     requestFunction()
     .then(
         [this, successCallback, requestFunction, numTries](const web::http::http_response& response) {
+            if (response.status_code() == web::http::status_codes::NonAuthInfo) {
+                // We use HTTP 203 (Non authoritative information) to mark that the response
+                // has already been processor through a middleware
+                eventHub->publish(EventType::webRequestFinished);
+                return;
+            }
+
             if (response.status_code() < 299) {
                 try {
                     auto jsonResponse = response.extract_json().get();

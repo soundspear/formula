@@ -24,6 +24,7 @@ namespace formula::gui
     public:
         SavedFilesTab(
             const std::shared_ptr<formula::events::EventHub>& eventHubRef,
+            const std::shared_ptr<formula::cloud::FormulaCloudClient>& cloudRef,
             const std::shared_ptr<formula::processor::PluginState>& pluginStateRef,
             const std::shared_ptr<formula::storage::LocalIndex>& localIndexRef);
 
@@ -32,6 +33,8 @@ namespace formula::gui
         void exportFormulaToFile();
         void importFormulaFromFile();
         void deleteFormula();
+        void publishFormula();
+        void askOverwriteFormula(std::string formulaId, formula::processor::FormulaMetadata metadata);
 
         int getNumRows() override;
         void paintRowBackground(Graphics& g, int rowNumber, int, int, bool rowIsSelected) override;
@@ -57,6 +60,7 @@ namespace formula::gui
         TextButton deleteButton;
 
         std::shared_ptr<formula::events::EventHub> eventHub;
+        std::shared_ptr<formula::cloud::FormulaCloudClient> cloud;
         std::shared_ptr<formula::processor::PluginState> pluginState;
         std::shared_ptr<formula::storage::LocalIndex> localIndex;
 

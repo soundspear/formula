@@ -28,7 +28,7 @@ formula::gui::PluginWindow::PluginWindow(
     auto colour = findColour(ResizableWindow::backgroundColourId);
 
     tabs.addTab("Editor", colour, new CodeEditorTab(eventHub, pluginState, localIndexRef), true);
-    tabs.addTab("Saved files", colour, new SavedFilesTab(eventHub, pluginState, localIndexRef), true);
+    tabs.addTab("Saved files", colour, new SavedFilesTab(eventHub, cloud, pluginState, localIndexRef), true);
 #ifndef FORMULA_LOCAL_ONLY
     tabs.addTab("Formula cloud", colour, new OnlineFormulasTab(eventHub, cloud), true);
 #endif
