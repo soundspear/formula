@@ -17,7 +17,10 @@ namespace formula::cloud {
     class AuthenticatedClient {
     public:
         void login(std::string user, std::string password);
+        void logout();
         void setUsername(std::string username);
+        std::optional<std::string> getUserName();
+        bool isLoggedIn();
         virtual ~AuthenticatedClient();
 
     protected:
@@ -29,8 +32,6 @@ namespace formula::cloud {
         void processLoginResponse(web::json::value jsonResponse);
         void processRefreshedTokenResponse(web::json::value jsonResponse);
 
-        bool hasUserName();
-        bool tokenExists();
         web::http::http_request forgeAuthenticatedRequest(web::http::method method, std::string uri);
 
         std::shared_ptr<formula::events::EventHub> eventHub;

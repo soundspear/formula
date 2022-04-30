@@ -7,6 +7,7 @@ formula::cloud::AuthenticatedClient::AuthenticatedClient(const std::shared_ptr<f
     accessToken = settings->find<std::string>(storage::SettingKey::accessToken);
     refreshToken = settings->find<std::string>(storage::SettingKey::refreshToken);
     expiresAt = settings->find<unsigned long long>(storage::SettingKey::expiresAt);
+    userName = settings->find<std::string>(storage::SettingKey::username);
 }
 
 void formula::cloud::AuthenticatedClient::login(std::string user, std::string password) {
@@ -31,6 +32,10 @@ void formula::cloud::AuthenticatedClient::login(std::string user, std::string pa
                     eventHub->publish(EventType::unexpectedError);
                 }
             });
+}
+
+void formula::cloud::AuthenticatedClient::logout() {
+    accessToken.reset(); refreshToken.reset(); expiresAt.reset(); userName.reset();
 }
 
 void formula::cloud::AuthenticatedClient::setUsername(std::string newUserName) {
@@ -109,12 +114,12 @@ void formula::cloud::AuthenticatedClient::processRefreshedTokenResponse(web::jso
     checkUsername(jsonResponse);
 }
 
-bool formula::cloud::AuthenticatedClient::tokenExists() {
+bool formula::cloud::AuthenticatedClient::isLoggedIn() {
     return accessToken && refreshToken && expiresAt;
 }
 
-bool formula::cloud::AuthenticatedClient::hasUserName() {
-    return userName.has_value();
+std::optional<std::string> formula::cloud::AuthenticatedClient::getUserName() {
+    return userName;
 }
 
 web::http::http_request

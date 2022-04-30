@@ -33,11 +33,15 @@ namespace formula::storage {
 
         template <typename T>
         void add(std::string key, std::optional<T> value){
+            remove(key);
+            settings.add(key, value.value());
+            saveSettings();
+        }
+
+        void remove(std::string key) {
             if (settings.get_child_optional(key)) {
                 settings.erase(key);
             }
-            settings.add(key, value.value());
-            saveSettings();
         }
 
     private:

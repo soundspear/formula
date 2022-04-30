@@ -87,6 +87,7 @@ target_sources(Formula
         "src/gui/tabs/CodeEditorTab.cpp"
         "src/gui/tabs/SavedFilesTab.cpp"
         "src/gui/tabs/OnlineFormulasTab.cpp"
+        "src/gui/tabs/SettingsTab.cpp"
         "src/gui/components/popups/SaveLocalFormulaPopup.cpp"
         "src/gui/components/popups/LoginPopup.cpp"
         "src/gui/components/popups/NoCompilerFoundPopup.cpp"

@@ -33,7 +33,7 @@ formula::gui::PluginWindow::PluginWindow(
 #ifndef FORMULA_LOCAL_ONLY
     tabs.addTab("Formula cloud", colour, new OnlineFormulasTab(eventHub, cloud), true);
 #endif
-    tabs.addTab("Settings", colour, new Component(), true);
+    tabs.addTab("Settings", colour, new SettingsTab(eventHub, cloud), true);
 
     addAndMakeVisible(tabs);
 

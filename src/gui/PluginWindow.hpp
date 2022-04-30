@@ -7,6 +7,7 @@
 #include <gui/tabs/CodeEditorTab.hpp>
 #include <gui/tabs/SavedFilesTab.hpp>
 #include <gui/tabs/OnlineFormulasTab.hpp>
+#include <gui/tabs/SettingsTab.hpp>
 #include <gui/components/popups/LoginPopup.hpp>
 #include <gui/components/popups/NoCompilerFoundPopup.hpp>
 #include <gui/components/popups/SetUserNamePopup.hpp>
