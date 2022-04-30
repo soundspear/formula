@@ -8,6 +8,7 @@
 #include <cpprest/http_msg.h>
 #include <cpprest/http_client.h>
 
+#include "gui/ErrorCodes.hpp"
 #include "storage/LocalSettings.hpp"
 #include "events/EventHub.hpp"
 #include "cloud/StringHelpers.hpp"
@@ -16,6 +17,7 @@ namespace formula::cloud {
     class AuthenticatedClient {
     public:
         void login(std::string user, std::string password);
+        void setUsername(std::string username);
         virtual ~AuthenticatedClient();
 
     protected:
@@ -27,7 +29,8 @@ namespace formula::cloud {
         void processLoginResponse(web::json::value jsonResponse);
         void processRefreshedTokenResponse(web::json::value jsonResponse);
 
-        bool isTokenValid();
+        bool hasUserName();
+        bool tokenExists();
         web::http::http_request forgeAuthenticatedRequest(web::http::method method, std::string uri);
 
         std::shared_ptr<formula::events::EventHub> eventHub;
@@ -35,11 +38,14 @@ namespace formula::cloud {
         pplx::cancellation_token_source destructorCts;
         std::shared_ptr<std::mutex> mutex;
     private:
+        void checkUsername(web::json::value tokenResponse);
+
         std::shared_ptr<formula::storage::LocalSettings> settings;
 
         std::optional<std::string> accessToken;
         std::optional<std::string> refreshToken;
         std::optional<unsigned long long> expiresAt;
+        std::optional<std::string> userName;
     };
 }
 

@@ -16,7 +16,8 @@ formula::gui::PluginWindow::PluginWindow(
       cloud(cloudRef),
       tabs(TabbedButtonBar::TabsAtTop),
       spinner(eventHubRef),
-      loginPopup(cloud)
+      loginPopup(cloud),
+      setUserNamePopup(cloud)
 {
     if (!laf) {
         laf = std::make_unique<FormulaLookAndFeel>();
@@ -47,63 +48,6 @@ formula::gui::PluginWindow::PluginWindow(
     versionLabel.setFont(versionFont);
     addAndMakeVisible(versionLabel);
 
-    addChildComponent(loginPopup);
-    addChildComponent(noCompilerFoundPopup);
-
-    eventHub->subscribeOnUiThread<PluginWindow>(
-            EventType::noCompilerFound, [] ([[maybe_unused]] boost::any _, PluginWindow* thisPtr) {
-        thisPtr->noCompilerFoundPopup.setVisible(true);
-        thisPtr->tabs.setInterceptsMouseClicks(false, false);
-        thisPtr->resized();
-    }, this);
-
-    eventHub->subscribeOnUiThread<PluginWindow>(
-            EventType::loginFail, [] ([[maybe_unused]] boost::any _, PluginWindow* thisPtr) {
-        thisPtr->loginPopup.setType(LoginPopupType::LoginFailed);
-        thisPtr->loginPopup.setVisible(true); thisPtr->resized();
-    }, this);
-
-    eventHub->subscribeOnUiThread<PluginWindow>(
-            EventType::needLogin, [] ([[maybe_unused]] boost::any _, PluginWindow* thisPtr) {
-        thisPtr->loginPopup.setType(LoginPopupType::FirstLogin);
-        thisPtr->loginPopup.setVisible(true); thisPtr->resized();
-    }, this);
-
-    eventHub->subscribeOnUiThread<PluginWindow>(
-            EventType::subscriptionExpired, [] ([[maybe_unused]] boost::any _, PluginWindow* thisPtr) {
-        thisPtr->loginPopup.setType(LoginPopupType::MissingSubscription);
-        thisPtr->loginPopup.setVisible(true); thisPtr->resized();
-    }, this);
-
-    eventHub->subscribeOnUiThread<PluginWindow>(
-            EventType::loadFormulaRequest, [] ([[maybe_unused]] boost::any _, PluginWindow* thisPtr) {
-        thisPtr->tabs.setCurrentTabIndex(0);
-        thisPtr->resized();
-    }, this);
-
-    eventHub->subscribeOnUiThread<PluginWindow>(
-            EventType::scaleUp, [] ([[maybe_unused]] boost::any _, PluginWindow* thisPtr) {
-        thisPtr->scaleFactor += 0.25;
-        thisPtr->setScaleFactor(thisPtr->scaleFactor);
-    }, this);
-
-    eventHub->subscribeOnUiThread<PluginWindow>(
-            EventType::scaleDown, [] ([[maybe_unused]] boost::any _, PluginWindow* thisPtr) {
-        thisPtr->scaleFactor -= 0.25;
-        thisPtr->setScaleFactor(thisPtr->scaleFactor);
-    }, this);
-
-    eventHub->subscribeOnUiThread<PluginWindow>(
-            EventType::unexpectedError, [] ([[maybe_unused]] boost::any arg, PluginWindow* thisPtr) {
-        formula::gui::ErrorCodes errCode = formula::gui::ErrorCodes::unknownError;
-        if (!arg.empty()) {
-            errCode = boost::any_cast<formula::gui::ErrorCodes>(arg);
-        }
-        juce::AlertWindow::showMessageBox(juce::MessageBoxIconType::WarningIcon,
-                                          "Network error", juce::String("An unexpected error happened.")
-                                          + " (Error code " + juce::String(errCode) + ")");
-    }, this);
-
     addAndMakeVisible(spinner);
     spinner.hideSpinner();
 
@@ -111,7 +55,89 @@ formula::gui::PluginWindow::PluginWindow(
         tooltipWindow = std::make_unique<TooltipWindow>(nullptr, 200);
     }
 
+    setupPopups();
+
+    eventHub->subscribeOnUiThread<PluginWindow>(
+            EventType::loadFormulaRequest, [] ([[maybe_unused]] boost::any _, PluginWindow* thisPtr) {
+                thisPtr->tabs.setCurrentTabIndex(0);
+                thisPtr->resized();
+            }, this);
+
+    eventHub->subscribeOnUiThread<PluginWindow>(
+            EventType::scaleUp, [] ([[maybe_unused]] boost::any _, PluginWindow* thisPtr) {
+                thisPtr->scaleFactor += 0.25;
+                thisPtr->scaleFactor = fmin(2.f, thisPtr->scaleFactor);
+                thisPtr->setScaleFactor(thisPtr->scaleFactor);
+            }, this);
+
+    eventHub->subscribeOnUiThread<PluginWindow>(
+            EventType::scaleDown, [] ([[maybe_unused]] boost::any _, PluginWindow* thisPtr) {
+                thisPtr->scaleFactor -= 0.25;
+                thisPtr->scaleFactor = fmax(0.25f, thisPtr->scaleFactor);
+                thisPtr->setScaleFactor(thisPtr->scaleFactor);
+            }, this);
+
+    eventHub->subscribeOnUiThread<PluginWindow>(
+            EventType::unexpectedError, [] ([[maybe_unused]] boost::any arg, PluginWindow* thisPtr) {
+                formula::gui::ErrorCodes errCode = formula::gui::ErrorCodes::unknownError;
+                if (!arg.empty()) {
+                    errCode = boost::any_cast<formula::gui::ErrorCodes>(arg);
+                }
+                juce::AlertWindow::showMessageBox(juce::MessageBoxIconType::WarningIcon,
+                                                  "Network error", juce::String("An unexpected error happened.")
+                                                                   + " (Error code " + juce::String(errCode) + ")");
+            }, this);
+
     resized();
+}
+
+void formula::gui::PluginWindow::setupPopups() {
+
+    // No compiler found popup
+    addChildComponent(noCompilerFoundPopup);
+
+    eventHub->subscribeOnUiThread<PluginWindow>(
+            EventType::noCompilerFound, [] ([[maybe_unused]] boost::any _, PluginWindow* thisPtr) {
+                thisPtr->noCompilerFoundPopup.setVisible(true);
+                thisPtr->tabs.setInterceptsMouseClicks(false, false);
+                thisPtr->resized();
+            }, this);
+
+    // Login Popup
+    addChildComponent(loginPopup);
+
+    eventHub->subscribeOnUiThread<PluginWindow>(
+            EventType::loginFail, [] ([[maybe_unused]] boost::any _, PluginWindow* thisPtr) {
+                thisPtr->loginPopup.setType(LoginPopupType::LoginFailed);
+                thisPtr->loginPopup.setVisible(true); thisPtr->resized();
+            }, this);
+
+    eventHub->subscribeOnUiThread<PluginWindow>(
+            EventType::needLogin, [] ([[maybe_unused]] boost::any _, PluginWindow* thisPtr) {
+                thisPtr->loginPopup.setType(LoginPopupType::FirstLogin);
+                thisPtr->loginPopup.setVisible(true); thisPtr->resized();
+            }, this);
+
+    eventHub->subscribeOnUiThread<PluginWindow>(
+            EventType::subscriptionExpired, [] ([[maybe_unused]] boost::any _, PluginWindow* thisPtr) {
+                thisPtr->loginPopup.setType(LoginPopupType::MissingSubscription);
+                thisPtr->loginPopup.setVisible(true); thisPtr->resized();
+            }, this);
+
+    // Set UserName Popup
+    addChildComponent(setUserNamePopup);
+
+    eventHub->subscribeOnUiThread<PluginWindow>(
+            EventType::needSetUsername, [] ([[maybe_unused]] boost::any _, PluginWindow* thisPtr) {
+                thisPtr->setUserNamePopup.setUserNameAlreadyExists(false);
+                thisPtr->setUserNamePopup.setVisible(true); thisPtr->resized();
+            }, this);
+
+    eventHub->subscribeOnUiThread<PluginWindow>(
+            EventType::userNameAlreadyExists, [] ([[maybe_unused]] boost::any _, PluginWindow* thisPtr) {
+                thisPtr->setUserNamePopup.setUserNameAlreadyExists(true);
+                thisPtr->setUserNamePopup.setVisible(true); thisPtr->resized();
+            }, this);
 }
 
 formula::gui::PluginWindow::~PluginWindow() {
@@ -148,4 +174,5 @@ void formula::gui::PluginWindow::resized()
     const auto areaCenter = area.getCentre();
     loginPopup.setBounds(loginPopup.getAreaToFit(areaCenter));
     noCompilerFoundPopup.setBounds(noCompilerFoundPopup.getAreaToFit(areaCenter));
+    setUserNamePopup.setBounds(setUserNamePopup.getAreaToFit(areaCenter));
 }

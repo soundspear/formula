@@ -11,7 +11,6 @@
 
 #include <cpprest/http_client.h>
 
-#include "gui/ErrorCodes.hpp"
 #include "storage/LocalSettings.hpp"
 #include "events/EventHub.hpp"
 #include "cloud/AuthenticatedClient.hpp"

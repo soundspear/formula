@@ -7,7 +7,9 @@
 #include <gui/tabs/CodeEditorTab.hpp>
 #include <gui/tabs/SavedFilesTab.hpp>
 #include <gui/tabs/OnlineFormulasTab.hpp>
+#include <gui/components/popups/LoginPopup.hpp>
 #include <gui/components/popups/NoCompilerFoundPopup.hpp>
+#include <gui/components/popups/SetUserNamePopup.hpp>
 #include <gui/components/SpinnerOverlay.hpp>
 #include <gui/FormulaLookAndFeel.hpp>
 
@@ -24,6 +26,8 @@ namespace formula::gui
             const std::shared_ptr<formula::storage::LocalIndex>& localIndexRef
         );
         ~PluginWindow() override;
+
+        void setupPopups();
 
         void paint(juce::Graphics&) override;
         void resized() override;
@@ -43,6 +47,7 @@ namespace formula::gui
         static std::unique_ptr<juce::TooltipWindow> tooltipWindow;
         formula::gui::LoginPopup loginPopup;
         formula::gui::NoCompilerFoundPopup noCompilerFoundPopup;
+        formula::gui::SetUserNamePopup setUserNamePopup;
         std::unique_ptr<formula::gui::FormulaLookAndFeel> laf;
 
         float scaleFactor = 1;

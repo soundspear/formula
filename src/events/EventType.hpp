@@ -18,6 +18,8 @@ enum class EventType {
     loginSuccess,
     loginFail,
     needLogin,
+    needSetUsername,
+    userNameAlreadyExists,
     subscriptionExpired,
     listFormulaResponse,
     getFormulaResponse,

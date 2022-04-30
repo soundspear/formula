@@ -175,6 +175,15 @@ void formula::cloud::FormulaCloudClient::submitRating(std::string formulaId, dou
 }
 
 void formula::cloud::FormulaCloudClient::requestWrapper(RequestFunction requestFunction, SuccessCallback successCallback, int numTries) {
+    if (!tokenExists()) {
+        eventHub->publish(EventType::needLogin);
+        return;
+    }
+    if (!hasUserName()) {
+        eventHub->publish(EventType::needSetUsername);
+        return;
+    }
+
     eventHub->publish(EventType::webRequestSent);
 
     requestFunction()

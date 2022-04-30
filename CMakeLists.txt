@@ -90,6 +90,7 @@ target_sources(Formula
         "src/gui/components/popups/SaveLocalFormulaPopup.cpp"
         "src/gui/components/popups/LoginPopup.cpp"
         "src/gui/components/popups/NoCompilerFoundPopup.cpp"
+        "src/gui/components/popups/SetUserNamePopup.cpp"
         "src/gui/components/SpinnerOverlay.cpp"
         "src/gui/components/RatingComponent.cpp"
         "src/gui/components/FormulaDetailsPanel.cpp"
