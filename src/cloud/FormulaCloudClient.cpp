@@ -58,6 +58,11 @@ void formula::cloud::FormulaCloudClient::listFormulas(int skip, int take, std::s
 }
 
 void formula::cloud::FormulaCloudClient::getFormula(std::string formulaId) {
+    if (!isLoggedIn()) {
+        eventHub->publish(EventType::needLogin);
+        return;
+    }
+
     const auto uri = (boost::format("/api/Formula/%1%")
                       % formulaId ).str();
 
@@ -98,6 +103,14 @@ void formula::cloud::FormulaCloudClient::getFormula(std::string formulaId) {
 }
 
 void formula::cloud::FormulaCloudClient::createFormula(formula::processor::FormulaMetadata metadata) {
+    if (!isLoggedIn()) {
+        eventHub->publish(EventType::needLogin);
+        return;
+    }
+    if (!(getUserName().has_value())) {
+        eventHub->publish(EventType::needSetUsername);
+        return;
+    }
     const auto uri = std::string("/api/Formula");
 
     web::json::value body;
@@ -131,6 +144,15 @@ void formula::cloud::FormulaCloudClient::createFormula(formula::processor::Formu
 }
 
 void formula::cloud::FormulaCloudClient::updateFormula(std::string formulaId, formula::processor::FormulaMetadata metadata) {
+    if (!isLoggedIn()) {
+        eventHub->publish(EventType::needLogin);
+        return;
+    }
+    if (!(getUserName().has_value())) {
+        eventHub->publish(EventType::needSetUsername);
+        return;
+    }
+
     const auto uri = (boost::format("/api/Formula/%1%")
                       % formulaId ).str();
 
@@ -154,6 +176,14 @@ void formula::cloud::FormulaCloudClient::updateFormula(std::string formulaId, fo
 }
 
 void formula::cloud::FormulaCloudClient::submitRating(std::string formulaId, double rating, std::string comment) {
+    if (!isLoggedIn()) {
+        eventHub->publish(EventType::needLogin);
+        return;
+    }
+    if (!(getUserName().has_value())) {
+        eventHub->publish(EventType::needSetUsername);
+        return;
+    }
     const auto uri = (boost::format("/api/Formula/%1%/rating")
                       % formulaId ).str();
 
@@ -175,10 +205,6 @@ void formula::cloud::FormulaCloudClient::submitRating(std::string formulaId, dou
 }
 
 void formula::cloud::FormulaCloudClient::requestWrapper(RequestFunction requestFunction, SuccessCallback successCallback, int numTries) {
-    if (!isLoggedIn()) {
-        eventHub->publish(EventType::needLogin);
-        return;
-    }
     if (!(getUserName().has_value())) {
         eventHub->publish(EventType::needSetUsername);
         return;

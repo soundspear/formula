@@ -39,6 +39,11 @@ void formula::cloud::AuthenticatedClient::logout() {
 }
 
 void formula::cloud::AuthenticatedClient::setUsername(std::string newUserName) {
+    if (!isLoggedIn()) {
+        eventHub->publish(EventType::needLogin);
+        return;
+    }
+
     web::json::value body;
     body[W("username")] = web::json::value::string(W(newUserName));
 
