@@ -15,12 +15,7 @@ formula::gui::CodeEditorTab::CodeEditorTab(
     auto metadata = pluginState->getActiveFormulaMetadata();
     auto formulaSource = metadata[formula::processor::FormulaMetadataKeys::source];
     if (formulaSource.empty()) {
-        editor->loadContent(R"""(
-formula_main {
-    float output = input;
-    return output;
-}
-)""");
+        editor->loadContent(defaultEditorContent);
     }
     else {
         editor->loadContent(formulaSource);
@@ -34,6 +29,7 @@ formula_main {
     const auto grey = Colour::fromRGB(0xaf,0xb1,0xb3);
     const auto orange = Colour::fromRGB(0xc2,0x93,0x44);
     const auto blue = Colour::fromRGB(0x35,0x92,0xc4);
+
     compileButton.setImage(formula::binary::compile_svg, green);
     compileButton.setTooltip("Launch the current formula");
     compileButton.onClick = [&] {
@@ -51,6 +47,21 @@ formula_main {
         this->pluginState->setBypassed(this->muteButton.getToggleState());
     };
     addAndMakeVisible(muteButton);
+
+    newButton.setImage(formula::binary::new_svg, grey);
+    newButton.setTooltip("Create a new formula");
+    newButton.onClick = [&] {
+        auto result = AlertWindow::showYesNoCancelBox(MessageBoxIconType::WarningIcon, "New formula",
+                    "All unsaved change will be lost. Do you want to create a new formula?");
+        if (result != 1) return;
+        formula::processor::FormulaMetadata newMetadata;
+        newMetadata[formula::processor::FormulaMetadataKeys::name] = "";
+        newMetadata[formula::processor::FormulaMetadataKeys::description] = "";
+        newMetadata[formula::processor::FormulaMetadataKeys::source] = defaultEditorContent;
+        pluginState->setActiveFormulaMetadata(newMetadata);
+        editor->loadContent(defaultEditorContent);
+    };
+    addAndMakeVisible(newButton);
 
     saveLocalButton.setImage(formula::binary::save_local_svg, orange);
     saveLocalButton.setTooltip("Save formula to local storage");
@@ -179,6 +190,12 @@ void formula::gui::CodeEditorTab::resized()
     savePopup.setBounds(savePopup.getAreaToFit(editorCenter));
 
     auto toolbarArea = area.removeFromLeft(toolbarSizePixels);
+    toolbarArea.removeFromTop(buttonMarginBottomPixels);
+
+    newButton.setBounds(
+            toolbarArea.removeFromTop(buttonSizePixels)
+            .withTrimmedLeft(buttonMarginSidesPixels)
+            .withTrimmedRight(buttonMarginSidesPixels));
     toolbarArea.removeFromTop(buttonMarginBottomPixels);
 
     compileButton.setBounds(

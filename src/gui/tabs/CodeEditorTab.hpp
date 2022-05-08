@@ -42,6 +42,7 @@ class CodeEditorTab : public juce::Component, public juce::CodeDocument::Listene
         CodeDocument codeDocument;
         CPlusPlusCodeTokeniser cppTokeniser;
         std::unique_ptr<CodeEditorComponent> editor;
+        formula::gui::IconButton newButton;
         formula::gui::IconButton compileButton;
         formula::gui::IconButton muteButton;
         formula::gui::IconButton saveLocalButton;
@@ -61,6 +62,13 @@ class CodeEditorTab : public juce::Component, public juce::CodeDocument::Listene
         std::shared_ptr<formula::processor::PluginState> pluginState;
 
         void setCodeEditorComponentColourScheme();
+
+        std::string defaultEditorContent = R"""(
+formula_main {
+    float output = input;
+    return output;
+}
+)""";
 
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(CodeEditorTab)
     };
