@@ -117,3 +117,12 @@ bool formula::compiler::CompilerWrapper::launchCompiler
 
     return c.exit_code() == 0;
 }
+
+std::string formula::compiler::CompilerWrapper::replaceMacros(std::string str) {
+    boost::replace_all(str, "__time", "TIME");
+    boost::replace_all(str, "__sample_rate", "SAMPLE_RATE");
+    boost::replace_all(str, "__knobs", "KNOB_i");
+    boost::replace_all(str, "__switches", "SWITCH_i");
+
+    return str;
+}

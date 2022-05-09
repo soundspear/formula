@@ -22,6 +22,8 @@ void formula::compiler::TccWrapper::sanitizeErrorString(std::string& errStr, boo
     for (auto& line : strs) {
         line = std::regex_replace(line, compilerError, "");
 
+        line = replaceMacros(line);
+
         std::smatch matches;
         std::regex_search(line, matches, lineNumberError);
         if (matches.empty()) {
@@ -31,6 +33,7 @@ void formula::compiler::TccWrapper::sanitizeErrorString(std::string& errStr, boo
 
         auto lineNumber = boost::lexical_cast<long long>(matches[1]);
         lineNumber -= lineNumberInBaseFile;
+        if (lineNumber < 0) continue;
         std::string errorMessage = matches[2];
         errStr += "Line " + std::to_string(lineNumber) + errorMessage + "\r\n";
     }

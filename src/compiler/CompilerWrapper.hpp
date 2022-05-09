@@ -36,6 +36,7 @@ namespace formula::compiler {
 		virtual std::string getCompilerPath() = 0;
 		virtual std::vector<std::string> getCompilerArgs(std::string sourcePath, std::string outPath, bool isMono) = 0;
 
+        static std::string replaceMacros(std::string str);
 		std::string& getBaseCodeMono() { return formulaBaseCodeMono; }
 		std::string& getBaseCodeStereo() { return formulaBaseCodeStereo; }
 
