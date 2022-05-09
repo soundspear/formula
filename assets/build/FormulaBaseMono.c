@@ -12,7 +12,7 @@
 #	define FORMULA_EXPORT __attribute__ ((visibility("default")))
 #endif
 
-#define _formula_main_decl float _formula_main(float input, float sampleRate, const float* knobs, const float* switches)
+#define _formula_main_decl float _formula_main(float input)
 _formula_main_decl;
 #define formula_main inline _formula_main_decl
 
@@ -26,24 +26,29 @@ int __debug_enabled;
 #define __PUSH_DEBUG(x) sprintf(__debug_stack[(*__debug_idx)++], "%s: %f (line %i)", #x, x, __LINE__);
 #define DEBUG(x)  if (!__debug_enabled || !__debug_stack); else if (*__debug_idx >= __debug_stack_size - 1) { __MAX_DEBUG_REACHED } else __PUSH_DEBUG(x)
 
-#define knob_1 knobs[0]
-#define knob_2 knobs[1]
-#define knob_3 knobs[2]
-#define knob_4 knobs[3]
-#define knob_5 knobs[4]
-#define knob_6 knobs[5]
-#define knob_7 knobs[6]
-#define knob_8 knobs[7]
-#define knob_9 knobs[8]
-#define knob_10 knobs[9]
-#define knob_11 knobs[10]
-#define knob_12 knobs[11]
-#define switch_1 switches[0]
-#define switch_2 switches[2]
-#define switch_3 switches[3]
+const float* __knobs;
+const float* __switches;
+float __time = 0;
+float __sample_rate;
 
+#define KNOB_1 __knobs[0]
+#define KNOB_2 __knobs[1]
+#define KNOB_3 __knobs[2]
+#define KNOB_4 __knobs[3]
+#define KNOB_5 __knobs[4]
+#define KNOB_6 __knobs[5]
+#define KNOB_7 __knobs[6]
+#define KNOB_8 __knobs[7]
+#define KNOB_9 __knobs[8]
+#define KNOB_10 __knobs[9]
+#define KNOB_11 __knobs[10]
+#define KNOB_12 __knobs[11]
+#define SWITCH_1 __switches[0]
+#define SWITCH_2 __switches[2]
+#define SWITCH_3 __switches[3]
 
-float time = 0;
+#define TIME __time
+#define SAMPLE_RATE __sample_rate
 
 FORMULA_EXPORT void process_block_mono(float* in, int numSamples, float sampleRate,
                                        const float* knobs, const float* switches,
@@ -53,10 +58,13 @@ FORMULA_EXPORT void process_block_mono(float* in, int numSamples, float sampleRa
     __debug_stack = debug_stack;
     __debug_stack_size = debug_stack_size;
     __debug_enabled = 1;
+    __knobs = knobs;
+    __switches = switches;
+    __sample_rate = sampleRate;
     for (int s = 0; s < numSamples; s++) {
-        time += 1 / sampleRate;
+        __time += 1 / sampleRate;
         double fixDenormal = (1.0 / 4294967295.0);
-        in[s] = outGain*(wet*_formula_main(in[s]*inGain, sampleRate, knobs, switches) + (1-wet)*in[s]);
+        in[s] = outGain*(wet*_formula_main(in[s]*inGain) + (1-wet)*in[s]);
         __debug_enabled = 0;
     }
 }
