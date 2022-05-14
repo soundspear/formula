@@ -6,6 +6,7 @@
 #include <cloud/GetFormulaDto.hpp>
 #include <processor/FormulaMetadata.hpp>
 #include <gui/components/RatingComponent.hpp>
+#include <gui/components/FormulaCodeEditor.hpp>
 
 namespace formula::gui {
     class FormulaDetailsPanel : public juce::Component {
@@ -25,8 +26,7 @@ namespace formula::gui {
         Label nameLabel;
         Label authorLabel;
         CodeDocument codePreview;
-        std::unique_ptr<CodeEditorComponent> codePreviewEditor;
-        CPlusPlusCodeTokeniser cppTokeniser;
+        std::unique_ptr<formula::gui::FormulaCodeEditor> codePreviewEditor;
         Label descriptionLabel;
         Label ratingsHeadingLabel;
         TextButton loadFormulaButton;

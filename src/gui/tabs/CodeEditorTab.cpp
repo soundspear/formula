@@ -10,7 +10,7 @@ formula::gui::CodeEditorTab::CodeEditorTab(
 {
     setOpaque(true);
 
-    editor = std::make_unique<CodeEditorComponent>(codeDocument, &cppTokeniser);
+    editor = std::make_unique<formula::gui::FormulaCodeEditor>(codeDocument);
     addAndMakeVisible(editor.get());
     auto metadata = pluginState->getActiveFormulaMetadata();
     auto formulaSource = metadata[formula::processor::FormulaMetadataKeys::source];
@@ -22,7 +22,6 @@ formula::gui::CodeEditorTab::CodeEditorTab(
     }
     metadata[formula::processor::FormulaMetadataKeys::source] = editor->getDocument().getAllContent().toStdString();
     pluginState->setActiveFormulaMetadata(metadata);
-    setCodeEditorComponentColourScheme();
     codeDocument.addListener(this);
 
     const auto green = Colour::fromRGB(0x49,0x9c,0x54);
@@ -248,37 +247,6 @@ void formula::gui::CodeEditorTab::resized()
 
     editor->setBounds(area);
 
-}
-
-void formula::gui::CodeEditorTab::setCodeEditorComponentColourScheme()
-{
-    struct Type
-    {
-        const char* name;
-        juce::uint32 colour;
-    };
-
-    const Type types[] =
-    {
-        { "Error",              0xffe60000 },
-        { "Comment",            0xff72d20c },
-        { "Keyword",            0xffee6f6f },
-        { "Operator",           0xffc4eb19 },
-        { "Identifier",         0xffcfcfcf },
-        { "Integer",            0xff42c8c4 },
-        { "Float",              0xff885500 },
-        { "String",             0xffbc45dd },
-        { "Bracket",            0xff058202 },
-        { "Punctuation",        0xffcfbeff },
-        { "Preprocessor Text",  0xfff8f631 }
-    };
-
-    CodeEditorComponent::ColourScheme cs;
-
-    for (auto& t : types)
-        cs.set(t.name, Colour(t.colour));
-
-    editor->setColourScheme(cs);
 }
 
 void formula::gui::CodeEditorTab::timerCallback() {

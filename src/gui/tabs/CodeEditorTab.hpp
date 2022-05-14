@@ -8,6 +8,7 @@
 #include "src/gui/components/IconButton.hpp"
 #include "src/gui/components/popups/SaveLocalFormulaPopup.hpp"
 #include "src/gui/components/KnobsPanel.hpp"
+#include "src/gui/components/FormulaCodeEditor.hpp"
 #include "src/events/EventHub.hpp"
 #include "src/processor/PluginState.hpp"
 #include "src/processor/FormulaMetadata.hpp"
@@ -40,8 +41,7 @@ class CodeEditorTab : public juce::Component, public juce::CodeDocument::Listene
         juce::String findAutoTabulation();
     private:
         CodeDocument codeDocument;
-        CPlusPlusCodeTokeniser cppTokeniser;
-        std::unique_ptr<CodeEditorComponent> editor;
+        std::unique_ptr<formula::gui::FormulaCodeEditor> editor;
         formula::gui::IconButton newButton;
         formula::gui::IconButton compileButton;
         formula::gui::IconButton muteButton;
@@ -60,8 +60,6 @@ class CodeEditorTab : public juce::Component, public juce::CodeDocument::Listene
 
         std::shared_ptr<formula::events::EventHub> eventHub;
         std::shared_ptr<formula::processor::PluginState> pluginState;
-
-        void setCodeEditorComponentColourScheme();
 
         std::string defaultEditorContent = R"""(
 formula_main {
