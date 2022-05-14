@@ -20,6 +20,7 @@ namespace formula::gui {
                     {IconButton::ColourIds::highlightedColourId,                   brighter(backgroundColor, 0.2f) },
                     {IconButton::ColourIds::downColourId,                          brighter(backgroundColor, 0.3f) },
                     {IconButton::ColourIds::toggledColourId,                       darker(backgroundColor, 0.5f) },
+                    {AlertWindow::ColourIds::backgroundColourId,                   darker(backgroundColor, 0.3f) },
             };
             this->mapColors(colorMapping);
         }

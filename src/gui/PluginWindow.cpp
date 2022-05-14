@@ -22,7 +22,7 @@ formula::gui::PluginWindow::PluginWindow(
     if (!laf) {
         laf = std::make_unique<FormulaLookAndFeel>();
     }
-    setLookAndFeel(laf.get());
+    LookAndFeel::setDefaultLookAndFeel(laf.get());
 
     setResizable(true, false);
     setSize(900, 450);
