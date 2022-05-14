@@ -2,6 +2,7 @@
 #define FORMULA_GUI_FORMULACODEEDITOR_INCLUDED
 
 #include <JuceHeader.h>
+#include <gui/FormulaCodeTokenizer.hpp>
 
 namespace formula::gui {
     class FormulaCodeEditor : public CodeEditorComponent {
@@ -10,7 +11,7 @@ namespace formula::gui {
     private:
         void setCodeEditorComponentColourScheme();
 
-        static CPlusPlusCodeTokeniser cppTokeniser;
+        static formula::gui::FormulaCodeTokenizer tokenizer;
     };
 }
 

@@ -80,11 +80,13 @@ juce_add_binary_data(FormulaBinaryData
 )
 
 add_compile_definitions(JUCE_MODAL_LOOPS_PERMITTED)
+
 juce_generate_juce_header(Formula)
 
 target_sources(Formula
     PRIVATE
         "src/gui/PluginWindow.cpp"
+        "src/gui/FormulaCodeTokenizer.cpp"
         "src/gui/tabs/CodeEditorTab.cpp"
         "src/gui/tabs/SavedFilesTab.cpp"
         "src/gui/tabs/OnlineFormulasTab.cpp"

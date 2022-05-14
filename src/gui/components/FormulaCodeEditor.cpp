@@ -1,9 +1,9 @@
 #include "FormulaCodeEditor.hpp"
 
-juce::CPlusPlusCodeTokeniser formula::gui::FormulaCodeEditor::cppTokeniser;
+formula::gui::FormulaCodeTokenizer formula::gui::FormulaCodeEditor::tokenizer;
 
 formula::gui::FormulaCodeEditor::FormulaCodeEditor(juce::CodeDocument& document)
-: CodeEditorComponent(document, &cppTokeniser) {
+: CodeEditorComponent(document, &tokenizer) {
     setCodeEditorComponentColourScheme();
 }
 
@@ -18,16 +18,17 @@ void formula::gui::FormulaCodeEditor::setCodeEditorComponentColourScheme()
     const Type types[] =
             {
                     { "Error",              0xffe60000 },
-                    { "Comment",            0xff72d20c },
+                    { "Comment",            0xff9fbc80 },
                     { "Keyword",            0xffee6f6f },
                     { "Operator",           0xffc4eb19 },
-                    { "Identifier",         0xffcfcfcf },
-                    { "Integer",            0xff42c8c4 },
-                    { "Float",              0xff885500 },
+                    { "Identifier",         0xffbdbdbd },
+                    { "Integer",            0xff639dbb },
+                    { "Float",              0xff639dbb },
                     { "String",             0xffbc45dd },
                     { "Bracket",            0xff058202 },
                     { "Punctuation",        0xffcfbeff },
-                    { "Preprocessor Text",  0xfff8f631 }
+                    { "Preprocessor Text",  0xffcfcfcf },
+                    { "Formula Macro",      0xffcd9898 },
             };
 
     CodeEditorComponent::ColourScheme cs;
