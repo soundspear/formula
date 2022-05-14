@@ -1,0 +1,35 @@
+FORMULA CLOUD Terms of service
+
+These Terms of Services govern your access and use of the service "Formula Cloud"
+under a subscription operated by Soundspear.
+In the following terms, a "formula" means any piece of code published to Formula Cloud
+and a "user" means an end-user of the Formula Cloud service.
+
+1. Ownership
+- You remain the sole owner of any code uploaded on Formula Cloud.
+Soundspear will never claim any right for code made available on Formula Cloud to other users.
+- If you wish to remove a formula that you published on Formula Cloud, please send an email to
+contact@soundspear.com by specifying your Formula Cloud username and the name of
+the formula you want to be removed.
+
+2. Licensing
+- If not specified, all code uploaded on Formula Cloud will be implicitly under the open source
+MIT License (https://opensource.org/licenses/MIT), with you being the copyright holder.
+- You can specify another license of your choice in a comment at the very top of a formula, or a reference
+to the original text of the license.
+- If an uploaded formula has not been created by his publisher, the original license of its source code will implicitly apply on
+Formula Cloud. If that original license did not allow sharing the code on the Formula Cloud service, you might send
+an email to contact@soundspear.com and request the removal of the formula by providing the necessary proof.
+
+3. Security
+- Soundspear put in place heavy security checks, both client-side and server-side, to prevent undesirable code from reaching the users.
+- Despite those security checks, undesirable or malfunctioning code might be found in formulas. 
+If you find such formulas, it is your responsibility to send an email to contact@soundspear.com to report it.
+- Soundspear can not be held responsible for any damage or loss resulting from the use of the service.
+
+4. Liability
+- You may not upload viruses or malicious code that could impair the proper working of Formula Cloud
+  or the integrity of its users.
+- You may not share, resell or make available in any way your Formula Cloud subscription or your associated account.
+- If those Terms of Service are not respected, Soundspear reserves the right to remove you
+  definitively from the service without notice and refund.
