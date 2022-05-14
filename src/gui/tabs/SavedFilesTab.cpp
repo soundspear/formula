@@ -41,6 +41,7 @@ formula::gui::SavedFilesTab::SavedFilesTab(
         changeBottomBarVisibility(false);
         const auto metadata = this->data[this->table.getSelectedRow()];
         this->eventHub->publish(EventType::loadFormulaRequest, metadata);
+        this->table.deselectAllRows();
     };
 
     deleteButton.setButtonText("Delete");
@@ -49,6 +50,7 @@ formula::gui::SavedFilesTab::SavedFilesTab(
     deleteButton.onClick = [this] {
         changeBottomBarVisibility(false);
         deleteFormula();
+        this->table.deselectAllRows();
     };
 
     publishButton.setButtonText("Publish online");
@@ -57,14 +59,15 @@ formula::gui::SavedFilesTab::SavedFilesTab(
     publishButton.onClick = [this] {
         changeBottomBarVisibility(false);
         publishFormula();
+        this->table.deselectAllRows();
     };
 
     exportButton.setButtonText("Export to file");
     exportButton.setHelpText("Save this formula and its configuration to a local file that you can import back");
     addChildComponent(exportButton);
     exportButton.onClick = [this] {
-        changeBottomBarVisibility(false);
         exportFormulaToFile();
+        this->table.deselectAllRows();
     };
 
     eventHub->subscribeOnUiThread<SavedFilesTab>(EventType::formulaAlreadyExists,
@@ -290,7 +293,9 @@ Component* formula::gui::SavedFilesTab::refreshComponentForCell(int /*rowNumber*
 }
 
 void formula::gui::SavedFilesTab::selectedRowsChanged(int /*lastRowSelected*/) {
-    changeBottomBarVisibility(true);
+    auto bottomBarVisible = table.getSelectedRow() != -1;
+    changeBottomBarVisibility(bottomBarVisible);
+
     repaint();
 }
 
