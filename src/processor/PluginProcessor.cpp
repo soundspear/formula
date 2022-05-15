@@ -33,12 +33,12 @@ formula::processor::PluginProcessor::~PluginProcessor()
 }
 
 void formula::processor::PluginProcessor::instanciateCompiler() {
-    compiler = std::make_unique<formula::compiler::ClangWrapper>(eventHub);
+    compiler = std::make_unique<formula::compiler::TccWrapper>(eventHub);
     if (compiler->isCompilerAvailable()) {
         return;
     }
 
-    compiler = std::make_unique<formula::compiler::TccWrapper>(eventHub);
+    compiler = std::make_unique<formula::compiler::ClangWrapper>(eventHub);
     if (compiler->isCompilerAvailable()) {
         return;
     }
