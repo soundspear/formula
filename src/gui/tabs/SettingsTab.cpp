@@ -9,6 +9,14 @@ formula::gui::SettingsTab::SettingsTab(
     refreshLoginSettings();
     addAndMakeVisible(loginLabel);
     addAndMakeVisible(loginButton);
+
+    formulaCloudTosButton.setButtonText("Formula Cloud Terms of Service");
+    addAndMakeVisible(formulaCloudTosButton);
+    formulaCloudTosButton.onClick = [this]() {
+        tosPopup.setVisible(true);
+    };
+
+    addChildComponent(tosPopup);
 }
 
 void formula::gui::SettingsTab::refreshLoginSettings() {
@@ -58,9 +66,14 @@ void formula::gui::SettingsTab::resized() {
     auto area = getLocalBounds();
     auto colWidth = area.getWidth() / 3;
 
+    const auto areaCenter = area.getCentre();
+    tosPopup.setBounds(tosPopup.getAreaToFit(areaCenter));
+
     auto col1 = area.removeFromLeft(colWidth);
     col1 = col1.withTrimmedBottom(pad).withTrimmedTop(pad).withTrimmedRight(pad).withTrimmedLeft(pad);
     loginLabel.setBounds(col1.removeFromTop(15));
     col1.removeFromTop(componentMargin);
     loginButton.setBounds(col1.removeFromTop(24));
+    col1.removeFromTop(componentMargin);
+    formulaCloudTosButton.setBounds(col1.removeFromTop(24));
 }
