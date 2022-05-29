@@ -12,6 +12,9 @@ formula::compiler::CompilerWrapper::CompilerWrapper(const std::shared_ptr<formul
     formulaBaseCodeStereo = std::string(formula::binary::FormulaBaseStereo_c, formula::binary::FormulaBaseStereo_cSize);
     boost::replace_all(formulaBaseCodeStereo, "\r\n", "\n");
 
+    securityGuards += std::make_unique<NoPreprocessorGuard>();
+    securityGuards += std::make_unique<NoDynamicAllocationGuard>();
+
     eventHub->subscribe(EventType::compilationRequest, [this](boost::any arg) {
         std::lock_guard<std::mutex> lock { compileMutex };
         if (compileThread.joinable()) {
@@ -28,14 +31,35 @@ formula::compiler::CompilerWrapper::~CompilerWrapper() {
     eventHub->unsubscribe<CompilerWrapper>(this);
 }
 
+bool formula::compiler::CompilerWrapper::checkSecurityGuards(const std::string& sourceCode) {
+    std::string errStr;
+    std::istringstream iss(sourceCode);
+    std::string line;
+    for (int i = 0; std::getline(iss, line); i++)
+    {
+        for (auto& guard : securityGuards)
+        {
+            if (guard->checkLine(line)) {
+                errStr = "Line " + boost::lexical_cast<std::string>(i+1) + ": " + guard->getErrorMessage();
+                eventHub->publish(EventType::compilationFail, errStr);
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 void formula::compiler::CompilerWrapper::compileFormula(const std::string& sourceCode)
 {
+    if (checkSecurityGuards(sourceCode)) {
+        return;
+    }
+
     formula::storage::CompilerStorage storage;
     const auto compilationId = storage.createCompilationId();
 
     const auto compiledLibPath = storage.getLibraryPath(compilationId);
 
-    std::string errStr;
     const auto hasMonoEntrypoint =
         std::regex_search(sourceCode,
             std::regex(monoFormulaEntrypoint + std::string(R"(\s*\{)")));
@@ -61,6 +85,7 @@ void formula::compiler::CompilerWrapper::compileFormula(const std::string& sourc
         return;
     }
 
+    std::string errStr;
     auto compileArgs = getCompilerArgs(sourcePath, outPath, hasMonoEntrypoint);
     auto compilerPath = getCompilerPath();
     bool success = launchCompiler(compilerPath, compileArgs, errStr);
@@ -80,7 +105,7 @@ void formula::compiler::CompilerWrapper::compileFormula(const std::string& sourc
     else {
         try {
             sanitizeErrorString(errStr, hasMonoEntrypoint);
-        } catch (std::exception& ex) {
+        } catch (std::exception&) {
             errStr = "[WARNING] Failed to sanitize error string\r\n" + errStr;
         }
         eventHub->publish(EventType::compilationFail, errStr);

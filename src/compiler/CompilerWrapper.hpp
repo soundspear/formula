@@ -21,6 +21,8 @@
 #include <events/EventHub.hpp>
 #include <processor/PluginState.hpp>
 #include <storage/CompilerStorage.hpp>
+#include <compiler/NoPreprocessorGuard.hpp>
+#include <compiler/NoDynamicAllocationGuard.hpp>
 
 namespace formula::compiler {
 	class CompilerWrapper
@@ -41,6 +43,7 @@ namespace formula::compiler {
 		std::string& getBaseCodeStereo() { return formulaBaseCodeStereo; }
 
 	private:
+        bool checkSecurityGuards(const std::string& sourceCode);
 		bool launchCompiler(const std::string& compilerPath, const std::vector<std::string>& compileArgs, std::string& errStr);
 
 		std::shared_ptr<formula::events::EventHub> eventHub;
@@ -48,6 +51,7 @@ namespace formula::compiler {
 		std::mutex compileMutex;
 		std::string formulaBaseCodeMono;
 		std::string formulaBaseCodeStereo;
+        std::vector<std::unique_ptr<formula::compiler::SecurityGuard>> securityGuards;
 
 		static constexpr char monoFormulaEntrypoint[] = "formula_main";
 		static constexpr char stereoFormulaEntrypoint[] = "formula_main_stereo";
