@@ -1,9 +1,21 @@
 name: Build plugin (MacOS)
 on: 
+  workflow_call:
+    inputs:
+      release_tag:
+        type: string
+        required: true
+      debug_enabled:
+        type: boolean
+        required: false
+        default: false
   workflow_dispatch:
     inputs:
+      release_tag:
+        description: 'Release tag (e.g. 2.1.0-rc.1)'     
+        required: true
       debug_enabled:
-        description: 'Run the build with tmate debugging enabled'     
+        description: 'Run the build with tmate debugging enabled'
         required: false
         default: false
 
@@ -67,9 +79,12 @@ jobs:
         
         zip -r formula-macos.zip *.pkg        
         
-    - name: Upload
-      run: |
-        brew install minio-mc
-        mc config host add scw ${{ secrets.BUCKET_ENDPOINT }} ${{ secrets.BUCKET_ACCESS_KEY }} ${{ secrets.BUCKET_SECRET_KEY }} --api S3v4
-        
-        mc cp "formula-macos.zip" "scw/formula/"
+    - name: Upload to release
+      uses: xresloader/upload-to-github-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        draft: false
+        file: 'formula-macos.zip'
+        prerelease: true
+        tag_name: '${{ inputs.release_tag }}'
