@@ -62,6 +62,13 @@ class CodeEditorTab : public juce::Component, public juce::CodeDocument::Listene
         std::shared_ptr<formula::processor::PluginState> pluginState;
 
         std::string defaultEditorContent = R"""(
+/*
+    Welcome to Formula!
+
+    If this is your first time, be sure to check out the tutorials
+    under the 'Saved files' tab.
+*/
+
 formula_main {
     float output = input;
     return output;

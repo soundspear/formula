@@ -17,12 +17,12 @@ void formula::storage::LocalIndex::refreshIndex()
 {
     if (!boost::filesystem::exists(indexPath))
     {
-        index = boost::property_tree::ptree();
+        auto defaultIndex = std::string(formula::binary::default_index_json, formula::binary::default_index_jsonSize);
+        boost::filesystem::ofstream file(indexPath);
+        file << defaultIndex;
+        file.close();
     }
-    else 
-    {
-        boost::property_tree::read_json(indexPath.string(), index);
-    }
+    boost::property_tree::read_json(indexPath.string(), index);
 }
 
 void formula::storage::LocalIndex::saveIndex()

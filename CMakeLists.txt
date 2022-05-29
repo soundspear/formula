@@ -65,8 +65,9 @@ juce_add_binary_data(FormulaBinaryData
         assets/build/libformula.h
         assets/build/FormulaBaseMono.c
         assets/build/FormulaBaseStereo.c
-        assets/logo.svg
+        assets/default_index.json
         assets/formula_cloud_tos.txt
+        assets/logo.svg
         assets/icons/compile.svg
         assets/icons/mute.svg
         assets/icons/new.svg
