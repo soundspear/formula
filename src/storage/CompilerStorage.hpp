@@ -21,6 +21,7 @@ namespace formula::storage {
 		std::string createSourceFile(
                 const std::string& compilationId,
                 const std::string& sourceCode);
+        void copyLibFormula();
 		void deleteSourceFile(const std::string& compilationId);
 		CompiledLibraryPath getLibraryPath(const std::string& compilationId);
 		void deleteLibrary(const std::string& compilationId);
@@ -30,6 +31,7 @@ namespace formula::storage {
 		const std::string sourceFileSuffix = ".c";
 		const std::string twoChannelsLibrarySuffix = ".2ch.formula";
 		const std::string singleChannelLibrariesPaths[2] = { ".1ch.left.formula", ".1ch.right.formula" };
+        std::string libFormulaCode;
 	};
 }
 

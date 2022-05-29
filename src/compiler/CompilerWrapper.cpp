@@ -56,6 +56,7 @@ void formula::compiler::CompilerWrapper::compileFormula(const std::string& sourc
     }
 
     formula::storage::CompilerStorage storage;
+    storage.copyLibFormula();
     const auto compilationId = storage.createCompilationId();
 
     const auto compiledLibPath = storage.getLibraryPath(compilationId);

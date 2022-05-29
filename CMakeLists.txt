@@ -62,6 +62,7 @@ juce_add_plugin(Formula
 juce_add_binary_data(FormulaBinaryData
     NAMESPACE formula::binary
     SOURCES
+        assets/build/libformula.h
         assets/build/FormulaBaseMono.c
         assets/build/FormulaBaseStereo.c
         assets/logo.svg

@@ -3,6 +3,7 @@
 formula::storage::CompilerStorage::CompilerStorage()
     : formula::storage::LocalStorage()
 {
+    libFormulaCode = std::string(formula::binary::libformula_h, formula::binary::libformula_hSize);
 }
 
 std::string formula::storage::CompilerStorage::createCompilationId()
@@ -20,6 +21,13 @@ std::string formula::storage::CompilerStorage::createSourceFile(
     file << sourceCode;
     file.close();
     return path.string();
+}
+
+void formula::storage::CompilerStorage::copyLibFormula() {
+    const auto path = storageFolder / "libformula.h";
+    boost::filesystem::ofstream file(path, std::ios::trunc);
+    file << libFormulaCode;
+    file.close();
 }
 
 void formula::storage::CompilerStorage::deleteSourceFile(const std::string& compilationId)
