@@ -25,8 +25,9 @@ namespace formula::processor {
 		FormulaLoader();
 		~FormulaLoader();
 
-		void loadLibrary(std::string compilationId);
-		void unloadLibrary();
+		void loadCompiledFormulaAsync(std::string compilationId,
+                                      std::optional<std::string> oldFormulaToDeleteCompilationId);
+		void unloadCompiledFormulaAsync();
 		void formulaProcessBlock(
                 AudioBuffer<float>& buffer,
                 float dryWet, float inGain, float outGain,
@@ -36,6 +37,10 @@ namespace formula::processor {
 		bool isReady() const { return isLoaded; };
         std::string getDebugString() { return lastDebugString; }
 	private:
+        void loadLibrary(std::string compilationId,
+                         std::optional<std::string> oldFormulaToDeleteCompilationId);
+        void unloadLibrary();
+
         void formatDebugString();
 
 		boost::dll::shared_library singleChannelLibraries[2];
@@ -49,8 +54,11 @@ namespace formula::processor {
 
         std::string lastDebugString;
 
-		bool isMono;
-		bool isLoaded;
+		std::atomic<bool> isMono;
+		std::atomic<bool> isLoaded;
+
+        std::mutex libraryUsedMutex;
+        std::thread loaderThread;
 
 		static constexpr char processBlockMonoSymbolName[] = "process_block_mono";
 		static constexpr char processBlockStereoSymbolName[] = "process_block_stereo";

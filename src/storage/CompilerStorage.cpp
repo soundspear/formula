@@ -56,7 +56,7 @@ void formula::storage::CompilerStorage::deleteLibrary(const std::string& compila
     boost::filesystem::remove(libraryPaths.singleChannelLibrariesPaths[1]);
 
 #if defined (_WIN32)
-    for (auto extension : { "exp", "lib" }) {
+    for (auto extension : { "exp", "lib", "def" }) {
         boost::filesystem::remove(
             libraryPaths.twoChannelsLibraryPath
             .substr(0, libraryPaths.twoChannelsLibraryPath.size() - 7)

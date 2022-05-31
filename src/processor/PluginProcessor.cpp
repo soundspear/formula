@@ -137,14 +137,11 @@ void formula::processor::PluginProcessor::processBlock (juce::AudioBuffer<float>
     }
 
     if (recompiled) {
-        formulaLoader.unloadLibrary();
-
-        if (!previousCompilationId.empty()) {
-            formula::storage::CompilerStorage storage;
-            storage.deleteLibrary(previousCompilationId);
-        }
-
-        formulaLoader.loadLibrary(pluginState->getActiveFormulaMetadata()[FormulaMetadataKeys::compilationId]);
+        std::string newCompilationId = pluginState->getActiveFormulaMetadata()[FormulaMetadataKeys::compilationId];
+        formulaLoader.loadCompiledFormulaAsync(
+                newCompilationId,
+                previousCompilationId.empty() ? std::nullopt : std::optional<std::string>(previousCompilationId)
+        );
         recompiled = false;
     }
 

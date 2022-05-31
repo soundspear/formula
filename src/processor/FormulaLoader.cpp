@@ -12,6 +12,10 @@ formula::processor::FormulaLoader::FormulaLoader()
 
 formula::processor::FormulaLoader::~FormulaLoader()
 {
+    if (loaderThread.joinable()) {
+        loaderThread.join();
+    }
+
     unloadLibrary();
 
     delete debugStackIdx;
@@ -21,54 +25,28 @@ formula::processor::FormulaLoader::~FormulaLoader()
     delete debugStack;
 }
 
-void formula::processor::FormulaLoader::loadLibrary(std::string compilationId)
+void formula::processor::FormulaLoader::loadCompiledFormulaAsync(
+    std::string compilationId,
+    std::optional<std::string> oldFormulaToDeleteCompilationId
+)
 {
-    unloadLibrary();
-
-    formula::storage::CompilerStorage storage;
-    const auto libraryPath = storage.getLibraryPath(compilationId);
-
-    if (!boost::filesystem::exists(libraryPath.singleChannelLibrariesPaths[0])
-        && !boost::filesystem::exists(libraryPath.twoChannelsLibraryPath)) {
-        return;
+    if (loaderThread.joinable()) {
+        loaderThread.join();
     }
 
-    boost::dll::shared_library formula;
-
-    isMono = boost::filesystem::exists(libraryPath.singleChannelLibrariesPaths[0]);
-
-    if (isMono) {
-        for (int channel = 0; channel < 2; channel++) {
-            singleChannelLibraries[channel] = boost::dll::shared_library();
-            singleChannelLibraries[channel].load(libraryPath.singleChannelLibrariesPaths[channel]);
-            singleChannelEntrypoints[channel] = singleChannelLibraries[channel].get<ProcessBlockMono>(processBlockMonoSymbolName);
-        }
-    }
-    else {
-        twoChannelsLibrary = boost::dll::shared_library();
-        twoChannelsLibrary.load(libraryPath.twoChannelsLibraryPath);
-        twoChannelsEntrypoint = twoChannelsLibrary.get<ProcessBlockStereo>(processBlockStereoSymbolName);
-    }
-    isLoaded = true;
+    loaderThread = std::thread  {
+        &formula::processor::FormulaLoader::loadLibrary,
+        this,
+        compilationId, oldFormulaToDeleteCompilationId
+    };
 }
 
-void formula::processor::FormulaLoader::unloadLibrary()
+void formula::processor::FormulaLoader::unloadCompiledFormulaAsync()
 {
-    if (!isLoaded) return;
-    if (isMono) {
-        for (auto & singleChannelLibrary : singleChannelLibraries) {
-            if (singleChannelLibrary.is_loaded()) {
-                singleChannelLibrary.unload();
-            }
-        }
+    if (loaderThread.joinable()) {
+        loaderThread.join();
     }
-    else {
-        if (twoChannelsLibrary.is_loaded()) {
-            twoChannelsLibrary.unload();
-        }
-    }
-    isLoaded = false;
-    lastDebugString.clear();
+    loaderThread = std::thread{ &formula::processor::FormulaLoader::unloadLibrary, this };
 }
 
 void formula::processor::FormulaLoader::formulaProcessBlock(
@@ -79,6 +57,11 @@ void formula::processor::FormulaLoader::formulaProcessBlock(
 ) {
     if (buffer.getNumChannels() > 2) return;
     if (!isLoaded) return;
+
+    auto locked = libraryUsedMutex.try_lock();
+    if (!locked) {
+        return;
+    }
 
     float** writePointers = buffer.getArrayOfWritePointers();
     int numSamples = buffer.getNumSamples();
@@ -108,6 +91,75 @@ void formula::processor::FormulaLoader::formulaProcessBlock(
         );
     }
     formatDebugString();
+
+    libraryUsedMutex.unlock();
+}
+
+void formula::processor::FormulaLoader::loadLibrary(
+        std::string compilationId,
+        std::optional<std::string> oldFormulaToDeleteCompilationId
+    ) {
+    unloadLibrary();
+
+    formula::storage::CompilerStorage storage;
+    const auto path = storage.getLibraryPath(compilationId);
+
+    if (!boost::filesystem::exists(path.singleChannelLibrariesPaths[0])
+        && !boost::filesystem::exists(path.twoChannelsLibraryPath)) {
+        return;
+    }
+
+    libraryUsedMutex.lock();
+
+    boost::dll::shared_library formula;
+
+    isMono = boost::filesystem::exists(path.singleChannelLibrariesPaths[0]);
+
+    if (isMono) {
+        for (int channel = 0; channel < 2; channel++) {
+            singleChannelLibraries[channel] = boost::dll::shared_library();
+            singleChannelLibraries[channel].load(path.singleChannelLibrariesPaths[channel]);
+            singleChannelEntrypoints[channel] = singleChannelLibraries[channel].get<ProcessBlockMono>(processBlockMonoSymbolName);
+        }
+    }
+    else {
+        twoChannelsLibrary = boost::dll::shared_library();
+        twoChannelsLibrary.load(path.twoChannelsLibraryPath);
+        twoChannelsEntrypoint = twoChannelsLibrary.get<ProcessBlockStereo>(processBlockStereoSymbolName);
+    }
+    isLoaded = true;
+
+    try {
+        if (!oldFormulaToDeleteCompilationId.has_value()) {
+            formula::storage::CompilerStorage storage;
+            storage.deleteLibrary(oldFormulaToDeleteCompilationId.value());
+        }
+    } catch (std::exception&) {}
+
+    libraryUsedMutex.unlock();
+}
+
+void formula::processor::FormulaLoader::unloadLibrary() {
+    if (!isLoaded) return;
+
+    libraryUsedMutex.lock();
+
+    if (isMono) {
+        for (auto & singleChannelLibrary : singleChannelLibraries) {
+            if (singleChannelLibrary.is_loaded()) {
+                singleChannelLibrary.unload();
+            }
+        }
+    }
+    else {
+        if (twoChannelsLibrary.is_loaded()) {
+            twoChannelsLibrary.unload();
+        }
+    }
+    isLoaded = false;
+    lastDebugString.clear();
+
+    libraryUsedMutex.unlock();
 }
 
 void formula::processor::FormulaLoader::formatDebugString() {
