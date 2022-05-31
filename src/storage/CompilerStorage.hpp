@@ -2,6 +2,7 @@
 #define FORMULA_STORAGE_COMPILER_STORAGE_INCLUDED
 
 #include <string>
+#include <fstream>
 
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/uuid/uuid_generators.hpp>

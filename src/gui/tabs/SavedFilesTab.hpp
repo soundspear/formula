@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <algorithm>
+#include <fstream>
 
 #include <boost/any.hpp>
 #include <boost/assign/std/vector.hpp>
@@ -11,7 +12,7 @@
 
 #include <gui/components/IconButton.hpp>
 #include <gui/ErrorCodes.hpp>
-#include "src/gui/components/popups/LoginPopup.hpp"
+#include <gui/components/popups/LoginPopup.hpp>
 #include <events/EventHub.hpp>
 #include <processor/PluginState.hpp>
 #include <processor/FormulaMetadata.hpp>

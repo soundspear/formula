@@ -17,7 +17,7 @@ std::string formula::storage::CompilerStorage::createSourceFile(
         const std::string& sourceCode)
 {
     const auto path = storageFolder / (compilationId + sourceFileSuffix);
-    boost::filesystem::ofstream file(path);
+    std::ofstream file(path.string());
     file << sourceCode;
     file.close();
     return path.string();
@@ -25,7 +25,7 @@ std::string formula::storage::CompilerStorage::createSourceFile(
 
 void formula::storage::CompilerStorage::copyLibFormula() {
     const auto path = storageFolder / "libformula.h";
-    boost::filesystem::ofstream file(path, std::ios::trunc);
+    std::ofstream file(path.string());
     file << libFormulaCode;
     file.close();
 }

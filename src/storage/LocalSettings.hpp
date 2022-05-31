@@ -7,6 +7,7 @@
 
 #include <string>
 #include <iostream>
+#include <optional>
 
 #include <boost/property_tree/ptree.hpp>
 #include "LocalStorage.hpp"

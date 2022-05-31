@@ -119,7 +119,9 @@ void formula::gui::SavedFilesTab::exportFormulaToFile()
     auto serialized = formula::storage::LocalIndex::serializeMetadata(metadata);
 
     try {
-        boost::filesystem::save_string_file(fileInfo.getFullPathName().toStdString(), serialized);
+        std::ofstream file(fileInfo.getFullPathName().toStdString());
+        file << serialized;
+        file.close();
     } catch (std::exception&) {
         eventHub->publish(EventType::unexpectedError, ErrorCodes::cannotExportFile);
     }
@@ -136,10 +138,14 @@ void formula::gui::SavedFilesTab::importFormulaFromFile()
     if (!fileChosen) return;
 
     auto fileInfo = chooser.getResult();
-    std::string content;
-    boost::filesystem::load_string_file(fileInfo.getFullPathName().toStdString(), content);
-
     try {
+        std::ifstream file(fileInfo.getFullPathName().toStdString());
+        std::stringstream buffer;
+        buffer << file.rdbuf();
+        file.close();
+
+        std::string content = buffer.str();
+
         FormulaMetadata metadata = formula::storage::LocalIndex::deserializeMetadata(content);
         localIndex->addFormulaToIndex(metadata, false);
     } catch (std::exception&) {

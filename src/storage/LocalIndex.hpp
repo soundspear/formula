@@ -1,6 +1,8 @@
 #ifndef FORMULA_STORAGE_LOCAL_INDEX_INCLUDED
 #define FORMULA_STORAGE_LOCAL_INDEX_INCLUDED
 
+#include <fstream>
+
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/optional.hpp>
