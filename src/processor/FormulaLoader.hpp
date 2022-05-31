@@ -1,6 +1,10 @@
 #ifndef FORMULA_PROCESSOR_FORMULA_LOADER_INCLUDED
 #define FORMULA_PROCESSOR_FORMULA_LOADER_INCLUDED
 
+#include <optional>
+#include <atomic>
+#include <mutex>
+
 #include <boost/dll/import.hpp>
 
 #include <JuceHeader.h>
