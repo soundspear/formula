@@ -38,7 +38,7 @@ jobs:
         
     - name: CMake x64
       run: |
-        cmake -G Ninja . -DCMAKE_OSX_ARCHITECTURES="x86_64" -DCMAKE_TOOLCHAIN_FILE="./vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET="x64-osx"
+        cmake -G Ninja . -DCMAKE_OSX_ARCHITECTURES="x86_64" -DCMAKE_TOOLCHAIN_FILE="./vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET="x64-osx" -DCMAKE_BUILD_TYPE=Release
             
     - name: CMake Build x64
       run: |
@@ -48,7 +48,7 @@ jobs:
     - name: CMake ARM64
       run: |
         rm -rf CMakeFiles CMakeCache.txt
-        cmake -G Ninja . -DCMAKE_OSX_ARCHITECTURES="arm64" -DCMAKE_TOOLCHAIN_FILE="./vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET="arm64-osx"
+        cmake -G Ninja . -DCMAKE_OSX_ARCHITECTURES="arm64" -DCMAKE_TOOLCHAIN_FILE="./vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET="arm64-osx" -DCMAKE_BUILD_TYPE=Release
             
     - name: CMake Build ARM64
       run: |

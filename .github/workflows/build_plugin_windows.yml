@@ -39,7 +39,7 @@ jobs:
     - name: CMake
       shell: powershell
       run: |
-        cmake . -G "Visual Studio 16 2019" -DVCPKG_TARGET_TRIPLET=x64-windows-static -DCMAKE_TOOLCHAIN_FILE=D:/a/formula/formula/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_WIN_DIR=D:/a/formula/formula/vcpkg/installed/x64-windows-static
+        cmake . -G "Visual Studio 16 2019" -DVCPKG_TARGET_TRIPLET=x64-windows-static -DCMAKE_TOOLCHAIN_FILE=D:/a/formula/formula/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_WIN_DIR=D:/a/formula/formula/vcpkg/installed/x64-windows-static -DCMAKE_BUILD_TYPE=Release
     
     - name: CMake Build
       shell: powershell
