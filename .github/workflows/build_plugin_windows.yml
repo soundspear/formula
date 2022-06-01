@@ -44,13 +44,13 @@ jobs:
     - name: CMake Build
       shell: powershell
       run: |
-        cmake --build . --target Formula_All
+        cmake --build . --target Formula_All --config Release
         
     - name: Package
       shell: powershell
       run: |
         choco install innosetup -y
-        cp Formula_artefacts/Debug/VST3/Formula.vst3/Contents/x86_64-win/Formula.vst3 packaging/windows/
+        cp Formula_artefacts/Release/VST3/Formula.vst3/Contents/x86_64-win/Formula.vst3 packaging/windows/
         cd packaging/windows/
         .\create-setup.ps1 -AppName "Formula" -AppFolderName "Formula" -AppVer "0.1" -Vst3File64 "./Formula.vst3" -OutputFileName formula-windows
         cd ../..

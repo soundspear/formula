@@ -58,15 +58,15 @@ jobs:
     - name: Create fat binaries
       run: |
         mkdir /tmp/AU
-        cp -R Formula_artefacts_x64/AU/Formula.component /tmp/AU
-        lipo Formula_artefacts_x64/AU/Formula.component/Contents/MacOS/Formula \
-            Formula_artefacts_arm64/AU/Formula.component/Contents/MacOS/Formula \
+        cp -R Formula_artefacts_x64/Release/AU/Formula.component /tmp/AU
+        lipo Formula_artefacts_x64/Release/AU/Formula.component/Contents/MacOS/Formula \
+            Formula_artefacts_arm64/Release/AU/Formula.component/Contents/MacOS/Formula \
             -create -output /tmp/AU/Formula.component/Contents/MacOS/Formula
         
         mkdir /tmp/VST3
-        cp -R Formula_artefacts_x64/VST3/Formula.vst3 /tmp/VST3
-        lipo Formula_artefacts_x64/VST3/Formula.vst3/Contents/MacOS/Formula \
-            Formula_artefacts_arm64/VST3/Formula.vst3/Contents/MacOS/Formula \
+        cp -R Formula_artefacts_x64/Release/VST3/Formula.vst3 /tmp/VST3
+        lipo Formula_artefacts_x64/Release/VST3/Formula.vst3/Contents/MacOS/Formula \
+            Formula_artefacts_arm64/Release/VST3/Formula.vst3/Contents/MacOS/Formula \
             -create -output /tmp/VST3/Formula.vst3/Contents/MacOS/Formula
       
     - name: Create setup
