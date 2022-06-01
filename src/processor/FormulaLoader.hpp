@@ -4,6 +4,7 @@
 #include <optional>
 #include <atomic>
 #include <mutex>
+#include <thread>
 
 #include <boost/dll/import.hpp>
 
