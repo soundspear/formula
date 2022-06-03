@@ -23,16 +23,18 @@ formula::gui::SavedFilesTab::SavedFilesTab(
     table.setModel(this);
 
     table.setColour(ListBox::outlineColourId, Colours::grey);
-    table.setOutlineThickness(1);
+    table.setOutlineThickness(2);
+    table.setRowHeight(30);
 
-    table.getHeader().addColumn("Source", SavedFileColumnsIds::source, 1);
-    table.getHeader().addColumn("Name", SavedFileColumnsIds::name, 300);
-    table.getHeader().addColumn("Created", SavedFileColumnsIds::created, 175);
-    table.getHeader().addColumn("Last Modified", SavedFileColumnsIds::lastModified, 175);
-    table.getHeader().addColumn("Description", SavedFileColumnsIds::description, 600);
+    auto & header = table.getHeader();
+    header.addColumn("Source", SavedFileColumnsIds::source, 1);
+    header.addColumn("Name", SavedFileColumnsIds::name, 300);
+    header.addColumn("Created", SavedFileColumnsIds::created, 175);
+    header.addColumn("Last Modified", SavedFileColumnsIds::lastModified, 175);
+    header.addColumn("Description", SavedFileColumnsIds::description, 600);
 
-    table.getHeader().setSortColumnId(4, true);
-    table.getHeader().setColumnVisible(1, false);
+    header.setSortColumnId(4, true);
+    header.setColumnVisible(1, false);
 
     loadButton.setButtonText("Load in the editor");
     loadButton.setHelpText("Load formula in the editor");
