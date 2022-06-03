@@ -2,8 +2,20 @@ cmake_minimum_required(VERSION 3.11)
 
 project(Formula VERSION 0.2.0 LANGUAGES CXX)
 
+# ------ Formula parameters
 add_compile_definitions(FORMULA_VERSION="${CMAKE_PROJECT_VERSION}")
-# add_compile_definitions(FORMULA_LOCAL_ONLY)
+if(NOT FORMULA_CLOUD_URL)
+    set(FORMULA_CLOUD_URL https://formula-staging.soundspear.com)
+endif()
+add_compile_definitions(FORMULA_CLOUD_URL="${FORMULA_CLOUD_URL}")
+if(FORMULA_LOCAL_ONLY)
+    add_compile_definitions(FORMULA_LOCAL_ONLY)
+endif()
+set(FORMULA_COMPILE_FORMATS "AU" "VST3")
+if(FORMULA_STANDALONE)
+    list (APPEND FORMULA_COMPILE_FORMATS "Standalone")
+endif()
+# ------
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_CXX_STANDARD 20)
@@ -34,7 +46,6 @@ add_subdirectory(JUCE)
 
 find_package(cpprestsdk CONFIG REQUIRED)
 
-set(FORMULA_COMPILE_FORMATS "AU" "VST3" "Standalone")
 IF (FORMULA_VST2_SDK_DIR)
     juce_set_vst2_sdk_path(${FORMULA_VST2_SDK_DIR})
     list (APPEND FORMULA_COMPILE_FORMATS "VST")
