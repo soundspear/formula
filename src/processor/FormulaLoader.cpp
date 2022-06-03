@@ -130,7 +130,7 @@ void formula::processor::FormulaLoader::loadLibrary(
     isLoaded = true;
 
     try {
-        if (!oldFormulaToDeleteCompilationId.has_value()) {
+        if (oldFormulaToDeleteCompilationId.has_value()) {
             formula::storage::CompilerStorage storage;
             storage.deleteLibrary(oldFormulaToDeleteCompilationId.value());
         }

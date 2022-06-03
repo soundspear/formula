@@ -107,6 +107,12 @@ void formula::gui::PluginWindow::setupPopups() {
     addChildComponent(loginPopup);
 
     eventHub->subscribeOnUiThread<PluginWindow>(
+            EventType::loginSuccess, [] ([[maybe_unused]] boost::any _, PluginWindow* thisPtr) {
+                juce::AlertWindow::showMessageBox(juce::AlertWindow::InfoIcon,
+                                                  "Login success!", "You are logged into Formula Cloud");
+            }, this);
+
+    eventHub->subscribeOnUiThread<PluginWindow>(
             EventType::loginFail, [] ([[maybe_unused]] boost::any _, PluginWindow* thisPtr) {
                 thisPtr->loginPopup.setType(LoginPopupType::LoginFailed);
                 thisPtr->loginPopup.setVisible(true); thisPtr->resized();

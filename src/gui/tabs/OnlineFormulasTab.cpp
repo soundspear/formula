@@ -48,7 +48,6 @@ formula::gui::OnlineFormulasTab::OnlineFormulasTab(const std::shared_ptr<formula
         const auto response = boost::any_cast<formula::cloud::GetFormulaDto>(arg);
         thisPtr->detailsPanel.setFormulaDto(response);
         thisPtr->detailsPanel.setVisible(true);
-        thisPtr->table.deselectAllRows();
         thisPtr->resized();
     }, this);
 
@@ -169,6 +168,7 @@ void formula::gui::OnlineFormulasTab::selectedRowsChanged(int lastRowSelected) {
     }
     const auto & selectedRowInformation = data[selectedRowIdx];
     cloud->getFormula(selectedRowInformation.id);
+    table.deselectAllRows();
 }
 
 void formula::gui::OnlineFormulasTab::resized() {
