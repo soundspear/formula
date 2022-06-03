@@ -78,7 +78,7 @@ int __debug_enabled;
 
 const float* __knobs;
 const float* __switches;
-float __time = 0;
+long double __time = 0;
 float __sample_rate;
 
 #define KNOB_1 __knobs[0]

@@ -14,8 +14,8 @@ FORMULA_EXPORT void process_block_stereo(float** in, int numSamples, float sampl
     __switches = switches;
     __sample_rate = sampleRate;
     for (int s = 0; s < numSamples; s++) {
-        __time += 1 / sampleRate;
         double fixDenormal = (1.0 / 4294967295.0);
+        __time += 1 / sampleRate;
         Stereo output = _formula_main((Stereo) { .left = in[0][s]*inGain, .right = in[1][s]*inGain });
         in[0][s] = (output.left*wet + in[0][s]*(1-wet))*outGain;
         in[1][s] = (output.right*wet + in[0][s]*(1-wet))*outGain;
