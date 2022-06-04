@@ -10,10 +10,21 @@ formula::gui::FormulaCodeTokenizer::FormulaCodeTokenizer() {
         "TIME"
      });
 
+    formulaKeywords.insert(
+       { "do", "if", "for", "int", "not", "auto", "case", "char",
+         "else", "enum", "goto", "long", "void", "break", "const", "float",
+         "short", "union", "while", "double", "extern", "inline",
+         "return", "signed", "sizeof", "static", "struct", "switch",
+         "typedef", "continue",  "register", "unsigned", "volatile"}
+    );
 }
 
 bool formula::gui::FormulaCodeTokenizer::isFormulaMacro(const String &token) {
     return formulaMacros.contains(token);
+}
+
+bool formula::gui::FormulaCodeTokenizer::isFormulaKeyword(const String &token) {
+    return formulaKeywords.contains(token);
 }
 
 CodeEditorComponent::ColourScheme formula::gui::FormulaCodeTokenizer::getDefaultColourScheme() {
@@ -188,7 +199,7 @@ int formula::gui::FormulaCodeTokenizer::parseFormulaIdentifier (CodeDocument::It
         juce::String tokenStr(String::CharPointerType (possibleIdentifier), tokenLength);
         if (isFormulaMacro(tokenStr))
             return FormulaCodeTokenizer::tokenType_formulaMacro;
-        if (isReservedKeyword(tokenStr))
+        else if (isFormulaKeyword(tokenStr))
             return FormulaCodeTokenizer::tokenType_keyword;
     }
 

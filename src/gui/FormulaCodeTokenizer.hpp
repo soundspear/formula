@@ -28,8 +28,10 @@ namespace formula::gui {
     private:
         int parseFormulaIdentifier (CodeDocument::Iterator& source);
         bool isFormulaMacro(const String &token);
+        bool isFormulaKeyword(const String &token);
 
         std::unordered_set<juce::String> formulaMacros;
+        std::unordered_set<juce::String> formulaKeywords;
     };
 }
 
