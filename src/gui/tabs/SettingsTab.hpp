@@ -7,7 +7,7 @@
 #include "gui/components/popups/FormulaCloudTosPopup.hpp"
 
 namespace formula::gui {
-    class SettingsTab : public juce::Component {
+class SettingsTab : public juce::Component, juce::ComboBox::Listener {
     public:
         explicit SettingsTab(
             const std::shared_ptr<formula::events::EventHub>& eventHubRef,
@@ -17,7 +17,8 @@ namespace formula::gui {
         void resized() override;
     private:
         void refreshLoginSettings();
-        void displayFormulaCloudToS();
+        void setPossibleWindowSizes();
+        void comboBoxChanged(ComboBox *comboBoxThatHasChanged) override;
 
         std::shared_ptr<formula::events::EventHub> eventHub;
         std::shared_ptr<formula::cloud::FormulaCloudClient> cloud;
@@ -27,6 +28,10 @@ namespace formula::gui {
 
         juce::TextButton formulaCloudTosButton;
         formula::gui::FormulaCloudTosPopup tosPopup;
+
+        juce::Label windowSizeLabel;
+        juce::ComboBox windowSizeComboBox;
+        juce::StringArray windowSizeList;
     };
 }
 

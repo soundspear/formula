@@ -163,7 +163,7 @@ bool formula::processor::PluginProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* formula::processor::PluginProcessor::createEditor()
 {
-    auto* editor = new formula::gui::PluginWindow(*this, eventHub, pluginState, cloud, localIndex);
+    auto* editor = new formula::gui::PluginWindow(*this, eventHub, pluginState, cloud, localIndex, settings);
     if (!compiler) {
         eventHub->publish(EventType::noCompilerFound);
     }

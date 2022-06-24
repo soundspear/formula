@@ -12,6 +12,7 @@ enum class EventType {
     // GUI
     scaleUp,
     scaleDown,
+    windowSizeRequested,
     // Web client events
     webRequestSent,
     webRequestFinished,

@@ -19,6 +19,7 @@ namespace formula::storage {
         inline static const std::string expiresAt = "expiresAt";
         inline static const std::string username = "username";
         inline static const std::string email = "email";
+        inline static const std::string windowResolution = "windowResolution";
     };
 
     class LocalSettings : public LocalStorage {

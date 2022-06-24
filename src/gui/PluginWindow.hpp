@@ -1,6 +1,9 @@
 #ifndef FORMULA_GUI_PLUGIN_WINDOW_INCLUDED
 #define FORMULA_GUI_PLUGIN_WINDOW_INCLUDED
 
+#include <boost/algorithm/string.hpp>
+#include <boost/lexical_cast.hpp>
+
 #include <events/EventHub.hpp>
 #include <processor/PluginProcessor.hpp>
 #include <storage/LocalIndex.hpp>
@@ -24,7 +27,8 @@ namespace formula::gui
             const std::shared_ptr<formula::events::EventHub>& eventHubRef,
             const std::shared_ptr<formula::processor::PluginState>& pluginStateRef,
             const std::shared_ptr<formula::cloud::FormulaCloudClient>& cloudRef,
-            const std::shared_ptr<formula::storage::LocalIndex>& localIndexRef
+            const std::shared_ptr<formula::storage::LocalIndex>& localIndexRef,
+            const std::shared_ptr<formula::storage::LocalSettings>& settingsRef
         );
         ~PluginWindow() override;
 
@@ -33,10 +37,13 @@ namespace formula::gui
         void paint(juce::Graphics&) override;
         void resized() override;
     private:
+        void setWindowSizeFromResolutionString(std::optional<std::string> resolutionStr);
+
         formula::processor::PluginProcessor& associatedProcessor;
         std::shared_ptr<formula::events::EventHub> eventHub;
         std::shared_ptr<formula::processor::PluginState> pluginState;
         std::shared_ptr<formula::cloud::FormulaCloudClient> cloud;
+        std::shared_ptr<formula::storage::LocalSettings> settings;
 
         std::unique_ptr<juce::Drawable> logoDrawable;
         juce::Rectangle<float> logoPos;

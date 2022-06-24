@@ -7,13 +7,15 @@ formula::gui::PluginWindow::PluginWindow(
     const std::shared_ptr<formula::events::EventHub>& eventHubRef,
     const std::shared_ptr<formula::processor::PluginState>& pluginStateRef,
     const std::shared_ptr<formula::cloud::FormulaCloudClient>& cloudRef,
-    const std::shared_ptr<formula::storage::LocalIndex>& localIndexRef
+    const std::shared_ptr<formula::storage::LocalIndex>& localIndexRef,
+    const std::shared_ptr<formula::storage::LocalSettings>& settingsRef
 )
     : AudioProcessorEditor (&processor),
       associatedProcessor(processor),
       eventHub(eventHubRef),
       pluginState(pluginStateRef),
       cloud(cloudRef),
+      settings(settingsRef),
       tabs(TabbedButtonBar::TabsAtTop),
       spinner(eventHubRef),
       loginPopup(cloud),
@@ -25,7 +27,9 @@ formula::gui::PluginWindow::PluginWindow(
     LookAndFeel::setDefaultLookAndFeel(laf.get());
 
     setResizable(true, false);
-    setSize(900, 450);
+    auto resolutionSetting = settings->find<std::string>(formula::storage::SettingKey::windowResolution);
+    setWindowSizeFromResolutionString(resolutionSetting);
+
     auto colour = findColour(ResizableWindow::backgroundColourId);
 
     tabs.addTab("Editor", colour, new CodeEditorTab(eventHub, pluginState, localIndexRef), true);
@@ -86,6 +90,13 @@ formula::gui::PluginWindow::PluginWindow(
                 juce::AlertWindow::showMessageBox(juce::MessageBoxIconType::WarningIcon,
                                                   "Network error", juce::String("An unexpected error happened.")
                                                                    + " (Error code " + juce::String(errCode) + ")");
+            }, this);
+
+    eventHub->subscribeOnUiThread<PluginWindow>(
+            EventType::windowSizeRequested, [] ([[maybe_unused]] boost::any arg, PluginWindow* thisPtr) {
+                auto resolutionStr = boost::any_cast<std::string>(arg);
+                thisPtr->setWindowSizeFromResolutionString(resolutionStr);
+                thisPtr->settings->add<std::string>(formula::storage::SettingKey::windowResolution, resolutionStr);
             }, this);
 
     resized();
@@ -181,4 +192,15 @@ void formula::gui::PluginWindow::resized()
     loginPopup.setBounds(loginPopup.getAreaToFit(areaCenter));
     noCompilerFoundPopup.setBounds(noCompilerFoundPopup.getAreaToFit(areaCenter));
     setUserNamePopup.setBounds(setUserNamePopup.getAreaToFit(areaCenter));
+}
+
+void formula::gui::PluginWindow::setWindowSizeFromResolutionString(std::optional<std::string> resolutionOpt) {
+    auto resolutionStr = resolutionOpt.has_value() ? resolutionOpt.value() : "900x450";
+    std::vector<std::string> resolution;
+    boost::split(resolution, resolutionStr, boost::is_any_of("x"));
+
+    auto resX = boost::lexical_cast<int>(resolution[0]);
+    auto resY = boost::lexical_cast<int>(resolution[1]);
+
+    setSize(resX, resY);
 }

@@ -15,8 +15,14 @@ formula::gui::SettingsTab::SettingsTab(
     formulaCloudTosButton.onClick = [this]() {
         tosPopup.setVisible(true);
     };
-
     addChildComponent(tosPopup);
+
+    windowSizeLabel.setText("Plugin window size", juce::NotificationType::sendNotification);
+    addAndMakeVisible(windowSizeLabel);
+    setPossibleWindowSizes();
+    windowSizeComboBox.addItemList(windowSizeList, 1);
+    windowSizeComboBox.addListener(this);
+    addAndMakeVisible(windowSizeComboBox);
 }
 
 void formula::gui::SettingsTab::refreshLoginSettings() {
@@ -76,4 +82,25 @@ void formula::gui::SettingsTab::resized() {
     loginButton.setBounds(col1.removeFromTop(24));
     col1.removeFromTop(componentMargin);
     formulaCloudTosButton.setBounds(col1.removeFromTop(24));
+
+    auto col2 = area.removeFromLeft(colWidth);
+    col2 = col2.withTrimmedBottom(pad).withTrimmedTop(pad).withTrimmedRight(pad).withTrimmedLeft(pad);
+    windowSizeLabel.setBounds(col2.removeFromTop(15));
+    col2.removeFromTop(componentMargin);
+    windowSizeComboBox.setBounds(col2.removeFromTop(24));
+}
+
+void formula::gui::SettingsTab::setPossibleWindowSizes() {
+    windowSizeList.add("650x350");
+    windowSizeList.add("700x700");
+    windowSizeList.add("900x450");
+    windowSizeList.add("1200x700");
+    windowSizeList.add("1600x900");
+    windowSizeList.add("1920x1080");
+}
+
+void formula::gui::SettingsTab::comboBoxChanged(juce::ComboBox *comboBoxThatHasChanged) {
+    if (comboBoxThatHasChanged == &windowSizeComboBox) {
+        eventHub->publish(EventType::windowSizeRequested, windowSizeComboBox.getText().toStdString());
+    }
 }
