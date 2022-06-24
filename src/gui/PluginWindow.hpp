@@ -10,6 +10,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
 
+#include <cloud/GithubClient.hpp>
 #include <events/EventHub.hpp>
 #include <processor/PluginProcessor.hpp>
 #include <storage/LocalIndex.hpp>
@@ -50,6 +51,7 @@ namespace formula::gui
         std::shared_ptr<formula::processor::PluginState> pluginState;
         std::shared_ptr<formula::cloud::FormulaCloudClient> cloud;
         std::shared_ptr<formula::storage::LocalSettings> settings;
+        formula::cloud::GithubClient github;
 
         std::unique_ptr<juce::Drawable> logoDrawable;
         juce::Rectangle<float> logoPos;

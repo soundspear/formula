@@ -24,6 +24,7 @@ formula::gui::PluginWindow::PluginWindow(
       settings(settingsRef),
       tabs(TabbedButtonBar::TabsAtTop),
       spinner(eventHubRef),
+      github(eventHubRef),
       loginPopup(cloud),
       setUserNamePopup(cloud)
 {
@@ -66,6 +67,19 @@ formula::gui::PluginWindow::PluginWindow(
     }
 
     setupPopups();
+
+    eventHub->subscribeOnUiThread<PluginWindow>(
+            EventType::newVersionReleased, [] ([[maybe_unused]] boost::any arg, PluginWindow* thisPtr) {
+                auto newVersion = boost::any_cast<std::string>(arg);
+                auto result = juce::AlertWindow::showYesNoCancelBox(juce::MessageBoxIconType::InfoIcon,
+                  "Update available", juce::String("A new update for Formula is available (version ")
+                   + juce::String(newVersion) + "). Do you want to download it?");
+                if (result == 1) {
+                    const auto url = juce::URL("https://soundspear.com/product/formula");
+                    url.launchInDefaultBrowser();
+                }
+            }, this);
+    github.checkForUpdates();
 
     eventHub->subscribeOnUiThread<PluginWindow>(
             EventType::loadFormulaRequest, [] ([[maybe_unused]] boost::any _, PluginWindow* thisPtr) {

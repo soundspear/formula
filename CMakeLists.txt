@@ -99,6 +99,11 @@ juce_generate_juce_header(Formula)
 
 target_sources(Formula
     PRIVATE
+        "src/cloud/AuthenticatedClient.cpp"
+        "src/cloud/FormulaCloudClient.cpp"
+        "src/cloud/GithubClient.cpp"
+        "src/compiler/TccWrapper.cpp"
+        "src/compiler/ClangWrapper.cpp"
         "src/gui/PluginWindow.cpp"
         "src/gui/FormulaCodeTokenizer.cpp"
         "src/gui/tabs/CodeEditorTab.cpp"
@@ -121,11 +126,7 @@ target_sources(Formula
         "src/compiler/CompilerWrapper.cpp"
         "src/storage/LocalIndex.cpp"
         "src/storage/LocalSettings.cpp"
-        "src/storage/CompilerStorage.cpp"
-        "src/cloud/FormulaCloudClient.cpp"
-        "src/cloud/AuthenticatedClient.cpp"
-        "src/compiler/TccWrapper.cpp"
-        "src/compiler/ClangWrapper.cpp")
+        "src/storage/CompilerStorage.cpp")
 
 target_compile_definitions(Formula
     PRIVATE

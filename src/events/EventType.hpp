@@ -20,6 +20,7 @@ enum class EventType {
     scaleDown,
     windowSizeRequested,
     // Web client events
+    newVersionReleased,
     webRequestSent,
     webRequestFinished,
     loginSuccess,
