@@ -21,8 +21,10 @@
 #include <events/EventHub.hpp>
 #include <processor/PluginState.hpp>
 #include <storage/CompilerStorage.hpp>
-#include <compiler/NoPreprocessorGuard.hpp>
 #include <compiler/NoDynamicAllocationGuard.hpp>
+#include <compiler/NoInlineAssemblyGuard.hpp>
+#include <compiler/NoPreprocessorGuard.hpp>
+#include <compiler/NoSystemCallGuard.hpp>
 
 namespace formula::compiler {
 	class CompilerWrapper

@@ -12,8 +12,10 @@ formula::compiler::CompilerWrapper::CompilerWrapper(const std::shared_ptr<formul
     formulaBaseCodeStereo = std::string(formula::binary::FormulaBaseStereo_c, formula::binary::FormulaBaseStereo_cSize);
     boost::replace_all(formulaBaseCodeStereo, "\r\n", "\n");
 
-    securityGuards += std::make_unique<NoPreprocessorGuard>();
     securityGuards += std::make_unique<NoDynamicAllocationGuard>();
+    securityGuards += std::make_unique<NoInlineAssemblyGuard>();
+    securityGuards += std::make_unique<NoPreprocessorGuard>();
+    securityGuards += std::make_unique<NoSystemCallGuard>();
 
     eventHub->subscribe(EventType::compilationRequest, [this](boost::any arg) {
         std::lock_guard<std::mutex> lock { compileMutex };
