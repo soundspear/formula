@@ -1,3 +1,9 @@
+/*
+    Copyright (c) 2022 Soundspear.
+    Distributed under the Boost Software License, Version 1.0.
+    See http://www.boost.org/LICENSE_1_0.txt
+*/
+
 #include <processor/PluginProcessor.hpp>
 #include <gui/PluginWindow.hpp>
 #include "cloud/FormulaCloudClient.hpp"

@@ -1,6 +1,8 @@
-//
-// Created by antoi on 23/03/2022.
-//
+/*
+    Copyright (c) 2022 Soundspear.
+    Distributed under the Boost Software License, Version 1.0.
+    See http://www.boost.org/LICENSE_1_0.txt
+*/
 
 #include <boost/property_tree/json_parser.hpp>
 #include "LocalSettings.hpp"
