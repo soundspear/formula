@@ -26,7 +26,10 @@ void formula::cloud::AuthenticatedClient::login(std::string user, std::string pa
                     auto jsonResponse = response.extract_json().get();
                     if (jsonResponse.is_null()) return;
                     processLoginResponse(jsonResponse);
-                    eventHub->publish(EventType::loginSuccess);
+                    bool hasUsername = settings->find<std::string>(storage::SettingKey::username).has_value();
+                    if (hasUsername) {
+                        eventHub->publish(EventType::loginSuccess);
+                    }
                 }
                 catch (const std::exception&) {
                     eventHub->publish(EventType::unexpectedError);
@@ -64,6 +67,7 @@ void formula::cloud::AuthenticatedClient::setUsername(std::string newUserName) {
                 try {
                     previousTask.wait();
                     eventHub->publish(EventType::webRequestFinished);
+                    eventHub->publish(EventType::loginSuccess);
                 } catch (std::exception& ex) {
                     eventHub->publish(EventType::webRequestFinished);
                     eventHub->publish(EventType::unexpectedError, formula::gui::ErrorCodes::networkError);
