@@ -1,5 +1,5 @@
-#ifndef FORMULA_GUI_LOGIN_POPUP_INCLUDED
-#define FORMULA_GUI_LOGIN_POPUP_INCLUDED
+#ifndef FORMULA_GUI_LOGINPOPUP_INCLUDED
+#define FORMULA_GUI_LOGINPOPUP_INCLUDED
 
 #include <iomanip>
 #include <ctime>
@@ -48,4 +48,4 @@ namespace formula::gui
     };
 }
 
-#endif // FORMULA_GUI_LOGIN_POPUP_INCLUDED
+#endif // FORMULA_GUI_LOGINPOPUP_INCLUDED

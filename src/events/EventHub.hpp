@@ -1,5 +1,5 @@
-#ifndef FORMULA_EVENTS_EVENT_HUB
-#define FORMULA_EVENTS_EVENT_HUB
+#ifndef FORMULA_EVENTS_EVENTHUB_INCLUDED
+#define FORMULA_EVENTS_EVENTHUB_INCLUDED
 
 #include <optional>
 #include <boost/signals2.hpp>
@@ -72,4 +72,4 @@ namespace formula::events {
 	};
 }
 
-#endif // FORMULA_EVENTS_EVENT_HUB
+#endif // FORMULA_EVENTS_EVENTHUB_INCLUDED

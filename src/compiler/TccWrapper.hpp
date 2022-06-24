@@ -1,5 +1,5 @@
-#ifndef FORMULA_TCC_WRAPPER_INCLUDED
-#define FORMULA_TCC_WRAPPER_INCLUDED
+#ifndef FORMULA_CLOUD_TCCWRAPPER_INCLUDED
+#define FORMULA_CLOUD_TCCWRAPPER_INCLUDED
 
 #include <boost/lexical_cast.hpp>
 
@@ -17,4 +17,4 @@ namespace formula::compiler{
 	};
 }
 
-#endif // FORMULA_TCC_WRAPPER_INCLUDED
+#endif // FORMULA_CLOUD_TCCWRAPPER_INCLUDED

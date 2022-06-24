@@ -1,9 +1,5 @@
-//
-// Created by antoi on 25/03/2022.
-//
-
-#ifndef FORMULA_CLOUD_GETFORMULADTO_HPP
-#define FORMULA_CLOUD_GETFORMULADTO_HPP
+#ifndef FORMULA_CLOUD_GETFORMULADTO_INCLUDED
+#define FORMULA_CLOUD_GETFORMULADTO_INCLUDED
 
 #include <processor/FormulaMetadata.hpp>
 #include <string>
@@ -26,4 +22,4 @@ namespace formula::cloud {
     };
 }
 
-#endif //FORMULA_CLOUD_GETFORMULADTO_HPP
+#endif //FORMULA_CLOUD_GETFORMULADTO_INCLUDED

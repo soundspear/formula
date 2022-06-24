@@ -1,5 +1,5 @@
-#ifndef FORMULA_GUI_PLUGIN_WINDOW_INCLUDED
-#define FORMULA_GUI_PLUGIN_WINDOW_INCLUDED
+#ifndef FORMULA_GUI_PLUGINWINDOW_INCLUDED
+#define FORMULA_GUI_PLUGINWINDOW_INCLUDED
 
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
@@ -64,4 +64,4 @@ namespace formula::gui
     };
 }
 
-#endif // FORMULA_GUI_PLUGIN_WINDOW_INCLUDED
+#endif // FORMULA_GUI_PLUGINWINDOW_INCLUDED

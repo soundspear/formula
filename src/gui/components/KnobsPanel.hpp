@@ -1,5 +1,5 @@
-#ifndef FORMULA_GUI_KNOBS_PANEL_INCLUDED
-#define FORMULA_GUI_KNOBS_PANEL_INCLUDED
+#ifndef FORMULA_GUI_KNOBSPANEL_INCLUDED
+#define FORMULA_GUI_KNOBSPANEL_INCLUDED
 
 #include <string>
 #include <array>
@@ -246,4 +246,4 @@ void formula::gui::KnobsPanel<NumKnobs, NumSwitches>::visibilityChanged()
 }
 
 
-#endif // FORMULA_GUI_KNOBS_PANEL_INCLUDED
+#endif // FORMULA_GUI_KNOBSPANEL_INCLUDED

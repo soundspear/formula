@@ -1,5 +1,5 @@
-#ifndef FORMULA_EVENTS_EVENT_TYPE
-#define FORMULA_EVENTS_EVENT_TYPE
+#ifndef FORMULA_EVENTS_EVENTTYPE_INLUDED
+#define FORMULA_EVENTS_EVENTTYPE_INLUDED
 
 enum class EventType {
     // Formula management
@@ -31,4 +31,4 @@ enum class EventType {
     unexpectedError,
 };
 
-#endif // FORMULA_EVENTS_EVENT_TYPE
+#endif // FORMULA_EVENTS_EVENTTYPE_INLUDED

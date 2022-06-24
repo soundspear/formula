@@ -1,5 +1,5 @@
-#ifndef FORMULA_COMPILER_CLANG_WRAPPER
-#define FORMULA_COMPILER_CLANG_WRAPPER
+#ifndef FORMULA_COMPILER_COMPILERWRAPPER_INCLUDED
+#define FORMULA_COMPILER_COMPILERWRAPPER_INCLUDED
 
 #include <string>
 #include <vector>
@@ -59,4 +59,4 @@ namespace formula::compiler {
 		static constexpr char stereoFormulaEntrypoint[] = "formula_main_stereo";
 	};
 }
-#endif // FORMULA_COMPILER_CLANG_WRAPPER
+#endif // FORMULA_COMPILER_COMPILERWRAPPER_INCLUDED
