@@ -105,7 +105,7 @@ void formula::processor::PluginProcessor::changeProgramName (int index, const ju
 
 void formula::processor::PluginProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    juce::ignoreUnused (sampleRate, samplesPerBlock);
+    filePlayer.prepare(sampleRate, samplesPerBlock);
 }
 
 void formula::processor::PluginProcessor::releaseResources()
@@ -130,12 +130,7 @@ void formula::processor::PluginProcessor::processBlock (juce::AudioBuffer<float>
     juce::ignoreUnused (midiMessages);
 
     if (JUCEApplicationBase::isStandaloneApp()) {
-        float** wPtrs = buffer.getArrayOfWritePointers();
-        for (auto i = 0; i < buffer.getNumChannels(); i++) {
-            for (auto j = 0; j < buffer.getNumSamples(); j++) {
-                wPtrs[i][j] = random.nextFloat() * 0.2f - 0.1f;
-            }
-        }
+        filePlayer.getNextBlock(buffer);
     }
 
     if (pluginState->isBypassed()) {

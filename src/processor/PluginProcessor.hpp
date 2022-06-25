@@ -14,6 +14,7 @@
 #include <events/EventHub.hpp>
 #include <compiler/TccWrapper.hpp>
 #include <compiler/ClangWrapper.hpp>
+#include <processor/FilePlayer.hpp>
 #include <processor/FormulaLoader.hpp>
 #include <processor/PluginState.hpp>
 #include <processor/KnobsPanelListener.hpp>
@@ -61,6 +62,7 @@ class PluginProcessor : public juce::AudioProcessor, public formula::processor::
         std::shared_ptr<formula::cloud::FormulaCloudClient> cloud;
         std::unique_ptr<formula::compiler::CompilerWrapper> compiler;
         formula::processor::FormulaLoader formulaLoader;
+        formula::processor::FilePlayer filePlayer;
 
         juce::Random random;
         std::string previousCompilationId;

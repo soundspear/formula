@@ -43,7 +43,6 @@ include_directories(Formula ${Boost_INCLUDE_DIR} SYSTEM)
 
 add_subdirectory(JUCE)
 
-
 find_package(cpprestsdk CONFIG REQUIRED)
 
 IF (FORMULA_VST2_SDK_DIR)
@@ -94,6 +93,7 @@ juce_add_binary_data(FormulaBinaryData
 )
 
 add_compile_definitions(JUCE_MODAL_LOOPS_PERMITTED)
+add_compile_definitions(JUCE_USE_MP3AUDIOFORMAT)
 
 juce_generate_juce_header(Formula)
 
@@ -119,6 +119,7 @@ target_sources(Formula
         "src/gui/components/RatingComponent.cpp"
         "src/gui/components/FormulaDetailsPanel.cpp"
         "src/gui/components/SearchBar.cpp"
+        "src/processor/FilePlayer.cpp"
         "src/processor/FormulaLoader.cpp"
         "src/processor/KnobsPanelListener.cpp"
         "src/processor/PluginState.cpp"
