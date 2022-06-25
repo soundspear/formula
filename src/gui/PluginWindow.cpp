@@ -14,7 +14,8 @@ formula::gui::PluginWindow::PluginWindow(
     const std::shared_ptr<formula::processor::PluginState>& pluginStateRef,
     const std::shared_ptr<formula::cloud::FormulaCloudClient>& cloudRef,
     const std::shared_ptr<formula::storage::LocalIndex>& localIndexRef,
-    const std::shared_ptr<formula::storage::LocalSettings>& settingsRef
+    const std::shared_ptr<formula::storage::LocalSettings>& settingsRef,
+    const std::shared_ptr<formula::processor::FilePlayer>& filePlayer
 )
     : AudioProcessorEditor (&processor),
       associatedProcessor(processor),
@@ -26,6 +27,7 @@ formula::gui::PluginWindow::PluginWindow(
       spinner(eventHubRef),
       github(eventHubRef),
       loginPopup(cloud),
+      filePlayer(filePlayer),
       setUserNamePopup(cloud)
 {
     if (!laf) {
@@ -47,6 +49,24 @@ formula::gui::PluginWindow::PluginWindow(
     tabs.addTab("Settings", colour, new SettingsTab(eventHub, cloud), true);
 
     addAndMakeVisible(tabs);
+
+    loadAudioFileButton.setButtonText("Load audio file");
+    addAndMakeVisible(loadAudioFileButton);
+    loadAudioFileButton.onClick = [this]() {
+        auto chooserPath = File::getSpecialLocation(File::userHomeDirectory);
+        auto& previousPath = this->filePlayer->getCurrentPath();
+        if (!previousPath.isEmpty()) {
+            chooserPath = juce::File(previousPath).getParentDirectory();
+        }
+        juce::FileChooser chooser("Select the file to load...",
+            chooserPath, this->filePlayer->getWildcardForAllFormats(), true);
+
+        auto fileChosen = chooser.browseForFileToOpen();
+
+        if (!fileChosen) return;
+        auto filePath = chooser.getResult().getFullPathName();
+        auto success = this->filePlayer->loadFile(filePath);
+    };
 
     logoDrawable = Drawable::createFromImageData(formula::binary::logo_svg, formula::binary::logo_svgSize);
     addAndMakeVisible(logoDrawable.get());
@@ -207,6 +227,12 @@ void formula::gui::PluginWindow::resized()
     }
     versionLabel.setBounds(getLocalBounds().removeFromRight(45).removeFromTop(31)
                                    .withTrimmedBottom(11).withTrimmedTop(10));
+
+    if (JUCEApplicationBase::isStandaloneApp()) {
+        auto loadAudioFileButtonPos = getLocalBounds().withTrimmedRight(150).removeFromRight(100)
+                .removeFromTop(30).withTrimmedBottom(5).withTrimmedTop(5);
+        loadAudioFileButton.setBounds(loadAudioFileButtonPos);
+    }
 
     const auto areaCenter = area.getCentre();
     loginPopup.setBounds(loginPopup.getAreaToFit(areaCenter));

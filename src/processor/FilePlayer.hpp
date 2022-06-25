@@ -15,7 +15,7 @@ namespace formula::processor {
         FilePlayer();
         bool loadFile(String& path);
         void prepare(double sampleRate, int maximumExpectedSamplesPerBlock);
-        void getNextBlock(juce::AudioBuffer<float>& buffer);
+        void getNextBlock(double sampleRate, AudioBuffer<float> &buffer);
         juce::String& getCurrentPath();
         juce::String getWildcardForAllFormats();
 

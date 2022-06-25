@@ -60,9 +60,9 @@ class PluginProcessor : public juce::AudioProcessor, public formula::processor::
         std::shared_ptr<formula::storage::LocalSettings> settings;
         std::shared_ptr<formula::storage::LocalIndex> localIndex;
         std::shared_ptr<formula::cloud::FormulaCloudClient> cloud;
+        std::shared_ptr<formula::processor::FilePlayer> filePlayer;
         std::unique_ptr<formula::compiler::CompilerWrapper> compiler;
         formula::processor::FormulaLoader formulaLoader;
-        formula::processor::FilePlayer filePlayer;
 
         juce::Random random;
         std::string previousCompilationId;

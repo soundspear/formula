@@ -17,7 +17,7 @@ formula::gui::SettingsTab::SettingsTab(
     };
     addChildComponent(tosPopup);
 
-    windowSizeLabel.setText("Plugin window size", juce::NotificationType::sendNotification);
+    windowSizeLabel.setText("Window size", juce::NotificationType::sendNotification);
     addAndMakeVisible(windowSizeLabel);
     setPossibleWindowSizes();
     windowSizeComboBox.addItemList(windowSizeList, 1);

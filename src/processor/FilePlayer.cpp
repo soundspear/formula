@@ -43,7 +43,11 @@ void formula::processor::FilePlayer::prepare(double sampleRate, int maximumExpec
     transportSource.start();
 }
 
-void formula::processor::FilePlayer::getNextBlock(AudioBuffer<float> &buffer) {
+void formula::processor::FilePlayer::getNextBlock(double sampleRate, AudioBuffer<float> &buffer) {
+    if (!transportSource.isPlaying()) {
+        transportSource.prepareToPlay(buffer.getNumSamples() * 10, sampleRate);
+        transportSource.start();
+    }
     transportSource.getNextAudioBlock(AudioSourceChannelInfo(buffer));
 
     // TransportSource.SetLooping does not work

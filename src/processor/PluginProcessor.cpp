@@ -13,12 +13,13 @@ formula::processor::PluginProcessor::PluginProcessor()
                        .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                        ),
-       KnobsPanelListener(),
+    KnobsPanelListener(),
     eventHub(std::make_shared<formula::events::EventHub>()),
     pluginState(std::make_shared<formula::processor::PluginState>(*this, "Formula")),
     settings(std::make_shared<formula::storage::LocalSettings>()),
     cloud(std::make_shared<formula::cloud::FormulaCloudClient>(settings, eventHub)),
     localIndex(std::make_shared<formula::storage::LocalIndex>(pluginState)),
+    filePlayer(std::make_shared<formula::processor::FilePlayer>()),
     recompiled(false)
 {
     pluginState->setupListener(this);
@@ -105,7 +106,7 @@ void formula::processor::PluginProcessor::changeProgramName (int index, const ju
 
 void formula::processor::PluginProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    filePlayer.prepare(sampleRate, samplesPerBlock);
+    filePlayer->prepare(sampleRate, samplesPerBlock);
 }
 
 void formula::processor::PluginProcessor::releaseResources()
@@ -130,7 +131,7 @@ void formula::processor::PluginProcessor::processBlock (juce::AudioBuffer<float>
     juce::ignoreUnused (midiMessages);
 
     if (JUCEApplicationBase::isStandaloneApp()) {
-        filePlayer.getNextBlock(buffer);
+        filePlayer->getNextBlock(getSampleRate(), buffer);
     }
 
     if (pluginState->isBypassed()) {
@@ -164,10 +165,13 @@ bool formula::processor::PluginProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* formula::processor::PluginProcessor::createEditor()
 {
-    auto* editor = new formula::gui::PluginWindow(*this, eventHub, pluginState, cloud, localIndex, settings);
+    auto* editor = new formula::gui::PluginWindow(
+        *this, eventHub, pluginState, cloud, localIndex, settings, filePlayer
+    );
     if (!compiler) {
         eventHub->publish(EventType::noCompilerFound);
     }
+
     return editor;
 }
 

@@ -12,6 +12,7 @@
 
 #include <cloud/GithubClient.hpp>
 #include <events/EventHub.hpp>
+#include <processor/FilePlayer.hpp>
 #include <processor/PluginProcessor.hpp>
 #include <storage/LocalIndex.hpp>
 #include <gui/tabs/CodeEditorTab.hpp>
@@ -35,7 +36,8 @@ namespace formula::gui
             const std::shared_ptr<formula::processor::PluginState>& pluginStateRef,
             const std::shared_ptr<formula::cloud::FormulaCloudClient>& cloudRef,
             const std::shared_ptr<formula::storage::LocalIndex>& localIndexRef,
-            const std::shared_ptr<formula::storage::LocalSettings>& settingsRef
+            const std::shared_ptr<formula::storage::LocalSettings>& settingsRef,
+            const std::shared_ptr<formula::processor::FilePlayer>& filePlayer
         );
         ~PluginWindow() override;
 
@@ -51,6 +53,7 @@ namespace formula::gui
         std::shared_ptr<formula::processor::PluginState> pluginState;
         std::shared_ptr<formula::cloud::FormulaCloudClient> cloud;
         std::shared_ptr<formula::storage::LocalSettings> settings;
+        std::shared_ptr<formula::processor::FilePlayer> filePlayer;
         formula::cloud::GithubClient github;
 
         std::unique_ptr<juce::Drawable> logoDrawable;
@@ -65,6 +68,8 @@ namespace formula::gui
         formula::gui::NoCompilerFoundPopup noCompilerFoundPopup;
         formula::gui::SetUserNamePopup setUserNamePopup;
         std::unique_ptr<formula::gui::FormulaLookAndFeel> laf;
+
+        juce::TextButton loadAudioFileButton;
 
         float scaleFactor = 1;
 
