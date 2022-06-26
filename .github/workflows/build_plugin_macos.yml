@@ -68,6 +68,12 @@ jobs:
         lipo Formula_artefacts_x64/Release/VST3/Formula.vst3/Contents/MacOS/Formula \
             Formula_artefacts_arm64/Release/VST3/Formula.vst3/Contents/MacOS/Formula \
             -create -output /tmp/VST3/Formula.vst3/Contents/MacOS/Formula
+            
+        mkdir /tmp/Standalone
+        cp -R Formula_artefacts_x64/Release/Standalone/Formula.app /tmp/Standalone
+        lipo Formula_artefacts_x64/Release/Standalone/Formula.app/Contents/MacOS/Formula \
+            Formula_artefacts_arm64/Release/Standalone/Formula.app/Contents/MacOS/Formula \
+            -create -output /tmp/Standalone/Formula.app/Contents/MacOS/Formula
       
     - name: Create setup
       run: |
@@ -76,7 +82,8 @@ jobs:
         
         pkgbuild --root "/tmp/VST3/" --identifier "$IDENTIFIER.vst3" --install-location "$SYSTEM_PLUGINS_DIR/VST3" Formula_VST3.pkg
         pkgbuild --root "/tmp/AU/" --identifier "$IDENTIFIER.component" --install-location "$SYSTEM_PLUGINS_DIR/Components" Formula_AU.pkg
-        
+        pkgbuild --root "/tmp/Standalone/" --identifier "$IDENTIFIER.app" --install-location "/Applications" Formula_Standalone_Application.pkg
+
         zip -r formula-macos.zip *.pkg        
         
     - name: Upload to release
