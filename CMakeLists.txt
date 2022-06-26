@@ -44,6 +44,7 @@ include_directories(Formula ${Boost_INCLUDE_DIR} SYSTEM)
 add_subdirectory(JUCE)
 
 find_package(cpprestsdk CONFIG REQUIRED)
+add_compile_definitions(_TURN_OFF_PLATFORM_STRING)
 
 IF (FORMULA_VST2_SDK_DIR)
     juce_set_vst2_sdk_path(${FORMULA_VST2_SDK_DIR})
