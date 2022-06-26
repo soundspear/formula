@@ -49,13 +49,14 @@ jobs:
     - name: Package
       shell: powershell
       env:
-        FORMULA_VERSION: '${{ inputs.release_tag }}'
+        TAG_NAME: '${{ inputs.release_tag }}'
       run: |
         choco install innosetup -y
-        cp Formula_artefacts/Release/VST3/Formula.vst3/Contents/x86_64-win/Formula.vst3 packaging/windows/
+        cp Formula_artefacts/Release/Standalone/Formula.exe packaging/windows/
         cp Formula_artefacts/Release/VST3/Formula.vst3/Contents/x86_64-win/Formula.vst3 packaging/windows/
         cd packaging/windows/
-        .\create-setup.ps1 -AppName "Formula" -AppFolderName "Formula" -AppVer "$env:FORMULA_VERSION" -Vst3File64 "./Formula.vst3" -StandaloneFile64 "./Formula.exe" -OutputFileName formula-windows
+        $env:TAG_NAME -Match '\d+\.\d+\.\d+'
+        .\create-setup.ps1 -AppName "Formula" -AppFolderName "Formula" -AppVer $Matches[0] -Vst3File64 "./Formula.vst3" -StandaloneFile64 "./Formula.exe" -OutputFileName formula-windows
         cd ../..
     
     - name: Upload to release
