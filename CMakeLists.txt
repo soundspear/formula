@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.11)
 
-project(Formula VERSION 0.2.0 LANGUAGES CXX)
+project(Formula VERSION 1.0.0 LANGUAGES CXX)
 
 # ------ Formula parameters
 add_compile_definitions(FORMULA_VERSION="${CMAKE_PROJECT_VERSION}")
