@@ -53,8 +53,7 @@ ENDIF ()
 
 include_directories(Formula ${CMAKE_CURRENT_SOURCE_DIR}/src)
 juce_add_plugin(Formula
-    # ICON_BIG ..
-    # ICON_SMALL ...
+    ICON_BIG assets/formula_icon.png
     COMPANY_NAME Soundspear
     IS_SYNTH FALSE
     NEEDS_MIDI_INPUT FALSE

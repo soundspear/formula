@@ -7,6 +7,7 @@ param (
 	
 	[Parameter(Mandatory=$false)][string]$Vst2File64,
 	[Parameter(Mandatory=$false)][string]$Vst3File64,
+	[Parameter(Mandatory=$false)][string]$StandaloneFile64,
 	
 	[string]$InputScriptPath = "setup-script-windows.iss",
 	[string]$OutputScriptPath = "setup-script-windows-out.iss"
@@ -44,6 +45,7 @@ Else {
 	Prepend-Param -Name NoVst2 -Value 1
 }
 Prepend-Param -Name Vst3File64 -Value $Vst3File64
+Prepend-Param -Name StandaloneFile64 -Value $StandaloneFile64
 
 $InnoSetupPath = "$Env:ProgramFiles (x86)\Inno Setup 6\ISCC.exe"
 $InnoSetupPath

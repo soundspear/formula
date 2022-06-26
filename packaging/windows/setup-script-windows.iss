@@ -33,10 +33,16 @@ WizardSmallImageFile=setup-image-small.bmp
 Source: "{#Vst2File64}"; DestDir: {code:GetVST2Dir|0}; Components: VST64; Flags: ignoreversion
 #endif
 Source: "{#Vst3File64}"; DestDir: "{commoncf64}\VST3\"; Components: VST364; Flags: ignoreversion
+Source: "{#StandaloneFile64}"; DestDir: "{app}"; Components: Standalone; Flags: ignoreversion   
 Source: "tcc\*"; DestDir: "{commonpf64}\tcc\"; Flags: ignoreversion recursesubdirs
 
+[Tasks]
+Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
+
 [Icons]
-Name: {group}\Uninstall Soundspear {#AppName}; Filename: {uninstallexe}
+Name: {group}\Uninstall Soundspear {#AppName}; Filename: {uninstallexe}  
+Name: "{autoprograms}\{#AppName}"; Filename: "{app}\Formula.exe"
+Name: "{autodesktop}\{#AppName}"; Filename: "{app}\Formula.exe"; Tasks: desktopicon
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -46,18 +52,12 @@ Name: "german"; MessagesFile: "compiler:Languages\German.isl"
 Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
 Name: "spanish"; MessagesFile: "compiler:Languages\Spanish.isl" 
 
-[Types]
+[Components]                                  
 #ifndef NoVst2
-Name: "Full"; Description: "VST/VST3";
-#else
-Name: "Full"; Description: "VST3";
+Name: "VST64"; Description: "VST2";
 #endif
-
-[Components]
-Name: "VST364"; Description: "64-bit VST3"; Types: Full;
-#ifndef NoVst2
-Name: "VST64"; Description: "64-bit VST2"; Types: Full;
-#endif
+Name: "VST364"; Description: "VST3";
+Name: "Standalone"; Description: "Standalone application";
 
 [Registry]
 Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; \

@@ -39,7 +39,7 @@ jobs:
     - name: CMake
       shell: powershell
       run: |
-        cmake . -G "Visual Studio 16 2019" -DVCPKG_TARGET_TRIPLET=x64-windows-static -DCMAKE_TOOLCHAIN_FILE=D:/a/formula/formula/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_WIN_DIR=D:/a/formula/formula/vcpkg/installed/x64-windows-static -DCMAKE_BUILD_TYPE=Release
+        cmake . -G "Visual Studio 16 2019" -DVCPKG_TARGET_TRIPLET=x64-windows-static -DCMAKE_TOOLCHAIN_FILE=D:/a/formula/formula/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_WIN_DIR=D:/a/formula/formula/vcpkg/installed/x64-windows-static -DFORMULA_STANDALONE=1 -DCMAKE_BUILD_TYPE=Release
     
     - name: CMake Build
       shell: powershell
@@ -48,11 +48,14 @@ jobs:
         
     - name: Package
       shell: powershell
+      env:
+        FORMULA_VERSION: '${{ inputs.release_tag }}'
       run: |
         choco install innosetup -y
         cp Formula_artefacts/Release/VST3/Formula.vst3/Contents/x86_64-win/Formula.vst3 packaging/windows/
+        cp Formula_artefacts/Release/VST3/Formula.vst3/Contents/x86_64-win/Formula.vst3 packaging/windows/
         cd packaging/windows/
-        .\create-setup.ps1 -AppName "Formula" -AppFolderName "Formula" -AppVer "0.1" -Vst3File64 "./Formula.vst3" -OutputFileName formula-windows
+        .\create-setup.ps1 -AppName "Formula" -AppFolderName "Formula" -AppVer "$env:FORMULA_VERSION" -Vst3File64 "./Formula.vst3" -StandaloneFile64 "./Formula.exe" -OutputFileName formula-windows
         cd ../..
     
     - name: Upload to release
