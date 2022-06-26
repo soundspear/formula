@@ -16,6 +16,9 @@
 #include "gui/components/FormulaDetailsPanel.hpp"
 
 namespace formula::gui {
+    /**
+     * Application tab that displays Formula Cloud search & retrieve
+     */
     class OnlineFormulasTab : public juce::Component, public juce::TableListBoxModel, public ScrollBar::Listener {
     public:
         OnlineFormulasTab(const std::shared_ptr<formula::events::EventHub>& eventHubRef,

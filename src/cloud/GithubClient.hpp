@@ -15,6 +15,9 @@
 #include "cloud/StringHelpers.hpp"
 
 namespace formula::cloud {
+    /**
+     * Client to check for updates using the Github API
+     */
     class GithubClient {
     public:
         explicit GithubClient(const std::shared_ptr<formula::events::EventHub>& eventHub);

@@ -12,6 +12,9 @@
 #include "boost/date_time/posix_time/posix_time.hpp"
 
 namespace formula::cloud {
+    /**
+     * Data object for listing the available formulas
+     */
     struct ListFormulaDto {
         std::string id;
         std::string author;

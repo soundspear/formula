@@ -7,6 +7,9 @@
 #include "gui/components/popups/FormulaCloudTosPopup.hpp"
 
 namespace formula::gui {
+    /**
+     * Application tab that displays application settings
+     */
 class SettingsTab : public juce::Component, juce::ComboBox::Listener {
     public:
         explicit SettingsTab(

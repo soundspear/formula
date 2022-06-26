@@ -10,6 +10,9 @@
 #include <boost/filesystem.hpp>
 
 namespace formula::storage {
+    /**
+     * Base class for a local storage manager
+     */
 	class LocalStorage {
 	public:
 		LocalStorage() {

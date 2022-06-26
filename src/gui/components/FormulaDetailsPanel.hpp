@@ -15,6 +15,9 @@
 #include <gui/components/FormulaCodeEditor.hpp>
 
 namespace formula::gui {
+    /**
+     * Collapsable panel in Formula Cloud to display the preview of a formula
+     */
     class FormulaDetailsPanel : public juce::Component {
     public:
         explicit FormulaDetailsPanel(const std::shared_ptr<formula::events::EventHub>& eventHubRef);

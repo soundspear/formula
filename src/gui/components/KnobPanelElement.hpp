@@ -16,6 +16,11 @@
 #include <processor/FormulaMetadata.hpp>
 
 namespace formula::gui {
+    /**
+     * Single element from the knobs and switches ponel
+     * @tparam ComponentType Juce component to use for rendering
+     * @tparam ValueType Type of the user-modifiable value
+     */
     template < 
         typename ComponentType,
         typename ValueType,
@@ -65,6 +70,9 @@ namespace formula::gui {
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(KnobPanelElement)
     };
 
+    /**
+     * A slider to display in the knobs panel
+     */
     class KnobPanelSlider : public KnobPanelElement<juce::Slider, double>
     {
     public:
@@ -102,6 +110,9 @@ namespace formula::gui {
         }
     };
 
+    /**
+     * A toggle to display in the knob panel
+     */
     class KnobPanelToggle : public KnobPanelElement<juce::ToggleButton, bool>
     {
     public:

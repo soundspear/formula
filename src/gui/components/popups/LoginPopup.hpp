@@ -24,6 +24,9 @@ namespace formula::gui
         FirstLogin, LoginFailed, MissingSubscription
     };
 
+    /**
+     * Displays a popup that asks for Formula Cloud login information
+     */
     class LoginPopup : public formula::gui::FormulaPopup
     {
     public:

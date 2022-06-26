@@ -13,6 +13,9 @@
 
 namespace formula::gui
 {
+    /**
+     * A square button with a coloured SVG icon and a tooltip
+     */
 	class IconButton : public DrawableButton {
 	public:
 		IconButton()

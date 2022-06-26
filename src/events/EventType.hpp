@@ -7,6 +7,9 @@
 #ifndef FORMULA_EVENTS_EVENTTYPE_INLUDED
 #define FORMULA_EVENTS_EVENTTYPE_INLUDED
 
+/**
+ * Different events types used across the application
+ */
 enum class EventType {
     // Formula management
     noCompilerFound,

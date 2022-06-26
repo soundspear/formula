@@ -10,6 +10,9 @@
 #include <JuceHeader.h>
 
 namespace formula::gui {
+    /**
+     * Juce look and feel customized for Formula
+     */
     class FormulaLookAndFeel : public juce::LookAndFeel_V4
     {
     public:

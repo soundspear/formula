@@ -16,6 +16,9 @@
 #include <events/EventType.hpp>
 
 namespace formula::events {
+    /**
+     * Centralized class for event publishing and subscribing through the whole application
+     */
 	class EventHub
 	{
 	public:

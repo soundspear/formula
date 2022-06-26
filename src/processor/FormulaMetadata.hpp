@@ -12,6 +12,9 @@
 namespace formula::processor {
 	using FormulaMetadata = std::unordered_map<std::string, std::string>;
 
+    /**
+     * Keys for key-value storage of a formula metadata
+     */
 	struct FormulaMetadataKeys {
 		static inline const std::string name = "Name";
 		static inline const std::string description = "Description";

@@ -12,6 +12,9 @@
 #include <src/compiler/SecurityGuard.hpp>
 
 namespace formula::compiler {
+    /**
+     * Check that there are no preprocessor usages in a formula
+     */
     class NoPreprocessorGuard : public SecurityGuard {
     public:
         NoPreprocessorGuard() : noPreprocessorRegex(R"(^\s*#.*)") { }

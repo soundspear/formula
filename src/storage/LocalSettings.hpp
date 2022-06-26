@@ -24,6 +24,9 @@ namespace formula::storage {
         inline static const std::string windowResolution = "windowResolution";
     };
 
+    /**
+     * Manages the application persistent settings
+     */
     class LocalSettings : public LocalStorage {
     public:
         LocalSettings();

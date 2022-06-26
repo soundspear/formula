@@ -20,6 +20,9 @@
 #include <processor/FormulaMetadata.hpp>
 
 namespace formula::storage {
+    /**
+     * Manages the formulas that are saved locally
+     */
 	class LocalIndexIterator {
 	public:
 		LocalIndexIterator() = delete;

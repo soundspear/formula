@@ -20,6 +20,10 @@
 #include "cloud/StringHelpers.hpp"
 
 namespace formula::cloud {
+    /**
+     * Base class to handle login, token refresh and craft
+     * authenticated web requests to Formula Cloud
+     */
     class AuthenticatedClient {
     public:
         void login(std::string user, std::string password);

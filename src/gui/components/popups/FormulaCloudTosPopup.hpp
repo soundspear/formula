@@ -12,6 +12,9 @@
 #include "src/gui/components/popups/FormulaPopup.hpp"
 
 namespace formula::gui {
+    /**
+     * Popup to display the terms and conditions of Formula Cloud
+     */
     class FormulaCloudTosPopup : public formula::gui::FormulaPopup {
     public:
         FormulaCloudTosPopup() {

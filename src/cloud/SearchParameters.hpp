@@ -10,6 +10,9 @@
 #include <string>
 
 namespace formula::cloud {
+    /**
+     * Stores persistent search parameters
+     */
     struct SearchParameters {
         SearchParameters() {
             skip = 0;

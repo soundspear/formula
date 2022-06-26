@@ -30,6 +30,9 @@ typedef void (ProcessBlockStereo)(float** in, int numSamples, float sampleRate,
                                   int* debug_idx, char** debug_stack, int debug_stack_size);
 
 namespace formula::processor {
+    /**
+     * Loads a compiled formula and calls it
+     */
 	class FormulaLoader
 	{
 	public:

@@ -22,6 +22,9 @@
 
 namespace formula::gui
 {
+    /**
+     * Ask the user the name and description to save a local formula
+     */
     class SaveLocalFormulaPopup : public formula::gui::FormulaPopup
     {
     public:

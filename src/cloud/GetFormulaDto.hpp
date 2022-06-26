@@ -11,6 +11,9 @@
 #include <string>
 
 namespace formula::cloud {
+    /**
+     * Data Object for retrieving a formula
+     */
     struct GetFormulaDto {
         struct GetUserRatingDto {
             std::string comment;

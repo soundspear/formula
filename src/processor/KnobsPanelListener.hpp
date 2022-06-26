@@ -14,6 +14,9 @@
 #include "processor/PluginState.hpp"
 
 namespace formula::processor {
+    /**
+     * Listener to the knobs and switches panel events
+     */
     class KnobsPanelListener : public juce::AudioProcessorValueTreeState::Listener {
     public:
         KnobsPanelListener();

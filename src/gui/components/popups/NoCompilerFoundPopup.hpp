@@ -11,6 +11,9 @@
 #include <gui/components/popups/FormulaPopup.hpp>
 
 namespace formula::gui {
+    /**
+     * Popup that warns the user that no compiler was found
+     */
     class NoCompilerFoundPopup : public formula::gui::FormulaPopup {
     public:
         NoCompilerFoundPopup();

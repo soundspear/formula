@@ -8,6 +8,9 @@
 #define FORMULA_GUI_ERRORCODES_INCLUDED
 
 namespace formula::gui {
+    /**
+     * Error codes used across the application
+     */
     enum ErrorCodes {
         unknownError = 1,
         // Web

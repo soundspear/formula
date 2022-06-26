@@ -10,6 +10,9 @@
 #include <JuceHeader.h>
 
 namespace formula::gui {
+    /**
+     * Editor tokenizer for the C language enhanced with Formula features and macros
+     */
     class FormulaCodeTokenizer : public juce::CPlusPlusCodeTokeniser {
     public:
         FormulaCodeTokenizer();

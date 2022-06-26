@@ -20,6 +20,11 @@
 #include <events/EventHub.hpp>
 
 namespace formula::gui {
+    /**
+     * Panel displaying the knobs and switches at the bottom of the editor
+     * @tparam NumKnobs Number of knobs
+     * @tparam NumSwitches Number of switches
+     */
     template<unsigned int NumKnobs, unsigned int NumSwitches>
 	class KnobsPanel : public Component 
     {

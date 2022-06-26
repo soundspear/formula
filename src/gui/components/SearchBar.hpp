@@ -12,6 +12,9 @@
 #include "events/EventHub.hpp"
 
 namespace formula::gui {
+    /**
+     * Search bar for Formula Cloud
+     */
     class SearchBar : public juce::Component {
     public:
         SearchBar(const std::shared_ptr<formula::events::EventHub>& eventHubRef);

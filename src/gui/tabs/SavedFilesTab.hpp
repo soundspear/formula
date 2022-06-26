@@ -20,6 +20,9 @@
 
 namespace formula::gui
 {
+    /**
+     * Application tab that displays locally saved formulas
+     */
     class SavedFilesTab : public juce::Component, public TableListBoxModel
     {
     public:

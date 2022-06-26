@@ -11,6 +11,9 @@
 #include <gui/FormulaCodeTokenizer.hpp>
 
 namespace formula::gui {
+    /**
+     * Formula code editor component
+     */
     class FormulaCodeEditor : public CodeEditorComponent {
     public:
         FormulaCodeEditor(juce::CodeDocument& document);

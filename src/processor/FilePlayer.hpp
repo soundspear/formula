@@ -10,6 +10,9 @@
 #include <JuceHeader.h>
 
 namespace formula::processor {
+    /**
+     * Loads and plays an audio file through a buffer
+     */
     class FilePlayer {
     public:
         FilePlayer();

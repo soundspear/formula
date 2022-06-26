@@ -12,6 +12,9 @@
 #include <compiler/CompilerWrapper.hpp>
 
 namespace formula::compiler{
+    /**
+     * Wrapper to the Clang compiler
+     */
     class ClangWrapper : public CompilerWrapper {
     public:
         explicit ClangWrapper(const std::shared_ptr<formula::events::EventHub>& eventHubRef);

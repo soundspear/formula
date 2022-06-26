@@ -12,6 +12,9 @@
 #include <src/compiler/SecurityGuard.hpp>
 
 namespace formula::compiler {
+    /**
+     * Check that there is no exec or system calls in a formula
+     */
     class NoSystemCallGuard : public SecurityGuard {
     public:
         NoSystemCallGuard() :

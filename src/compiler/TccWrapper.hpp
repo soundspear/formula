@@ -12,6 +12,9 @@
 #include <compiler/CompilerWrapper.hpp>
 
 namespace formula::compiler{
+    /**
+     * Wrapper to the TinyCC compiler
+     */
 	class TccWrapper : public CompilerWrapper {
 	public:
 		explicit TccWrapper(const std::shared_ptr<formula::events::EventHub>& eventHubRef);

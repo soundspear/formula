@@ -27,6 +27,9 @@
 
 namespace formula::gui 
 {
+    /**
+     * Base window for the application
+     */
     class PluginWindow : public juce::AudioProcessorEditor
     {
     public:

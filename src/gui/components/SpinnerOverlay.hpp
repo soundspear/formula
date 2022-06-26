@@ -15,6 +15,9 @@
 #include <events/EventHub.hpp>
 
 namespace formula::gui {
+    /**
+     * Spinner that indicates loading in the application
+     */
     class SpinnerOverlay : public Component {
     public:
         explicit SpinnerOverlay(const std::shared_ptr<formula::events::EventHub>& eventHub);

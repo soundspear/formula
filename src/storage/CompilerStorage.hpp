@@ -17,6 +17,9 @@
 #include <storage/LocalStorage.hpp>
 
 namespace formula::storage {
+    /**
+     * Manages the storage for the compiler
+     */
 	class CompilerStorage : public LocalStorage {
 	public:
 		struct CompiledLibraryPath {

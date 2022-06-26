@@ -12,6 +12,9 @@
 #include "src/cloud/FormulaCloudClient.hpp"
 
 namespace formula::gui {
+    /**
+     * Ask the user to choose an username
+     */
     class SetUserNamePopup : public formula::gui::FormulaPopup {
     public:
         explicit SetUserNamePopup(const std::shared_ptr<formula::cloud::FormulaCloudClient>& cloudRef);

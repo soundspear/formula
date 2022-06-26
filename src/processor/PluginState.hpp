@@ -24,6 +24,9 @@
 
 
 namespace formula::processor {
+    /**
+     * Manages the state of the application
+     */
 	class PluginState : public AudioProcessorValueTreeState
 	{
 	public:

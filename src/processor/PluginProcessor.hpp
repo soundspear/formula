@@ -25,6 +25,9 @@
 
 namespace formula::processor
 {
+    /**
+     * Main class of the application that manages audio processing
+     */
 class PluginProcessor : public juce::AudioProcessor, public formula::processor::KnobsPanelListener
     {
     public:

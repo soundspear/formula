@@ -12,6 +12,9 @@
 #include <src/compiler/SecurityGuard.hpp>
 
 namespace formula::compiler {
+    /**
+     * Check that there is no dynamic allocation in a formula
+     */
     class NoDynamicAllocationGuard : public SecurityGuard {
     public:
         NoDynamicAllocationGuard() : noDynamicAllocationRegex(

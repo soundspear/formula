@@ -12,6 +12,9 @@
 #include <utility>
 
 namespace formula::compiler {
+    /**
+     * Base class for implementing a security guard
+     */
     class SecurityGuard {
     public:
         virtual ~SecurityGuard() = default;

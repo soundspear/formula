@@ -10,6 +10,9 @@
 #include <JuceHeader.h>
 
 namespace formula::gui {
+    /**
+     * Base class for a Formula-styled popup
+     */
     class FormulaPopup : public juce::Component {
     public:
         void paint(Graphics& g) override {

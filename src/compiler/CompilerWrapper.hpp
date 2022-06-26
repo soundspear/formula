@@ -33,6 +33,9 @@
 #include <compiler/NoSystemCallGuard.hpp>
 
 namespace formula::compiler {
+    /**
+     * Base class to handle a compiler behavior and compile a formula
+     */
 	class CompilerWrapper
 	{
 	public:

@@ -15,6 +15,9 @@
 
 namespace formula::gui
 {
+    /**
+     * Application tab that displays the code editor and the buttons sidebar
+     */
 class CodeEditorTab : public juce::Component, public juce::CodeDocument::Listener, public juce::Timer
     {
     public:

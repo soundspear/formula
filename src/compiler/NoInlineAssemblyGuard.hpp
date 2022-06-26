@@ -10,6 +10,9 @@
 #include <src/compiler/SecurityGuard.hpp>
 
 namespace formula::compiler {
+    /**
+     * Check that there is no inline assembly in a formula
+     */
     class NoInlineAssemblyGuard : public SecurityGuard {
     public:
         bool checkLine(std::string& line) override {
