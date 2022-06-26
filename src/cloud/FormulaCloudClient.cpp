@@ -39,20 +39,20 @@ void formula::cloud::FormulaCloudClient::listFormulas(int skip, int take, std::s
         std::vector<formula::cloud::ListFormulaDto> formulaList;
         for (auto formula : response.as_array()) {
             ListFormulaDto dto;
-            dto.id = S(formula[W("id")].as_string());
-            if (!formula[W("author")].is_null()) {
-                dto.author = S(formula[W("author")].as_string());
+            dto.id = NARROW(formula[WIDE("id")].as_string());
+            if (!formula[WIDE("author")].is_null()) {
+                dto.author = NARROW(formula[WIDE("author")].as_string());
             }
-            dto.name = S(formula[W("name")].as_string());
-            dto.description = S(formula[W("description")].as_string());
-            if (!formula[W("rating")].is_null()) {
-                dto.rating = formula[W("rating")].as_double();
+            dto.name = NARROW(formula[WIDE("name")].as_string());
+            dto.description = NARROW(formula[WIDE("description")].as_string());
+            if (!formula[WIDE("rating")].is_null()) {
+                dto.rating = formula[WIDE("rating")].as_double();
             }
-            if (!formula[W("created")].is_null()) {
-                dto.created = boost::posix_time::from_iso_extended_string(S(formula[W("created")].as_string()));
+            if (!formula[WIDE("created")].is_null()) {
+                dto.created = boost::posix_time::from_iso_extended_string(NARROW(formula[WIDE("created")].as_string()));
             }
-            if (!formula[W("lastModified")].is_null()) {
-                dto.lastModified = boost::posix_time::from_iso_extended_string(S(formula[W("lastModified")].as_string()));
+            if (!formula[WIDE("lastModified")].is_null()) {
+                dto.lastModified = boost::posix_time::from_iso_extended_string(NARROW(formula[WIDE("lastModified")].as_string()));
             }
             formulaList.push_back(dto);
         }
@@ -80,24 +80,24 @@ void formula::cloud::FormulaCloudClient::getFormula(std::string formulaId) {
     const auto successCallback = [this](web::json::value response) {
         auto resp = response.serialize();
         formula::cloud::GetFormulaDto dto;
-        dto.author = S(response[W("author")].as_string());
-        dto.name = S(response[W("name")].as_string());
-        dto.description = S(response[W("description")].as_string());
-        dto.numDownloads = response[W("numDownloads")].as_integer();
-        if (!response[W("rating")].is_null()) {
-            dto.rating = response[W("rating")].as_double();
+        dto.author = NARROW(response[WIDE("author")].as_string());
+        dto.name = NARROW(response[WIDE("name")].as_string());
+        dto.description = NARROW(response[WIDE("description")].as_string());
+        dto.numDownloads = response[WIDE("numDownloads")].as_integer();
+        if (!response[WIDE("rating")].is_null()) {
+            dto.rating = response[WIDE("rating")].as_double();
         }
-        dto.numRatings = response[W("numRatings")].as_integer();
-        auto metadataStr = S(response[W("metadata")].as_string());
+        dto.numRatings = response[WIDE("numRatings")].as_integer();
+        auto metadataStr = NARROW(response[WIDE("metadata")].as_string());
         auto metadata = formula::storage::LocalIndex::deserializeMetadata(metadataStr);
         metadata[formula::processor::FormulaMetadataKeys::name] = dto.name;
         dto.metadata = metadata;
 
-        const auto userRatingsList = response[W("userRatings")].as_array();
+        const auto userRatingsList = response[WIDE("userRatings")].as_array();
         for (auto userRating : userRatingsList) {
             GetFormulaDto::GetUserRatingDto ratingDto;
-            ratingDto.rating = userRating[W("rating")].as_double();
-            ratingDto.comment = S(userRating[W("comment")].as_string());
+            ratingDto.rating = userRating[WIDE("rating")].as_double();
+            ratingDto.comment = NARROW(userRating[WIDE("comment")].as_string());
 
             dto.ratings.push_back(ratingDto);
         }
@@ -122,10 +122,10 @@ void formula::cloud::FormulaCloudClient::createFormula(formula::processor::Formu
     web::json::value body;
 
     using formula::processor::FormulaMetadataKeys;
-    body[W("name")] = web::json::value::string(W(metadata[FormulaMetadataKeys::name]));
-    body[W("description")] = web::json::value::string(W(metadata[FormulaMetadataKeys::description]));
+    body[WIDE("name")] = web::json::value::string(WIDE(metadata[FormulaMetadataKeys::name]));
+    body[WIDE("description")] = web::json::value::string(WIDE(metadata[FormulaMetadataKeys::description]));
     auto serializedMetadata = formula::storage::LocalIndex::serializeMetadata(metadata);
-    body[W("metadata")] = web::json::value::string(W(serializedMetadata));
+    body[WIDE("metadata")] = web::json::value::string(WIDE(serializedMetadata));
 
     const auto requestFunction = [this, uri, body, metadata]() {
         auto req = forgeAuthenticatedRequest(web::http::methods::POST, uri);
@@ -134,7 +134,7 @@ void formula::cloud::FormulaCloudClient::createFormula(formula::processor::Formu
             const web::http::http_response& response) {
                 if (response.status_code() == 409) {
                     auto body = response.extract_json().get();
-                    auto conflictingFormulaId = S(body[W("conflictingFormulaId")].as_string());
+                    auto conflictingFormulaId = NARROW(body[WIDE("conflictingFormulaId")].as_string());
                     this->eventHub->publish(EventType::formulaAlreadyExists, std::pair(conflictingFormulaId, metadata));
                     response.set_status_code(web::http::status_codes::NonAuthInfo);
                 }
@@ -164,9 +164,9 @@ void formula::cloud::FormulaCloudClient::updateFormula(std::string formulaId, fo
 
     web::json::value body;
     using formula::processor::FormulaMetadataKeys;
-    body[W("description")] = web::json::value::string(W(metadata[FormulaMetadataKeys::description]));
+    body[WIDE("description")] = web::json::value::string(WIDE(metadata[FormulaMetadataKeys::description]));
     auto serializedMetadata = formula::storage::LocalIndex::serializeMetadata(metadata);
-    body[W("metadata")] = web::json::value::string(W(serializedMetadata));
+    body[WIDE("metadata")] = web::json::value::string(WIDE(serializedMetadata));
 
     const auto requestFunction = [this, uri, body]() {
         auto req = forgeAuthenticatedRequest(web::http::methods::PATCH, uri);
@@ -194,8 +194,8 @@ void formula::cloud::FormulaCloudClient::submitRating(std::string formulaId, dou
                       % formulaId ).str();
 
     web::json::value body ;
-    body[W("rating")] = web::json::value::number(rating);
-    body[W("comment")] = web::json::value::string(W(comment));
+    body[WIDE("rating")] = web::json::value::number(rating);
+    body[WIDE("comment")] = web::json::value::string(WIDE(comment));
 
     const auto requestFunction = [this, uri, body]() {
         auto req = forgeAuthenticatedRequest(web::http::methods::POST, uri);

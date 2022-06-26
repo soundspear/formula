@@ -40,7 +40,7 @@ namespace formula::cloud {
     private:
         void requestWrapper(RequestFunction requestFunction, SuccessCallback successCallback, int numTries = 0);
 
-        inline static const utility::string_t baseUrl = W(FORMULA_CLOUD_URL);
+        inline static const utility::string_t baseUrl = WIDE(FORMULA_CLOUD_URL);
     };
 }
 

@@ -16,14 +16,14 @@ namespace formula::cloud {
         /**
          * Converts a wide string to a narrow string
          */
-        constexpr auto S = [](utility::string_t w) {
+        constexpr auto NARROW = [](utility::string_t w) {
             return utility::conversions::to_utf8string(w);
         };
 
         /**
          * Converts a narrow string to a wide string
          */
-        constexpr auto W = [](std::string s) {
+        constexpr auto WIDE = [](std::string s) {
             return utility::conversions::to_string_t(s);
         };
     }

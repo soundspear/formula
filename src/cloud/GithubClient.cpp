@@ -7,11 +7,11 @@
 #include "GithubClient.hpp"
 
 formula::cloud::GithubClient::GithubClient(const std::shared_ptr<formula::events::EventHub>& eventHub)
-: eventHub(eventHub), client(W("https://api.github.com/"))  { }
+: eventHub(eventHub), client(WIDE("https://api.github.com/"))  { }
 
 void formula::cloud::GithubClient::checkForUpdates() {
     web::json::value jsonResponse;
-    client.request(web::http::methods::GET, U("/repos/soundspear/formula/releases"), destructorCts.get_token())
+    client.request(web::http::methods::GET, WIDE("/repos/soundspear/formula/releases"), destructorCts.get_token())
             .then([this](const web::http::http_response& response) {
                 if (response.status_code() != 200) {
                     return;
@@ -22,10 +22,10 @@ void formula::cloud::GithubClient::checkForUpdates() {
 
                     std::optional<std::string> newerVersion;
                     for (auto& release : releases) {
-                        if (release[W("prerelease")].as_bool()) {
+                        if (release[WIDE("prerelease")].as_bool()) {
                             continue;
                         }
-                        auto releaseVersion = S(release[W("tag_name")].as_string());
+                        auto releaseVersion = NARROW(release[WIDE("tag_name")].as_string());
                         if (releaseVersion != FORMULA_VERSION) {
                             newerVersion = releaseVersion;
                         }

@@ -18,11 +18,11 @@ formula::cloud::AuthenticatedClient::AuthenticatedClient(const std::shared_ptr<f
 
 void formula::cloud::AuthenticatedClient::login(std::string user, std::string password) {
     web::json::value body;
-    body[W("username")] = web::json::value::string(W(user));
-    body[W("password")] = web::json::value::string(W(password));
+    body[WIDE("username")] = web::json::value::string(WIDE(user));
+    body[WIDE("password")] = web::json::value::string(WIDE(password));
 
     web::json::value jsonResponse;
-    client.request(web::http::methods::POST, U("/api/auth/login"), body, destructorCts.get_token())
+    client.request(web::http::methods::POST, WIDE("/api/auth/login"), body, destructorCts.get_token())
             .then([this](const web::http::http_response& response) {
                 if (response.status_code() == 400) {
                     eventHub->publish(EventType::loginFail);
@@ -54,7 +54,7 @@ void formula::cloud::AuthenticatedClient::setUsername(std::string newUserName) {
     }
 
     web::json::value body;
-    body[W("username")] = web::json::value::string(W(newUserName));
+    body[WIDE("username")] = web::json::value::string(WIDE(newUserName));
 
     auto request = forgeAuthenticatedRequest(web::http::methods::POST, "/api/auth/username");
     request.set_body(body);
@@ -83,10 +83,10 @@ void formula::cloud::AuthenticatedClient::setUsername(std::string newUserName) {
 
 pplx::task<void> formula::cloud::AuthenticatedClient::refreshAccessToken() {
     web::json::value body;
-    body[W("refreshToken")] = web::json::value::string(W(refreshToken.value_or("")));
+    body[WIDE("refreshToken")] = web::json::value::string(WIDE(refreshToken.value_or("")));
 
     web::json::value jsonResponse;
-    return client.request(web::http::methods::POST, U("/api/auth/refreshAccessToken"), body, destructorCts.get_token())
+    return client.request(web::http::methods::POST, WIDE("/api/auth/refreshAccessToken"), body, destructorCts.get_token())
             .then([this](const web::http::http_response& response) {
                 if (response.status_code() == 400) {
                     eventHub->publish(EventType::needLogin);
@@ -104,11 +104,11 @@ pplx::task<void> formula::cloud::AuthenticatedClient::refreshAccessToken() {
 }
 
 void formula::cloud::AuthenticatedClient::processLoginResponse(web::json::value jsonResponse) {
-    accessToken = S(jsonResponse[W("accessToken")].as_string());
-    refreshToken = S(jsonResponse[W("refreshToken")].as_string());
+    accessToken = NARROW(jsonResponse[WIDE("accessToken")].as_string());
+    refreshToken = NARROW(jsonResponse[WIDE("refreshToken")].as_string());
     expiresAt = std::chrono::duration_cast<std::chrono::seconds>(
             std::chrono::system_clock::now().time_since_epoch()).count()
-                + jsonResponse[W("expiresIn")].as_integer();
+                + jsonResponse[WIDE("expiresIn")].as_integer();
 
     settings->add(storage::SettingKey::accessToken, accessToken);
     settings->add(storage::SettingKey::refreshToken, refreshToken);
@@ -118,10 +118,10 @@ void formula::cloud::AuthenticatedClient::processLoginResponse(web::json::value 
 }
 
 void formula::cloud::AuthenticatedClient::processRefreshedTokenResponse(web::json::value jsonResponse) {
-    accessToken = utility::conversions::to_utf8string(jsonResponse[W("accessToken")].as_string());
+    accessToken = utility::conversions::to_utf8string(jsonResponse[WIDE("accessToken")].as_string());
     expiresAt = std::chrono::duration_cast<std::chrono::seconds>(
             std::chrono::system_clock::now().time_since_epoch()).count()
-                + jsonResponse[W("expiresIn")].as_integer();
+                + jsonResponse[WIDE("expiresIn")].as_integer();
 
     settings->add(storage::SettingKey::accessToken, accessToken);
     settings->add(storage::SettingKey::expiresAt, expiresAt);
@@ -140,16 +140,16 @@ std::optional<std::string> formula::cloud::AuthenticatedClient::getUserName() {
 web::http::http_request
 formula::cloud::AuthenticatedClient::forgeAuthenticatedRequest(web::http::method method, std::string uri) {
     web::http::http_request req(method);
-    req.headers().add(W("Authorization"), W("Bearer " + accessToken.value_or("")));
-    req.set_request_uri(W(uri));
+    req.headers().add(WIDE("Authorization"), WIDE("Bearer " + accessToken.value_or("")));
+    req.set_request_uri(WIDE(uri));
 
     return req;
 }
 
 void formula::cloud::AuthenticatedClient::checkUsername(web::json::value tokenResponse) {
-    auto userNameField = tokenResponse[W("username")];
+    auto userNameField = tokenResponse[WIDE("username")];
     if (!userNameField.is_null()) {
-        userName = S(userNameField.as_string());
+        userName = NARROW(userNameField.as_string());
         settings->add(storage::SettingKey::username, userName);
     } else {
         eventHub->publish(EventType::needSetUsername);
