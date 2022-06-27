@@ -5,7 +5,7 @@ project(Formula VERSION 1.0.0 LANGUAGES CXX)
 # ------ Formula parameters
 add_compile_definitions(FORMULA_VERSION="${CMAKE_PROJECT_VERSION}")
 if(NOT FORMULA_CLOUD_URL)
-    set(FORMULA_CLOUD_URL https://formula-staging.soundspear.com)
+    set(FORMULA_CLOUD_URL https://formula.soundspear.com)
 endif()
 add_compile_definitions(FORMULA_CLOUD_URL="${FORMULA_CLOUD_URL}")
 if(FORMULA_LOCAL_ONLY)
