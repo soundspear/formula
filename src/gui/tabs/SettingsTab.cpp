@@ -92,7 +92,7 @@ void formula::gui::SettingsTab::resized() {
 
 void formula::gui::SettingsTab::setPossibleWindowSizes() {
     windowSizeList.add("650x350");
-    windowSizeList.add("700x700");
+    windowSizeList.add("700x450");
     windowSizeList.add("900x450");
     windowSizeList.add("1200x700");
     windowSizeList.add("1600x900");

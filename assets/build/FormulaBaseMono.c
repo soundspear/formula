@@ -16,7 +16,7 @@ FORMULA_EXPORT void process_block_mono(float* in, int numSamples, float sampleRa
     for (int s = 0; s < numSamples; s++) {
         double fixDenormal = (1.0 / 4294967295.0);
         __time += 1.0L / (long double)(sampleRate);
-        in[s] = outGain*(wet*_formula_main(in[s]*inGain) + (1-wet)*in[s]);
+        in[s] = outGain*wet*_formula_main(in[s]*inGain) + (1-wet)*in[s];
         __debug_enabled = 0;
     }
 }
