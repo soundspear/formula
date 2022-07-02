@@ -135,6 +135,7 @@ void formula::processor::PluginProcessor::processBlock (juce::AudioBuffer<float>
     }
 
     if (pluginState->isBypassed()) {
+        buffer.clear();
         return;
     }
 
