@@ -69,6 +69,12 @@ formula::gui::KnobsPanel<NumKnobs, NumSwitches>::KnobsPanel(
         knob.setRange(0., 1.);
         knob.setValue(1.);
         dryWetKnobAttachment.reset(pluginState->attachSlider("Dry Wet", knob));
+        knob.onValueChange = [&]() {
+            pluginState->setActiveFormulaMetadataField(
+                    formula::processor::FormulaMetadataKeys::dryWet,
+                    std::to_string(knob.getValue())
+            );
+        };
     }
 
     inGainKnob.setNameLabel("In Gain");
@@ -79,6 +85,12 @@ formula::gui::KnobsPanel<NumKnobs, NumSwitches>::KnobsPanel(
         knob.setValue(0.);
         knob.setTextValueSuffix(" dB");
         inGainKnobAttachment.reset(pluginState->attachSlider("In Gain", knob));
+        knob.onValueChange = [&]() {
+            pluginState->setActiveFormulaMetadataField(
+                    formula::processor::FormulaMetadataKeys::inGain,
+                    std::to_string(knob.getValue())
+            );
+        };
     }
 
     outGainKnob.setNameLabel("Out Gain");
@@ -89,6 +101,12 @@ formula::gui::KnobsPanel<NumKnobs, NumSwitches>::KnobsPanel(
         knob.setValue(0., juce::NotificationType::dontSendNotification);
         knob.setTextValueSuffix(" dB");
         outGainKnobAttachment.reset(pluginState->attachSlider("Out Gain", knob));
+        knob.onValueChange = [&]() {
+            pluginState->setActiveFormulaMetadataField(
+                    formula::processor::FormulaMetadataKeys::outGain,
+                    std::to_string(knob.getValue())
+            );
+        };
     }
 
     for (auto i = 0; i < NumSwitches; i++) {
@@ -142,9 +160,41 @@ formula::gui::KnobsPanel<NumKnobs, NumSwitches>::KnobsPanel(
 template<unsigned int NumKnobs, unsigned int NumSwitches>
 inline void formula::gui::KnobsPanel<NumKnobs, NumSwitches>::restoreFromState(formula::processor::FormulaMetadata& metadata)
 {
-    dryWetKnob.inner().setValue(1.f);
-    inGainKnob.inner().setValue(0.f);
-    outGainKnob.inner().setValue(0.f);
+    try
+    {
+        auto& knob = dryWetKnob.inner();
+        auto valueStr = metadata[formula::processor::FormulaMetadataKeys::dryWet];
+        knob.setValue(boost::lexical_cast<double>(valueStr));
+    }
+    catch (boost::bad_lexical_cast&)
+    {
+        // Knob has never been moved and does not have a default value
+        dryWetKnob.inner().setValue(1.f);
+    }
+
+    try
+    {
+        auto& knob = inGainKnob.inner();
+        auto valueStr = metadata[formula::processor::FormulaMetadataKeys::inGain];
+        knob.setValue(boost::lexical_cast<double>(valueStr));
+    }
+    catch (boost::bad_lexical_cast&)
+    {
+        // Knob has never been moved and does not have a default value
+        inGainKnob.inner().setValue(0.f);
+    }
+
+    try
+    {
+        auto& knob = outGainKnob.inner();
+        auto valueStr = metadata[formula::processor::FormulaMetadataKeys::outGain];
+        knob.setValue(boost::lexical_cast<double>(valueStr));
+    }
+    catch (boost::bad_lexical_cast&)
+    {
+        // Knob has never been moved and does not have a default value
+        outGainKnob.inner().setValue(0.f);
+    }
 
     for (auto i = 0; i < NumSwitches; i++) {
         auto& toggle = userSwitches[i].inner();
@@ -250,11 +300,9 @@ void formula::gui::KnobsPanel<NumKnobs, NumSwitches>::resetContent()
 {
 }
 
-
 template<unsigned int NumKnobs, unsigned int NumSwitches>
 void formula::gui::KnobsPanel<NumKnobs, NumSwitches>::visibilityChanged()
 {
 }
-
 
 #endif // FORMULA_GUI_KNOBSPANEL_INCLUDED

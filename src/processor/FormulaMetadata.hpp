@@ -23,6 +23,9 @@ namespace formula::processor {
 		static inline const std::string created = "Created";
 		static inline const std::string lastModified = "LastModified";
 
+		static inline const std::string dryWet = "DryWet";
+		static inline const std::string inGain = "InGain";
+		static inline const std::string outGain = "OutGain";
 		static inline std::string knobName(int knobId) { return std::string("KnobName") + std::to_string(knobId); }
 		static inline std::string knobDefaultValue(int knobId) { return std::string("KnobDefaultValue") + std::to_string(knobId); }
 		static inline std::string switchName(int switchId) { return std::string("SwitchName") + std::to_string(switchId); }

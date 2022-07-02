@@ -77,7 +77,6 @@ void formula::processor::PluginState::serialize(juce::MemoryBlock& outData)
     std::unique_ptr<juce::XmlElement> xml(currentState.createXml());
 
     MemoryOutputStream out(outData, false);
-    const auto textXml = XmlElement::TextFormat().singleLine();
     xml->writeTo(out, XmlElement::TextFormat().singleLine());
 }
 
