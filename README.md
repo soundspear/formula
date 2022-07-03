@@ -18,6 +18,10 @@ Download and install the latest release for Windows or macOS [here](https://gith
 Replace `x64-windows-static` by `x64-osx` or `arm64-osx` depending on your platform.
 5. Finally, run `cmake --build .`
 
+---
+
+![Demo](/assets/demo.gif)
+
 ## Contribute
 
 If you like this project and you would like to contribute, you are welcome!
