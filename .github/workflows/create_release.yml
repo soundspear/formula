@@ -1,0 +1,48 @@
+name: Create a new release
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number (e.g. 2.1.0-rc.1)'     
+        required: true
+      release_candidate:
+        description: 'Is a release candidate'     
+        type: boolean
+        required: true
+
+jobs:
+  prepare:
+    name: Create tag
+    runs-on: ubuntu-latest
+    steps:        
+    - name: Checkout
+      uses: actions/checkout@v2
+      
+    - name: Create tag
+      uses: actions/github-script@v6
+      env:
+        TAG_NAME: '${{ github.event.inputs.version }}'
+      with:
+        script: |
+          github.rest.git.createRef({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            ref: `refs/tags/${process.env.TAG_NAME}`,
+            sha: context.sha
+          })          
+          
+  build-windows:
+    needs: prepare
+    name: Build for Windows
+    uses: ./.github/workflows/build_plugin_windows.yml
+    with:
+      release_tag: '${{ github.event.inputs.version }}'
+      release_candidate: ${{ github.event.inputs.release_candidate == 'true' }}
+  
+  build-macos:
+    needs: prepare
+    name: Build for macOS
+    uses: ./.github/workflows/build_plugin_macos.yml
+    with:
+      release_tag: '${{ github.event.inputs.version }}'
+      release_candidate: ${{ github.event.inputs.release_candidate == 'true' }}

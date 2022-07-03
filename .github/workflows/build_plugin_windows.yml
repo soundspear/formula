@@ -5,6 +5,9 @@ on:
       release_tag:
         type: string
         required: true
+      release_candidate:
+        type: boolean
+        required: true
       debug_enabled:
         type: boolean
         required: false
@@ -13,6 +16,10 @@ on:
     inputs:
       release_tag:
         description: 'Release tag (e.g. 2.1.0-rc.1)'     
+        required: true
+      release_candidate:
+        description: 'Is a release candidate' 
+        type: boolean
         required: true
       debug_enabled:
         description: 'Run the build with tmate debugging enabled'
@@ -66,5 +73,5 @@ jobs:
       with:
         draft: false
         file: 'packaging/windows/Output/formula-windows.exe'
-        prerelease: true
+        prerelease: ${{ inputs.release_candidate == 'true' }}
         tag_name: '${{ inputs.release_tag }}'
