@@ -40,6 +40,13 @@ void formula::cloud::AuthenticatedClient::login(std::string user, std::string pa
                 catch (const std::exception&) {
                     eventHub->publish(EventType::unexpectedError);
                 }
+            })
+            .then([this](pplx::task<void> previous_task) {
+                try {
+                    previous_task.wait();
+                } catch (std::exception& e) {
+                    eventHub->publish(EventType::unexpectedError);
+                }
             });
 }
 
@@ -98,6 +105,13 @@ pplx::task<void> formula::cloud::AuthenticatedClient::refreshAccessToken() {
                     processRefreshedTokenResponse(jsonResponse);
                 }
                 catch (const std::exception&) {
+                    eventHub->publish(EventType::unexpectedError);
+                }
+            })
+            .then([this](pplx::task<void> previous_task) {
+                try {
+                    previous_task.wait();
+                } catch (std::exception& e) {
                     eventHub->publish(EventType::unexpectedError);
                 }
             });
