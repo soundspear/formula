@@ -27,11 +27,15 @@ formula::processor::FilePlayer::FilePlayer() {
 
 bool formula::processor::FilePlayer::loadFile(String& path) {
     try {
+        if (readerSource) {
+            readerSource.release();
+        }
         currentPath = path;
         auto file = File(currentPath);
         auto *reader = formatManager.createReaderFor(file);
         readerSource = std::make_unique<juce::AudioFormatReaderSource>(reader, true);
         transportSource.setSource(readerSource.get());
+        transportSource.setPosition(0);
     } catch (std::exception&) {
         return false;
     }
