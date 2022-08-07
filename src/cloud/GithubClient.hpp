@@ -23,6 +23,8 @@ namespace formula::cloud {
         explicit GithubClient(const std::shared_ptr<formula::events::EventHub>& eventHub);
         void checkForUpdates();
     private:
+        static void parseVersion(const std::string& input, int result[3]);
+        static bool isGreaterThanCurrentVersion(std::string semverStr);
         std::shared_ptr<formula::events::EventHub> eventHub;
         web::http::client::http_client client;
         pplx::cancellation_token_source destructorCts;

@@ -20,27 +20,39 @@ void formula::cloud::GithubClient::checkForUpdates() {
                 auto jsonResponse = response.extract_json().get();
                 auto releases = jsonResponse.as_array();
 
-                std::optional<std::string> newerVersion;
                 for (auto& release : releases) {
                     if (release[WIDE("prerelease")].as_bool()) {
                         continue;
                     }
                     auto releaseVersion = NARROW(release[WIDE("tag_name")].as_string());
-                    if (releaseVersion != FORMULA_VERSION) {
-                        newerVersion = releaseVersion;
+                    if (isGreaterThanCurrentVersion(releaseVersion)) {
+                        eventHub->publish(EventType::newVersionReleased, releaseVersion);
                     }
                     break; // First release will always be the most recent
-                }
-
-                if (newerVersion.has_value()) {
-                    eventHub->publish(EventType::newVersionReleased, newerVersion.value());
                 }
             }
             catch (const std::exception&) { /* Silence check for update errors */ }
         })
-        .then([] (pplx::task<void> previous_task) {
+        .then([] (const pplx::task<void>& previous_task) {
             try {
                 previous_task.wait();
             } catch (std::exception& e) { /* ignore */ }
         });
+}
+
+void formula::cloud::GithubClient::parseVersion(const std::string& input, int result[3]) {
+    std::istringstream parser(input);
+    parser >> result[0];
+    for(int idx = 1; idx < 3; idx++)
+    {
+        parser.get();
+        parser >> result[idx];
+    }
+}
+
+bool formula::cloud::GithubClient::isGreaterThanCurrentVersion(std::string semverStr) {
+    int currentVersion[3], semver[3];
+    parseVersion(FORMULA_VERSION, currentVersion);
+    parseVersion(semverStr, semver);
+    return std::lexicographical_compare(currentVersion, currentVersion + 3, semver, semver + 3);
 }
