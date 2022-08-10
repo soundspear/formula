@@ -15,7 +15,7 @@
 #include <compiler/TccWrapper.hpp>
 #include <compiler/ClangWrapper.hpp>
 #include <processor/FilePlayer.hpp>
-#include <processor/FormulaLoader.hpp>
+#include <processor/library/FormulaLoader.hpp>
 #include <processor/PluginState.hpp>
 #include <processor/KnobsPanelListener.hpp>
 #include <storage/LocalIndex.hpp>
@@ -65,8 +65,10 @@ class PluginProcessor : public juce::AudioProcessor, public formula::processor::
         std::shared_ptr<formula::cloud::FormulaCloudClient> cloud;
         std::shared_ptr<formula::processor::FilePlayer> filePlayer;
         std::unique_ptr<formula::compiler::CompilerWrapper> compiler;
-        formula::processor::FormulaLoader formulaLoader;
+        formula::processor::library::FormulaLoader formulaLoader;
 
+        juce::AudioPlayHead* audioPlayHead;
+        juce::AudioPlayHead::CurrentPositionInfo currentPositionInfo;
         juce::Random random;
         std::string previousCompilationId;
         bool recompiled;

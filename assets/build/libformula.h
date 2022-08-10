@@ -79,6 +79,8 @@ int __debug_enabled;
 const float* __knobs;
 const float* __switches;
 long double __time = 0;
+double __bpm = 0;
+double __bar = 0;
 float __sample_rate;
 
 #define KNOB_1 __knobs[0]
@@ -99,5 +101,7 @@ float __sample_rate;
 
 #define TIME __time
 #define SAMPLE_RATE __sample_rate
+#define BAR __bar
+#define BPM __bpm
 
 #endif //FORMULA_ASSETS_LIBFORMULA_INCLUDED

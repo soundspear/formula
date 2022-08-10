@@ -13,7 +13,7 @@ formula::gui::FormulaCodeTokenizer::FormulaCodeTokenizer() {
         "KNOB_7", "KNOB_8","KNOB_9","KNOB_10","KNOB_11","KNOB_12",
         "SAMPLE_RATE",
         "SWITCH_1", "SWITCH_2","SWITCH_3",
-        "TIME"
+        "TIME", "BPM", "BAR"
      });
 
     formulaKeywords.insert(

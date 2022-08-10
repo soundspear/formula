@@ -143,7 +143,7 @@ formula::gui::CodeEditorTab::CodeEditorTab(
         thisPtr->eventHub->publish(EventType::compilationRequest, formulaSource);
     }, this);
 
-    startTimer(500);
+    startTimer(100);
 }
 
 formula::gui::CodeEditorTab::~CodeEditorTab() {

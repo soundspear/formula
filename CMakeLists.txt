@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.11)
 
-project(Formula VERSION 1.0.1 LANGUAGES CXX)
+project(Formula VERSION 1.1.0 LANGUAGES CXX)
 
 # ------ Formula parameters
 add_compile_definitions(FORMULA_VERSION="${CMAKE_PROJECT_VERSION}")
@@ -120,7 +120,7 @@ target_sources(Formula
         "src/gui/components/FormulaDetailsPanel.cpp"
         "src/gui/components/SearchBar.cpp"
         "src/processor/FilePlayer.cpp"
-        "src/processor/FormulaLoader.cpp"
+        "src/processor/library/FormulaLoader.cpp"
         "src/processor/KnobsPanelListener.cpp"
         "src/processor/PluginState.cpp"
         "src/processor/PluginProcessor.cpp"

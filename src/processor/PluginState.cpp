@@ -9,9 +9,9 @@
 formula::processor::PluginState::PluginState(AudioProcessor& audioProcessor, String name)
     : AudioProcessorValueTreeState(audioProcessor, nullptr, juce::Identifier(name),
     {
-        std::make_unique<AudioParameterFloat>("Dry Wet", "Dry Wet", 0.f, 1.f, 1.f),
-        std::make_unique<AudioParameterFloat>("In Gain", "In Gain", -12.f, 12.f, .0f),
-        std::make_unique<AudioParameterFloat>("Out Gain", "Out Gain", -12.f, 12.f, .0f),
+        std::make_unique<AudioParameterFloat>(ParameterID { "Dry Wet", 1 }, "Dry Wet", 0.f, 1.f, 1.f),
+        std::make_unique<AudioParameterFloat>(ParameterID { "In Gain", 1 }, "In Gain", -12.f, 12.f, .0f),
+        std::make_unique<AudioParameterFloat>(ParameterID { "Out Gain", 1 }, "Out Gain", -12.f, 12.f, .0f),
         BOOST_PP_REPEAT(FORMULA_NUM_USER_KNOBS, FORMULA_CREATE_USER_KNOB_PARAMETERS, _)
         BOOST_PP_REPEAT(FORMULA_NUM_USER_SWITCHES, FORMULA_CREATE_USER_SWITCH_PARAMETERS, _)
     })

@@ -149,9 +149,16 @@ void formula::processor::PluginProcessor::processBlock (juce::AudioBuffer<float>
     }
 
     if (formulaLoader.isReady()) {
+
+        audioPlayHead = getPlayHead();
+        auto pos = audioPlayHead->getPosition();
+        double bpm = pos->getBpm().orFallback(60.0);
+        double bar = pos->getPpqPosition().orFallback(1.0);
+
         juce::ScopedNoDenormals noDenormals;
 
         formulaLoader.formulaProcessBlock(buffer, dryWet, inGain, outGain,
+                                          bpm, bar,
                                           userKnobs, userSwitches,
                                           getSampleRate());
 

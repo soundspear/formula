@@ -2,7 +2,8 @@
 
 _formula_main_stereo_decl;
 
-FORMULA_EXPORT void process_block_stereo(float** in, int numSamples, float sampleRate,
+FORMULA_EXPORT void process_block_stereo_1_1(float** in, int numSamples, float sampleRate,
+                                         double bpm, double bar,
                                          const float* knobs, const float* switches,
                                          float wet, float inGain, float outGain,
                                          int* debug_idx, char** debug_stack, int debug_stack_size) {
@@ -13,6 +14,8 @@ FORMULA_EXPORT void process_block_stereo(float** in, int numSamples, float sampl
     __knobs = knobs;
     __switches = switches;
     __sample_rate = sampleRate;
+    __bpm = bpm;
+    __bar = bar;
     for (int s = 0; s < numSamples; s++) {
         double fixDenormal = (1.0 / 4294967295.0);
         __time += 1 / sampleRate;

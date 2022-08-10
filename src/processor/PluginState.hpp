@@ -19,8 +19,8 @@
 
 #define FORMULA_NUM_USER_KNOBS 12
 #define FORMULA_NUM_USER_SWITCHES 3
-#define FORMULA_CREATE_USER_KNOB_PARAMETERS(_, i, __) std::make_unique<AudioParameterFloat>("Knob " + std::to_string((i)+1), "Knob " + std::to_string((i)+1), 0.f, 1.f, 0.5f),
-#define FORMULA_CREATE_USER_SWITCH_PARAMETERS(_, i, __) std::make_unique<AudioParameterBool>("Switch " + std::to_string((i)+1), "Switch " + std::to_string((i)+1), false),
+#define FORMULA_CREATE_USER_KNOB_PARAMETERS(_, i, __) std::make_unique<AudioParameterFloat>(ParameterID { "Knob " + std::to_string((i)+1), 1 }, "Knob " + std::to_string((i)+1), 0.f, 1.f, 0.5f),
+#define FORMULA_CREATE_USER_SWITCH_PARAMETERS(_, i, __) std::make_unique<AudioParameterBool>(ParameterID {"Switch " + std::to_string((i)+1), 1 }, "Switch " + std::to_string((i)+1), false),
 
 
 namespace formula::processor {
