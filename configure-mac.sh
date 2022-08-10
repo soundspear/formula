@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-JuceVersion="6.1.4"
+JuceVersion="7.0.1"
 LLVMVersion="11"
 BoostVersion="1.78" # 1.74 not available through brew
 OpenSSLVersion="1.1"
