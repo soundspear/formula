@@ -37,7 +37,7 @@ jobs:
     uses: ./.github/workflows/build_plugin_windows.yml
     with:
       release_tag: '${{ github.event.inputs.version }}'
-      release_candidate: ${{ github.event.inputs.release_candidate }}
+      release_candidate: "${{ github.event.inputs.release_candidate == 'true' }}"
   
   build-macos:
     needs: prepare
@@ -45,4 +45,4 @@ jobs:
     uses: ./.github/workflows/build_plugin_macos.yml
     with:
       release_tag: '${{ github.event.inputs.version }}'
-      release_candidate: ${{ github.event.inputs.release_candidate }}
+      release_candidate: "${{ github.event.inputs.release_candidate == 'true' }}"
