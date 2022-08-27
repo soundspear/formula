@@ -17,6 +17,9 @@ fi
 
 echo "Installing vcpkg"
 git clone https://github.com/microsoft/vcpkg
+cd vcpkg
+git reset --hard "2022.02.02"
+cd ..
 ./vcpkg/bootstrap-vcpkg.sh
 
 echo "Installing Boost"
