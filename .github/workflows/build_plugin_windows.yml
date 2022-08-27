@@ -73,5 +73,5 @@ jobs:
       with:
         draft: false
         file: 'packaging/windows/Output/formula-windows.exe'
-        prerelease: ${{ inputs.release_candidate == 'true' }}
+        prerelease: ${{ inputs.release_candidate }}
         tag_name: '${{ inputs.release_tag }}'

@@ -100,5 +100,5 @@ jobs:
       with:
         draft: false
         file: 'formula-macos.zip'
-        prerelease: ${{ inputs.release_candidate == 'true' }}
+        prerelease: ${{ inputs.release_candidate }}
         tag_name: '${{ inputs.release_tag }}'
