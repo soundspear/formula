@@ -96,8 +96,8 @@ float __sample_rate;
 #define KNOB_11 __knobs[10]
 #define KNOB_12 __knobs[11]
 #define SWITCH_1 __switches[0]
-#define SWITCH_2 __switches[2]
-#define SWITCH_3 __switches[3]
+#define SWITCH_2 __switches[1]
+#define SWITCH_3 __switches[2]
 
 #define TIME __time
 #define SAMPLE_RATE __sample_rate
