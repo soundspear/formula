@@ -34,8 +34,9 @@ bool formula::processor::FilePlayer::loadFile(String& path) {
         auto file = File(currentPath);
         auto *reader = formatManager.createReaderFor(file);
         readerSource = std::make_unique<juce::AudioFormatReaderSource>(reader, true);
-        transportSource.setSource(readerSource.get());
+        transportSource.setSource(readerSource.get(), 0, nullptr, reader->sampleRate, 2);
         transportSource.setPosition(0);
+        prepare();
     } catch (std::exception&) {
         return false;
     }
@@ -43,14 +44,25 @@ bool formula::processor::FilePlayer::loadFile(String& path) {
 }
 
 void formula::processor::FilePlayer::prepare(double sampleRate, int maximumExpectedSamplesPerBlock) {
+    currentSampleRate = sampleRate;
+    currentSamplesPerBlock = maximumExpectedSamplesPerBlock;
+    if (readerSource == nullptr) {
+        return;
+    }
+
+    transportSource.stop();
     transportSource.prepareToPlay(maximumExpectedSamplesPerBlock, sampleRate);
+    readerSource->prepareToPlay(maximumExpectedSamplesPerBlock, sampleRate);
     transportSource.start();
 }
 
-void formula::processor::FilePlayer::getNextBlock(double sampleRate, AudioBuffer<float> &buffer) {
+void formula::processor::FilePlayer::prepare() {
+    prepare(currentSampleRate, currentSamplesPerBlock);
+}
+
+void formula::processor::FilePlayer::getNextBlock(AudioBuffer<float> &buffer) {
     if (!transportSource.isPlaying()) {
-        transportSource.prepareToPlay(buffer.getNumSamples() * 10, sampleRate);
-        transportSource.start();
+        return;
     }
     transportSource.getNextAudioBlock(AudioSourceChannelInfo(buffer));
 

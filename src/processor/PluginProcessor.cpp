@@ -131,7 +131,7 @@ void formula::processor::PluginProcessor::processBlock (juce::AudioBuffer<float>
     juce::ignoreUnused (midiMessages);
 
     if (JUCEApplicationBase::isStandaloneApp()) {
-        filePlayer->getNextBlock(getSampleRate(), buffer);
+        filePlayer->getNextBlock(buffer);
     }
 
     if (pluginState->isBypassed()) {

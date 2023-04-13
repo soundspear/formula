@@ -18,7 +18,8 @@ namespace formula::processor {
         FilePlayer();
         bool loadFile(String& path);
         void prepare(double sampleRate, int maximumExpectedSamplesPerBlock);
-        void getNextBlock(double sampleRate, AudioBuffer<float> &buffer);
+        void prepare();
+        void getNextBlock(AudioBuffer<float> &buffer);
         juce::String& getCurrentPath();
         juce::String getWildcardForAllFormats();
 
@@ -27,7 +28,8 @@ namespace formula::processor {
         std::unique_ptr<juce::AudioFormatReaderSource> readerSource;
         juce::AudioTransportSource transportSource;
         juce::String currentPath;
-        std::unique_ptr<juce::InputStream> inputStream;
+        double currentSampleRate;
+        double currentSamplesPerBlock;
     };
 }
 
