@@ -41,7 +41,7 @@ jobs:
     - name: Configure
       run: |
         chmod +x configure-linux.sh
-        ./configure-linux.sh
+        sudo ./configure-linux.sh
         
     - name: CMake
       run: |
