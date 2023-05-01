@@ -9,6 +9,8 @@ out/**
 .DS_Store
 
 Makefile
+CMakeFiles/**
+Formula_artefacts/**
 
 JUCE/**
 

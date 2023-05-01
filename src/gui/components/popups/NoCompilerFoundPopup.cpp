@@ -25,6 +25,10 @@ formula::gui::NoCompilerFoundPopup::NoCompilerFoundPopup()
     downloadLink.setButtonText("Install XCode from the App Store");
     downloadLink.setURL(juce::URL("https://apps.apple.com/app/xcode/id497799835"));
     bottomDescriptionLabel.setText("Restart your DAW once installed", NotificationType::sendNotification);
+#elif defined(__linux__)
+    downloadLink.setButtonText("Download LLVM");
+    downloadLink.setURL(juce::URL("https://releases.llvm.org/download.html"));
+    bottomDescriptionLabel.setText("Or install the latest 'clang' package using your package manager", NotificationType::sendNotification);
 #endif
 
     bottomDescriptionLabel.setJustificationType(Justification::centred);

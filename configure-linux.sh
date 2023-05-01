@@ -1,14 +1,14 @@
 #!/bin/bash
 
-JuceVersion="6.1.4"
+JuceVersion="7.0.1"
 LLVMVersion="11"
-BoostVersion="1.74.0"
+BoostVersion="1.74"
 
 if [ "$EUID" -ne 0 ]
   then echo "Please run as root"
   exit
 fi
-# /mnt/c/Users/antoi/Documents/Prog/C++/formula
+
 echo "Installing Prerequisites"
 apt-get install curl tar gzip build-essential -y
 apt-get install libasound2-dev libfreetype6-dev libfontconfig1-dev xclip libcurl4-openssl-dev  -y
@@ -21,17 +21,31 @@ echo "Installing LLVM"
 apt-get install llvm-$LLVMVersion clang-$LLVMVersion -y
 
 echo "Installing Boost"
+apt-get install libboost$BoostVersion-dev -y
+BOOST_PACKAGES=(
+	"boost-date-time"
+	"boost-filesystem"
+)
+for PACKAGE in "${BOOST_PACKAGES[@]}"
+do
+	apt-get install lib$PACKAGE$BoostVersion-dev -y
+done
+
+: '
 BoostVersion_=$(echo boost_$BoostVersion | tr '.' '_')
 https://boostorg.jfrog.io/artifactory/main/release/$BoostVersion/source/boost_$(echo $BoostVersion | tr '.' '_').tar.gz
 tar xzfv $BoostVersion_.tar.gz
 cd $BoostVersion_
-./bootstrap.sh --prefix=/usr/
+./bootstrap.sh --prefix=/usr/local/
 ./b2 && ./b2 install
-#apt-get install libboost$BoostVersion-all-dev -y
+'
 
 echo "Installing JUCE"
-curl -s -L "https://github.com/juce-framework/JUCE/archive/refs/tags/$JuceVersion.tar.gz" | tar xvz -C .
-mv JUCE-$JuceVersion JUCE
+if [[ ! -d "JUCE" ]]; then
+	curl -s -L "https://github.com/juce-framework/JUCE/archive/refs/tags/$JuceVersion.tar.gz" | tar xvz -C .
+	mv JUCE-$JuceVersion JUCE
+  chmod -R 777 JUCE
+fi
 
 echo "Installing cpprestsdk"
-apt-get install libcpprest-dev
+apt-get install libcpprest-dev -y

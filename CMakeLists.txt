@@ -32,12 +32,13 @@ IF (WIN32)
         set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
     ENDIF ()
 	set(Boost_USE_STATIC_RUNTIME ON)
+    set(Boost_USE_STATIC_LIBS ON)
 ELSEIF (APPLE)
-  set(VCPKG_LIBRARY_LINKAGE static CACHE STRING "VCPKG_Library_Linkage")
+    set(VCPKG_LIBRARY_LINKAGE static CACHE STRING "VCPKG_Library_Linkage")
+    set(Boost_USE_STATIC_LIBS ON)
 ENDIF()
 
 # DEPENDENCIES
-set(Boost_USE_STATIC_LIBS ON)
 find_package(Boost 1.74.0 COMPONENTS REQUIRED filesystem date_time)
 include_directories(Formula ${Boost_INCLUDE_DIR} SYSTEM)
 
@@ -91,6 +92,10 @@ juce_add_binary_data(FormulaBinaryData
         assets/icons/zoom_in.svg
         assets/icons/zoom_out.svg
 )
+IF (UNIX)
+    set_target_properties(FormulaBinaryData PROPERTIES
+        POSITION_INDEPENDENT_CODE TRUE)
+ENDIF()
 
 add_compile_definitions(JUCE_MODAL_LOOPS_PERMITTED)
 add_compile_definitions(JUCE_USE_MP3AUDIOFORMAT)
@@ -154,4 +159,7 @@ IF (WIN32)
             cpprestsdk::cpprestsdk_zlib_internal
             cpprestsdk::cpprestsdk_brotli_internal
             bcrypt.lib winhttp.lib crypt32.lib)
+ELSEIF (UNIX)
+    target_link_libraries(Formula PRIVATE
+            OpenSSL::SSL)
 ENDIF()

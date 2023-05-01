@@ -71,8 +71,11 @@ std::vector<std::string> formula::compiler::ClangWrapper::getCompilerArgs(std::s
 
 #if defined (_WIN32)
     args += "-shared";
-#elif defined(__APPLE__ )
+#elif defined (__APPLE__ )
     args += "-dynamiclib";
+#elif defined (__linux__)
+    args += "-shared";
+    args += "-fPIC";
 #endif
     args += "-fvisibility=hidden";
 
