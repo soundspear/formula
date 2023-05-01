@@ -1,0 +1,70 @@
+name: Build plugin (Linux)
+on: 
+  workflow_call:
+    inputs:
+      release_tag:
+        type: string
+        required: true
+      release_candidate:
+        type: boolean
+        required: true
+      debug_enabled:
+        type: boolean
+        required: false
+        default: false
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Release tag (e.g. 2.1.0-rc.1)'     
+        required: true
+      release_candidate:
+        description: 'Is a release candidate' 
+        type: boolean
+        required: true
+      debug_enabled:
+        description: 'Run the build with tmate debugging enabled'
+        required: false
+        default: false
+
+jobs:  
+  build:
+    name: Building the project
+    runs-on: ubuntu-latest
+    steps: 
+    - name: Git Checkout
+      uses: actions/checkout@v2
+        
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
+      if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled }}
+      
+    - name: Configure
+      run: |
+        chmod +x configure-linux.sh
+        ./configure-linux.sh
+        
+    - name: CMake
+      run: |
+        cmake -G Ninja . -DFORMULA_STANDALONE=1 -DCMAKE_BUILD_TYPE=Release
+            
+    - name: CMake Build
+      run: |
+        cmake --build . --target Formula_All
+
+    - name: Create tarball
+      run: |
+        mkdir /tmp/formula
+        cp -R Formula_artefacts/Release/VST3/Formula.vst3 /tmp/formula/
+        cp -R Formula_artefacts/Release/Standalone/Formula /tmp/formula/
+        cd /tmp/formula
+        tar czf /tmp/formula-linux.tgz *
+
+    - name: Upload to release
+      uses: xresloader/upload-to-github-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        draft: false
+        file: '/tmp/formula-linux.zip'
+        prerelease: ${{ inputs.release_candidate }}
+        tag_name: '${{ inputs.release_tag }}'

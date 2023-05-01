@@ -22,7 +22,7 @@ namespace formula::processor::library {
                                         float wet, float inGain, float outGain,
                                         int* debug_idx, char** debug_stack, int debug_stack_size);
 
-        typedef void (ProcessBlockStereo)(float** in, int numSamples, float sampleRate,
+        typedef void (ProcessBlockStereo)(float* const* in, int numSamples, float sampleRate,
                                           const float* knobs, const float* switches,
                                           float wet, float inGain, float outGain,
                                           int* debug_idx, char** debug_stack, int debug_stack_size);
@@ -84,7 +84,7 @@ namespace formula::processor::library {
                 int debugStackSize
         ) override {
 
-            float** writePointers = buffer.getArrayOfWritePointers();
+            float* const* writePointers = buffer.getArrayOfWritePointers();
             int numSamples = buffer.getNumSamples();
             int numChannels = buffer.getNumChannels();
 
