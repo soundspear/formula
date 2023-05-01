@@ -23,6 +23,7 @@ on:
         required: true
       debug_enabled:
         description: 'Run the build with tmate debugging enabled'
+        type: boolean
         required: false
         default: false
 
