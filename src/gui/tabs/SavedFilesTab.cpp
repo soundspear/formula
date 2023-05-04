@@ -41,7 +41,7 @@ formula::gui::SavedFilesTab::SavedFilesTab(
     addChildComponent(loadButton);
     loadButton.onClick = [this] {
         changeBottomBarVisibility(false);
-        const auto metadata = this->data[this->table.getSelectedRow()];
+        const auto metadata = this->data[static_cast<unsigned int>(this->table.getSelectedRow())];
         this->eventHub->publish(EventType::loadFormulaRequest, metadata);
         this->table.deselectAllRows();
     };
@@ -81,7 +81,7 @@ formula::gui::SavedFilesTab::SavedFilesTab(
     }, this);
 
     eventHub->subscribeOnUiThread<SavedFilesTab>(EventType::createFormulaSuccess,
-                                  [](boost::any arg, SavedFilesTab* thisPtr) {
+                                  []([[maybe_unused]] boost::any arg, [[maybe_unused]] SavedFilesTab* thisPtr) {
         AlertWindow::showMessageBox(MessageBoxIconType::NoIcon, "Success", "Your formula was successfully uploaded");
     }, this);
 }
@@ -106,7 +106,7 @@ void formula::gui::SavedFilesTab::changeBottomBarVisibility(bool visible)
 
 void formula::gui::SavedFilesTab::exportFormulaToFile()
 {
-    const auto metadata = this->data[this->table.getSelectedRow()];
+    const auto metadata = this->data[static_cast<unsigned int>(this->table.getSelectedRow())];
 
     FileChooser chooser("Select the destination file...",
         File::getSpecialLocation(File::userHomeDirectory),
@@ -170,7 +170,7 @@ void formula::gui::SavedFilesTab::deleteFormula()
 
     if (result != 1) return;
 
-    auto &metadata = this->data[this->table.getSelectedRow()];
+    auto &metadata = this->data[static_cast<unsigned int>(this->table.getSelectedRow())];
     localIndex->deleteFormula(metadata[FormulaMetadataKeys::name]);
     refreshData();
 }
@@ -187,7 +187,7 @@ void formula::gui::SavedFilesTab::publishFormula() {
 
     if (result != 1) return;
 
-    auto &metadata = this->data[this->table.getSelectedRow()];
+    auto &metadata = this->data[static_cast<unsigned int>(this->table.getSelectedRow())];
     cloud->createFormula(metadata);
 }
 
@@ -224,13 +224,13 @@ void formula::gui::SavedFilesTab::paintRowBackground(Graphics& g, int rowNumber,
 void formula::gui::SavedFilesTab::paintCell(Graphics& g, int rowNumber, int columnId,
     int width, int height, bool /*rowIsSelected*/)
 {
-    if (rowNumber >= data.size()) {
+    if (rowNumber >= static_cast<int>(data.size())) {
         return;
     }
     g.setColour(getLookAndFeel().findColour(ListBox::textColourId));
     g.setFont(Font());
 
-    auto row = data[rowNumber];
+    auto row = data[static_cast<unsigned int>(rowNumber)];
     String text;
 
     switch (columnId) {

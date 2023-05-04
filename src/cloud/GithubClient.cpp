@@ -6,11 +6,10 @@
 
 #include "GithubClient.hpp"
 
-formula::cloud::GithubClient::GithubClient(const std::shared_ptr<formula::events::EventHub>& eventHub)
-: eventHub(eventHub), client(WIDE("https://api.github.com/"))  { }
+formula::cloud::GithubClient::GithubClient(const std::shared_ptr<formula::events::EventHub>& eventHubRef)
+: eventHub(eventHubRef), client(WIDE("https://api.github.com/"))  { }
 
 void formula::cloud::GithubClient::checkForUpdates() {
-    web::json::value jsonResponse;
     client.request(web::http::methods::GET, WIDE("/repos/soundspear/formula/releases"), destructorCts.get_token())
         .then([this](const web::http::http_response& response) mutable {
             if (response.status_code() != 200) {

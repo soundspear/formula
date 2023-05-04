@@ -40,10 +40,10 @@ namespace formula::gui
 		void paintButton(Graphics& g,
 			bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override {
             const auto& laf = getLookAndFeel();
-            const auto idleColour = laf.findColour(ColourIds::idleColourId);
-            const auto highlightedColour = laf.findColour(ColourIds::highlightedColourId);
-            const auto downColour = laf.findColour(ColourIds::downColourId);
-            const auto toggledColour = laf.findColour(ColourIds::toggledColourId);
+            const auto idleColour = laf.findColour(static_cast<int>(ColourIds::idleColourId));
+            const auto highlightedColour = laf.findColour(static_cast<int>(ColourIds::highlightedColourId));
+            const auto downColour = laf.findColour(static_cast<int>(ColourIds::downColourId));
+            const auto toggledColour = laf.findColour(static_cast<int>(ColourIds::toggledColourId));
 
 			auto localBounds = getLocalBounds().toFloat();
             g.fillAll(idleColour);

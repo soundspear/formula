@@ -76,7 +76,7 @@ namespace formula::processor::library {
         void processBlock(
                 AudioBuffer<float>& buffer,
                 float dryWet, float inGain, float outGain,
-                double bpm, double bar,
+                [[maybe_unused]] double bpm, [[maybe_unused]] double bar,
                 float* userKnobs, float* userSwitches,
                 double sampleRate,
                 int *debugStackIdx,

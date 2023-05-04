@@ -65,7 +65,9 @@ std::string formula::compiler::ClangWrapper::getCompilerPath()
     return clangPath.string();
 }
 
-std::vector<std::string> formula::compiler::ClangWrapper::getCompilerArgs(std::string sourcePath, std::string outPath, bool isMono)
+std::vector<std::string> formula::compiler::ClangWrapper::getCompilerArgs(
+    std::string sourcePath, std::string outPath, [[maybe_unused]] bool isMono
+)
 {
     std::vector<std::string> args;
 

@@ -25,7 +25,7 @@ namespace formula::gui {
      * @tparam NumKnobs Number of knobs
      * @tparam NumSwitches Number of switches
      */
-    template<unsigned int NumKnobs, unsigned int NumSwitches>
+    template<int NumKnobs, int NumSwitches>
 	class KnobsPanel : public Component 
     {
     public:
@@ -40,14 +40,14 @@ namespace formula::gui {
         KnobPanelSlider dryWetKnob;
         KnobPanelSlider inGainKnob;
         KnobPanelSlider outGainKnob;
-        std::array<KnobPanelSlider, NumKnobs> userKnobs;
-        std::array<KnobPanelToggle, NumSwitches> userSwitches;
+        std::array<KnobPanelSlider, static_cast<unsigned long>(NumKnobs)> userKnobs;
+        std::array<KnobPanelToggle, static_cast<unsigned long>(NumSwitches)> userSwitches;
 
         std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> dryWetKnobAttachment;
         std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> inGainKnobAttachment;
         std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> outGainKnobAttachment;
-        std::array<std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>, NumKnobs> userKnobsAttachments;
-        std::array<std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment>, NumSwitches> userSwitchesAttachments;
+        std::array<std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>, static_cast<unsigned long>(NumKnobs)> userKnobsAttachments;
+        std::array<std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment>, static_cast<unsigned long>(NumSwitches)> userSwitchesAttachments;
 
         std::shared_ptr<formula::processor::PluginState> pluginState;
 
@@ -55,12 +55,14 @@ namespace formula::gui {
 	};
 }
 
-template<unsigned int NumKnobs, unsigned int NumSwitches>
+template<int NumKnobs, int NumSwitches>
 formula::gui::KnobsPanel<NumKnobs, NumSwitches>::KnobsPanel(
-    const std::shared_ptr<formula::processor::PluginState>& pluginState
-) : dryWetKnob(true, juce::Slider::SliderStyle::RotaryVerticalDrag), 
+    const std::shared_ptr<formula::processor::PluginState>& pluginStateRef
+) :
+    dryWetKnob(true, juce::Slider::SliderStyle::RotaryVerticalDrag),
     inGainKnob(true, juce::Slider::SliderStyle::RotaryVerticalDrag), 
-    outGainKnob(true, juce::Slider::SliderStyle::RotaryVerticalDrag)
+    outGainKnob(true, juce::Slider::SliderStyle::RotaryVerticalDrag),
+    pluginState(pluginStateRef)
 {
     addAndMakeVisible(dryWetKnob);
     dryWetKnob.setNameLabel("Dry Wet");
@@ -109,14 +111,14 @@ formula::gui::KnobsPanel<NumKnobs, NumSwitches>::KnobsPanel(
         };
     }
 
-    for (auto i = 0; i < NumSwitches; i++) {
+    for (unsigned i = 0; i < NumSwitches; i++) {
         addAndMakeVisible(userSwitches[i]);
         userSwitches[i].setNameLabel("...");
         auto &toggle = userSwitches[i].inner();
         toggle.setToggleState(false, juce::NotificationType::dontSendNotification);
         toggle.onStateChange = [&, i]() {
             pluginState->setActiveFormulaMetadataField(
-                formula::processor::FormulaMetadataKeys::switchDefaultValue(i),
+                formula::processor::FormulaMetadataKeys::switchDefaultValue(static_cast<int>(i)),
                 std::to_string(toggle.getToggleState())
             );
         };
@@ -125,20 +127,20 @@ formula::gui::KnobsPanel<NumKnobs, NumSwitches>::KnobsPanel(
         auto& textEditor = userSwitches[i].nameTextEditor();
         textEditor.onFocusLost = [&, i]() {
             pluginState->setActiveFormulaMetadataField(
-                formula::processor::FormulaMetadataKeys::switchName(i),
+                formula::processor::FormulaMetadataKeys::switchName(static_cast<int>(i)),
                 textEditor.getText().toStdString()
             );
         };
     }
 
-    for (auto i = 0; i < NumKnobs; i++) {
+    for (unsigned i = 0; i < NumKnobs; i++) {
         addAndMakeVisible(userKnobs[i]);
         userKnobs[i].setNameLabel("...");
         auto &knob = userKnobs[i].inner();
         knob.setRange(0., 1.);
         knob.onValueChange = [&, i]() {
             pluginState->setActiveFormulaMetadataField(
-                formula::processor::FormulaMetadataKeys::knobDefaultValue(i),
+                formula::processor::FormulaMetadataKeys::knobDefaultValue(static_cast<int>(i)),
                 std::to_string(knob.getValue())
             );
         };
@@ -147,7 +149,7 @@ formula::gui::KnobsPanel<NumKnobs, NumSwitches>::KnobsPanel(
         auto& textEditor = userKnobs[i].nameTextEditor();
         textEditor.onFocusLost = [&, i]() {
             pluginState->setActiveFormulaMetadataField(
-                formula::processor::FormulaMetadataKeys::knobName(i),
+                formula::processor::FormulaMetadataKeys::knobName(static_cast<int>(i)),
                 textEditor.getText().toStdString()
             );
         };
@@ -157,7 +159,7 @@ formula::gui::KnobsPanel<NumKnobs, NumSwitches>::KnobsPanel(
     restoreFromState(metadata);
 }
 
-template<unsigned int NumKnobs, unsigned int NumSwitches>
+template<int NumKnobs, int NumSwitches>
 inline void formula::gui::KnobsPanel<NumKnobs, NumSwitches>::restoreFromState(formula::processor::FormulaMetadata& metadata)
 {
     try
@@ -196,9 +198,9 @@ inline void formula::gui::KnobsPanel<NumKnobs, NumSwitches>::restoreFromState(fo
         outGainKnob.inner().setValue(0.f);
     }
 
-    for (auto i = 0; i < NumSwitches; i++) {
+    for (unsigned i = 0; i < NumSwitches; i++) {
         auto& toggle = userSwitches[i].inner();
-        auto valueStr = metadata[formula::processor::FormulaMetadataKeys::switchDefaultValue(i)];
+        auto valueStr = metadata[formula::processor::FormulaMetadataKeys::switchDefaultValue(static_cast<int>(i))];
         try
         {
             toggle.setToggleState(
@@ -211,7 +213,7 @@ inline void formula::gui::KnobsPanel<NumKnobs, NumSwitches>::restoreFromState(fo
             toggle.setToggleState(0, juce::NotificationType::sendNotification);
         }
         auto& textEditor = userSwitches[i].nameTextEditor(); 
-        auto name = metadata[formula::processor::FormulaMetadataKeys::switchName(i)];
+        auto name = metadata[formula::processor::FormulaMetadataKeys::switchName(static_cast<int>(i))];
         if (!name.empty()) {
             textEditor.setText(name);
         }
@@ -220,9 +222,9 @@ inline void formula::gui::KnobsPanel<NumKnobs, NumSwitches>::restoreFromState(fo
         }
     }
 
-    for (auto i = 0; i < NumKnobs; i++) {
+    for (unsigned i = 0; i < NumKnobs; i++) {
         auto& knob = userKnobs[i].inner();
-        auto valueStr = metadata[formula::processor::FormulaMetadataKeys::knobDefaultValue(i)];
+        auto valueStr = metadata[formula::processor::FormulaMetadataKeys::knobDefaultValue(static_cast<int>(i))];
         try
         {
             knob.setValue(boost::lexical_cast<double>(valueStr));
@@ -233,7 +235,7 @@ inline void formula::gui::KnobsPanel<NumKnobs, NumSwitches>::restoreFromState(fo
             knob.setValue(.5f);
         }
         auto& textEditor = userKnobs[i].nameTextEditor();
-        auto name = metadata[formula::processor::FormulaMetadataKeys::knobName(i)];
+        auto name = metadata[formula::processor::FormulaMetadataKeys::knobName(static_cast<int>(i))];
         if (!name.empty()) {
             textEditor.setText(name);
         }
@@ -243,7 +245,7 @@ inline void formula::gui::KnobsPanel<NumKnobs, NumSwitches>::restoreFromState(fo
     }
 }
 
-template<unsigned int NumKnobs, unsigned int NumSwitches>
+template<int NumKnobs, int NumSwitches>
 void formula::gui::KnobsPanel<NumKnobs, NumSwitches>::paint(Graphics& g)
 {
     g.fillAll(getLookAndFeel().findColour(ListBox::backgroundColourId));
@@ -252,7 +254,7 @@ void formula::gui::KnobsPanel<NumKnobs, NumSwitches>::paint(Graphics& g)
     g.drawRect(area);
 }
 
-template<unsigned int NumKnobs, unsigned int NumSwitches>
+template<int NumKnobs, int NumSwitches>
 void formula::gui::KnobsPanel<NumKnobs, NumSwitches>::resized()
 {
     constexpr auto pad = 12;
@@ -282,10 +284,10 @@ void formula::gui::KnobsPanel<NumKnobs, NumSwitches>::resized()
     grid.items.add(GridItem(dryWetKnob));
     grid.items.add(GridItem(inGainKnob));
     grid.items.add(GridItem(outGainKnob));
-    for (auto i = 0; i < FORMULA_NUM_USER_SWITCHES; i++) {
+    for (unsigned i = 0; i < FORMULA_NUM_USER_SWITCHES; i++) {
         grid.items.add(GridItem(userSwitches[i]));
     }
-    for (auto i = 0; i < FORMULA_NUM_USER_KNOBS; i++) {
+    for (unsigned i = 0; i < FORMULA_NUM_USER_KNOBS; i++) {
         grid.items.add(GridItem(userKnobs[i]));
     }
 
@@ -295,12 +297,12 @@ void formula::gui::KnobsPanel<NumKnobs, NumSwitches>::resized()
         .withTrimmedLeft(pad).withTrimmedRight(pad));
 }
 
-template<unsigned int NumKnobs, unsigned int NumSwitches>
+template<int NumKnobs, int NumSwitches>
 void formula::gui::KnobsPanel<NumKnobs, NumSwitches>::resetContent()
 {
 }
 
-template<unsigned int NumKnobs, unsigned int NumSwitches>
+template<int NumKnobs, int NumSwitches>
 void formula::gui::KnobsPanel<NumKnobs, NumSwitches>::visibilityChanged()
 {
 }

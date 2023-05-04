@@ -103,8 +103,8 @@ namespace formula::gui {
             for (int i = 0; i < 3; i++) {
                 auto offset = i * 8;
                 auto mask = 0xff << offset;
-                auto channel = 255 - ((color & mask) >> offset);
-                channel = static_cast<int>(amount * channel);
+                auto channel = 255 - ((color & static_cast<unsigned int>(mask)) >> offset);
+                channel = static_cast<unsigned int>(amount * channel);
                 result |= (255 - channel) << offset;
             }
             return result;
@@ -116,8 +116,8 @@ namespace formula::gui {
             for (int i = 0; i < 3; i++) {
                 auto offset = i * 8;
                 auto mask = 0xff << offset;
-                auto channel = (color & mask) >> offset;
-                channel = static_cast<int>(amount * channel);
+                auto channel = (color & static_cast<unsigned int>(mask)) >> offset;
+                channel = static_cast<unsigned int>(amount * channel);
                 result |= channel << offset;
             }
             return result;
@@ -125,7 +125,7 @@ namespace formula::gui {
 
         void mapColors(std::vector<std::pair<int, juce::uint32>> colorMapping) {
             for (auto& pair : colorMapping) {
-                juce::uint32 colourHex = (0xff << 24) | std::get<1>(pair);
+                juce::uint32 colourHex = static_cast<unsigned int>(0xff << 24) | std::get<1>(pair);
                 setColour(std::get<0>(pair), juce::Colour(colourHex));
             }
         }

@@ -1,12 +1,14 @@
 #include <gui/tabs/CodeEditorTab.hpp>
 
 formula::gui::CodeEditorTab::CodeEditorTab(
-    const std::shared_ptr<formula::events::EventHub>& eventHub,
-    const std::shared_ptr<formula::processor::PluginState>& pluginState,
-    const std::shared_ptr<formula::storage::LocalIndex>& localIndex
-) : eventHub(eventHub), pluginState(pluginState),
-    savePopup(localIndex, pluginState),
-    knobsPanel(pluginState)
+    const std::shared_ptr<formula::events::EventHub>& eventHubRef,
+    const std::shared_ptr<formula::processor::PluginState>& pluginStateRef,
+    const std::shared_ptr<formula::storage::LocalIndex>& localIndexRef
+) :
+    savePopup(localIndexRef, pluginStateRef),
+    knobsPanel(pluginStateRef),
+    eventHub(eventHubRef),
+    pluginState(pluginStateRef)
 {
     setOpaque(true);
 
@@ -32,9 +34,9 @@ formula::gui::CodeEditorTab::CodeEditorTab(
     compileButton.setImage(formula::binary::compile_svg, green);
     compileButton.setTooltip("Launch the current formula");
     compileButton.onClick = [&] {
-        auto metadata = pluginState->getActiveFormulaMetadata();
-        auto formulaSource = metadata[formula::processor::FormulaMetadataKeys::source];
-        eventHub->publish(EventType::compilationRequest, formulaSource);
+        auto activeMetadata = pluginState->getActiveFormulaMetadata();
+        auto activeFormulaSource = activeMetadata[formula::processor::FormulaMetadataKeys::source];
+        eventHub->publish(EventType::compilationRequest, activeFormulaSource);
         compileButton.setEnabled(false);
     };
     addAndMakeVisible(compileButton);
@@ -133,14 +135,14 @@ formula::gui::CodeEditorTab::CodeEditorTab(
     }, this);
 
     eventHub->subscribeOnUiThread<CodeEditorTab>(
-            EventType::loadFormulaRequest, [](boost::any metadata, CodeEditorTab* thisPtr) {
-        auto formulaMetadata = boost::any_cast<formula::processor::FormulaMetadata>(metadata);
-        auto formulaSource = formulaMetadata[formula::processor::FormulaMetadataKeys::source];
-        thisPtr->editor->loadContent(formulaSource);
+            EventType::loadFormulaRequest, [](boost::any requestMetadata, CodeEditorTab* thisPtr) {
+        auto formulaMetadata = boost::any_cast<formula::processor::FormulaMetadata>(requestMetadata);
+        auto activeFormulaSource = formulaMetadata[formula::processor::FormulaMetadataKeys::source];
+        thisPtr->editor->loadContent(activeFormulaSource);
         thisPtr->knobsPanel.restoreFromState(formulaMetadata);
         thisPtr->pluginState->setActiveFormulaMetadata(formulaMetadata);
         thisPtr->resized();
-        thisPtr->eventHub->publish(EventType::compilationRequest, formulaSource);
+        thisPtr->eventHub->publish(EventType::compilationRequest, activeFormulaSource);
     }, this);
 
     startTimer(100);
@@ -157,7 +159,7 @@ void formula::gui::CodeEditorTab::paint(Graphics& g)
     g.fillAll(backgroundColour);
 }
 
-void formula::gui::CodeEditorTab::codeDocumentTextInserted(const String& newText, int insertIndex)
+void formula::gui::CodeEditorTab::codeDocumentTextInserted(const String& newText, [[maybe_unused]] int insertIndex)
 {
     if (newText.endsWithChar('\n')) {
         const auto autoTab = findAutoTabulation();
@@ -167,7 +169,7 @@ void formula::gui::CodeEditorTab::codeDocumentTextInserted(const String& newText
     pluginState->setActiveFormulaMetadataField(formula::processor::FormulaMetadataKeys::source, source.toStdString());
 }
 
-void formula::gui::CodeEditorTab::codeDocumentTextDeleted(int startIndex, int endIndex)
+void formula::gui::CodeEditorTab::codeDocumentTextDeleted([[maybe_unused]] int startIndex, [[maybe_unused]] int endIndex)
 {
     auto source = codeDocument.getAllContent();
     pluginState->setActiveFormulaMetadataField(formula::processor::FormulaMetadataKeys::source, source.toStdString());

@@ -202,7 +202,7 @@ int formula::gui::FormulaCodeTokenizer::parseFormulaIdentifier (CodeDocument::It
     if (tokenLength > 1 && tokenLength <= 16)
     {
         possible.writeNull();
-        juce::String tokenStr(String::CharPointerType (possibleIdentifier), tokenLength);
+        juce::String tokenStr(String::CharPointerType (possibleIdentifier), static_cast<size_t>(tokenLength));
         if (isFormulaMacro(tokenStr))
             return FormulaCodeTokenizer::tokenType_formulaMacro;
         else if (isFormulaKeyword(tokenStr))

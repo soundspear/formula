@@ -16,9 +16,9 @@
 
 using formula::processor::FormulaMetadataKeys;
 
-formula::cloud::FormulaCloudClient::FormulaCloudClient(const std::shared_ptr<formula::storage::LocalSettings>& settings,
-                                                       const std::shared_ptr<formula::events::EventHub>& eventHub)
-: AuthenticatedClient(settings, eventHub, baseUrl){
+formula::cloud::FormulaCloudClient::FormulaCloudClient(const std::shared_ptr<formula::storage::LocalSettings>& settingsRef,
+                                                       const std::shared_ptr<formula::events::EventHub>& eventHubRef)
+: AuthenticatedClient(settingsRef, eventHubRef, baseUrl){
 
 }
 
@@ -133,8 +133,8 @@ void formula::cloud::FormulaCloudClient::createFormula(formula::processor::Formu
         return client.request(req, destructorCts.get_token()).then([this, metadata](
             const web::http::http_response& response) {
                 if (response.status_code() == 409) {
-                    auto body = response.extract_json().get();
-                    auto conflictingFormulaId = NARROW(body[WIDE("conflictingFormulaId")].as_string());
+                    auto responseBody = response.extract_json().get();
+                    auto conflictingFormulaId = NARROW(responseBody[WIDE("conflictingFormulaId")].as_string());
                     this->eventHub->publish(EventType::formulaAlreadyExists, std::pair(conflictingFormulaId, metadata));
                     response.set_status_code(web::http::status_codes::NonAuthInfo);
                 }
@@ -142,7 +142,7 @@ void formula::cloud::FormulaCloudClient::createFormula(formula::processor::Formu
         });
     };
 
-    const auto successCallback = [this](web::json::value response) {
+    const auto successCallback = [this]([[maybe_unused]] web::json::value response) {
         eventHub->publish(EventType::createFormulaSuccess);
     };
 
@@ -174,7 +174,7 @@ void formula::cloud::FormulaCloudClient::updateFormula(std::string formulaId, fo
         return client.request(req ,destructorCts.get_token());
     };
 
-    const auto successCallback = [this](web::json::value response) {
+    const auto successCallback = [this]([[maybe_unused]] web::json::value response) {
         eventHub->publish(EventType::createFormulaSuccess);
     };
 
@@ -203,7 +203,7 @@ void formula::cloud::FormulaCloudClient::submitRating(std::string formulaId, dou
         return client.request(req ,destructorCts.get_token());
     };
 
-    const auto successCallback = [this](web::json::value response) {
+    const auto successCallback = [this]([[maybe_unused]] web::json::value response) {
         eventHub->publish(EventType::ratingSubmitted);
     };
 

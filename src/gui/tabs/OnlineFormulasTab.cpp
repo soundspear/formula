@@ -6,9 +6,12 @@ using namespace boost::assign;
 
 formula::gui::OnlineFormulasTab::OnlineFormulasTab(const std::shared_ptr<formula::events::EventHub>& eventHubRef,
                                                    const std::shared_ptr<formula::cloud::FormulaCloudClient>& cloudRef)
-        : eventHub(eventHubRef), cloud(cloudRef),
-          detailsPanel(eventHubRef), searchBar(eventHubRef),
-          endOfResultsReached(false), sortColumn("last_modified"), sortDirection("desc")
+        :   cloud(cloudRef),
+            eventHub(eventHubRef),
+            sortColumn("last_modified"), sortDirection("desc"),
+            detailsPanel(eventHubRef),
+            searchBar(eventHubRef),
+            endOfResultsReached(false)
 {
     addAndMakeVisible(searchBar);
 
@@ -36,7 +39,7 @@ formula::gui::OnlineFormulasTab::OnlineFormulasTab(const std::shared_ptr<formula
             EventType::listFormulaResponse, [](boost::any arg, OnlineFormulasTab* thisPtr) {
         thisPtr->searchParams.skip += thisPtr->searchParams.take;
         const auto response = boost::any_cast<std::vector<formula::cloud::ListFormulaDto>>(arg);
-        if (response.size() < thisPtr->searchParams.take) {
+        if (response.size() < static_cast<unsigned>(thisPtr->searchParams.take)) {
             thisPtr->endOfResultsReached = true;
         }
         thisPtr->data.insert(thisPtr->data.end(), response.begin(), response.end());
@@ -78,14 +81,14 @@ void formula::gui::OnlineFormulasTab::paintRowBackground(Graphics &g, int rowNum
 }
 
 void formula::gui::OnlineFormulasTab::paintCell(Graphics &g, int rowNumber, int columnId, int width, int height, bool) {
-    if (rowNumber >= data.size()) {
+    if (static_cast<unsigned>(rowNumber) >= data.size()) {
         return;
     }
 
     g.setColour(getLookAndFeel().findColour(ListBox::textColourId));
     g.setFont(Font());
 
-    auto row = data[rowNumber];
+    auto row = data[static_cast<unsigned>(rowNumber)];
     String text;
 
     switch (columnId) {
@@ -141,8 +144,8 @@ void formula::gui::OnlineFormulasTab::sortOrderChanged(int newSortColumnId, bool
     makeSearchAsync();
 }
 
-Component *formula::gui::OnlineFormulasTab::refreshComponentForCell(int rowNumber, int columnId, bool,
-                                                                    Component *existingComponentToUpdate) {
+Component *formula::gui::OnlineFormulasTab::refreshComponentForCell(int /*rowNumber*/, int /*columnId*/, bool,
+                                                                    Component */*existingComponentToUpdate*/) {
 
 #ifdef __PREVIEW_SHOW_RATINGS
     if (columnId == OnlineFormulasColumnsIds::rating) {
@@ -161,12 +164,12 @@ Component *formula::gui::OnlineFormulasTab::refreshComponentForCell(int rowNumbe
     return nullptr;
 }
 
-void formula::gui::OnlineFormulasTab::selectedRowsChanged(int lastRowSelected) {
+void formula::gui::OnlineFormulasTab::selectedRowsChanged([[maybe_unused]] int lastRowSelected) {
     const auto selectedRowIdx = table.getSelectedRow();
-    if (selectedRowIdx == -1 || selectedRowIdx >= data.size()) {
+    if (selectedRowIdx == -1 || static_cast<unsigned>(selectedRowIdx) >= data.size()) {
         return;
     }
-    const auto & selectedRowInformation = data[selectedRowIdx];
+    const auto & selectedRowInformation = data[static_cast<unsigned>(selectedRowIdx)];
     cloud->getFormula(selectedRowInformation.id);
     table.deselectAllRows();
 }
@@ -195,7 +198,7 @@ void formula::gui::OnlineFormulasTab::visibilityChanged() {
     }
 }
 
-void formula::gui::OnlineFormulasTab::scrollBarMoved(ScrollBar *scrollBarThatHasMoved, double newRangeStart) {
+void formula::gui::OnlineFormulasTab::scrollBarMoved(ScrollBar *scrollBarThatHasMoved, [[maybe_unused]] double newRangeStart) {
     const auto barRange = scrollBarThatHasMoved->getCurrentRange();
     const auto scrollLimit = scrollBarThatHasMoved->getMaximumRangeLimit();
     if (barRange.getEnd() >= scrollLimit && !this->endOfResultsReached) {

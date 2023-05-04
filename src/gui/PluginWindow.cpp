@@ -9,25 +9,25 @@
 std::unique_ptr<TooltipWindow> formula::gui::PluginWindow::tooltipWindow = nullptr;
 
 formula::gui::PluginWindow::PluginWindow(
-    formula::processor::PluginProcessor& processor,
+    formula::processor::PluginProcessor& processorRef,
     const std::shared_ptr<formula::events::EventHub>& eventHubRef,
     const std::shared_ptr<formula::processor::PluginState>& pluginStateRef,
     const std::shared_ptr<formula::cloud::FormulaCloudClient>& cloudRef,
     const std::shared_ptr<formula::storage::LocalIndex>& localIndexRef,
     const std::shared_ptr<formula::storage::LocalSettings>& settingsRef,
-    const std::shared_ptr<formula::processor::FilePlayer>& filePlayer
+    const std::shared_ptr<formula::processor::FilePlayer>& filePlayerRef
 )
-    : AudioProcessorEditor (&processor),
-      associatedProcessor(processor),
+    : AudioProcessorEditor (&processorRef),
+      associatedProcessor(processorRef),
       eventHub(eventHubRef),
       pluginState(pluginStateRef),
       cloud(cloudRef),
       settings(settingsRef),
+      filePlayer(filePlayerRef),
+      github(eventHubRef),
       tabs(TabbedButtonBar::TabsAtTop),
       spinner(eventHubRef),
-      github(eventHubRef),
       loginPopup(cloud),
-      filePlayer(filePlayer),
       setUserNamePopup(cloud)
 {
     if (!laf) {
@@ -65,7 +65,7 @@ formula::gui::PluginWindow::PluginWindow(
 
         if (!fileChosen) return;
         auto filePath = chooser.getResult().getFullPathName();
-        auto success = this->filePlayer->loadFile(filePath);
+        this->filePlayer->loadFile(filePath);
     };
 
     logoDrawable = Drawable::createFromImageData(formula::binary::logo_svg, formula::binary::logo_svgSize);
@@ -89,7 +89,7 @@ formula::gui::PluginWindow::PluginWindow(
     setupPopups();
 
     eventHub->subscribeOnUiThread<PluginWindow>(
-            EventType::newVersionReleased, [] ([[maybe_unused]] boost::any arg, PluginWindow* thisPtr) {
+            EventType::newVersionReleased, [] ([[maybe_unused]] boost::any arg, [[maybe_unused]] PluginWindow* thisPtr) {
                 auto newVersion = boost::any_cast<std::string>(arg);
                 auto result = juce::AlertWindow::showYesNoCancelBox(juce::MessageBoxIconType::InfoIcon,
                   "Update available", juce::String("A new update for Formula is available (version ")
@@ -122,7 +122,7 @@ formula::gui::PluginWindow::PluginWindow(
             }, this);
 
     eventHub->subscribeOnUiThread<PluginWindow>(
-            EventType::unexpectedError, [] ([[maybe_unused]] boost::any arg, PluginWindow* thisPtr) {
+            EventType::unexpectedError, [] ([[maybe_unused]] boost::any arg, [[maybe_unused]] PluginWindow* thisPtr) {
                 formula::gui::ErrorCodes errCode = formula::gui::ErrorCodes::unknownError;
                 if (!arg.empty()) {
                     errCode = boost::any_cast<formula::gui::ErrorCodes>(arg);
@@ -158,7 +158,7 @@ void formula::gui::PluginWindow::setupPopups() {
     addChildComponent(loginPopup);
 
     eventHub->subscribeOnUiThread<PluginWindow>(
-            EventType::loginSuccess, [] ([[maybe_unused]] boost::any _, PluginWindow* thisPtr) {
+            EventType::loginSuccess, [] ([[maybe_unused]] boost::any _, [[maybe_unused]] PluginWindow* thisPtr) {
                 juce::AlertWindow::showMessageBox(juce::AlertWindow::InfoIcon,
                                                   "Login success!", "You are logged into Formula Cloud");
             }, this);

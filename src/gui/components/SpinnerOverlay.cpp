@@ -9,7 +9,7 @@
 using namespace boost::assign;
 
 formula::gui::SpinnerOverlay::SpinnerOverlay(const std::shared_ptr<formula::events::EventHub>& eventHubRef)
-    : spinner(progress), eventHub(eventHubRef) {
+    : eventHub(eventHubRef), spinner(progress){
     std::vector<EventType> spinnerStartEvents;
     spinnerStartEvents += EventType::webRequestSent, EventType::compilationRequest;
 
@@ -51,6 +51,4 @@ void formula::gui::SpinnerOverlay::resized() {
     spinner.centreWithSize(100, 100);
 }
 
-void formula::gui::SpinnerOverlay::paint(juce::Graphics& g) {
-    //g.fillAll(juce::Colour(0x22000000));
-}
+void formula::gui::SpinnerOverlay::paint(juce::Graphics&) { }

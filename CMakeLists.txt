@@ -21,6 +21,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+add_compile_definitions(BOOST_BIND_GLOBAL_PLACEHOLDERS)
 IF (WIN32)
     # Force static linking and static CRT for cpprestsdk
     add_compile_definitions(_NO_ASYNCRTIMP)

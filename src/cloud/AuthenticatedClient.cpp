@@ -6,10 +6,10 @@
 
 #include "AuthenticatedClient.hpp"
 
-formula::cloud::AuthenticatedClient::AuthenticatedClient(const std::shared_ptr<formula::storage::LocalSettings>& settings,
-                                                         const std::shared_ptr<formula::events::EventHub>& eventHub,
+formula::cloud::AuthenticatedClient::AuthenticatedClient(const std::shared_ptr<formula::storage::LocalSettings>& settingsRef,
+                                                         const std::shared_ptr<formula::events::EventHub>& eventHubRef,
                                                          utility::string_t baseUrl)
-                                                         : settings(settings), eventHub(eventHub), client(baseUrl) {
+                                                         : eventHub(eventHubRef), client(baseUrl), settings(settingsRef) {
     accessToken = settings->find<std::string>(storage::SettingKey::accessToken);
     refreshToken = settings->find<std::string>(storage::SettingKey::refreshToken);
     expiresAt = settings->find<unsigned long long>(storage::SettingKey::expiresAt);
@@ -21,7 +21,6 @@ void formula::cloud::AuthenticatedClient::login(std::string user, std::string pa
     body[WIDE("username")] = web::json::value::string(WIDE(user));
     body[WIDE("password")] = web::json::value::string(WIDE(password));
 
-    web::json::value jsonResponse;
     client.request(web::http::methods::POST, WIDE("/api/auth/login"), body, destructorCts.get_token())
             .then([this](const web::http::http_response& response) {
                 if (response.status_code() == 400) {
@@ -92,7 +91,6 @@ pplx::task<void> formula::cloud::AuthenticatedClient::refreshAccessToken() {
     web::json::value body;
     body[WIDE("refreshToken")] = web::json::value::string(WIDE(refreshToken.value_or("")));
 
-    web::json::value jsonResponse;
     return client.request(web::http::methods::POST, WIDE("/api/auth/refreshAccessToken"), body, destructorCts.get_token())
             .then([this](const web::http::http_response& response) {
                 if (response.status_code() == 400) {

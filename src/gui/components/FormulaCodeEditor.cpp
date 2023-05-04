@@ -8,8 +8,8 @@
 
 formula::gui::FormulaCodeTokenizer formula::gui::FormulaCodeEditor::tokenizer;
 
-formula::gui::FormulaCodeEditor::FormulaCodeEditor(juce::CodeDocument& document)
-: CodeEditorComponent(document, &tokenizer) {
+formula::gui::FormulaCodeEditor::FormulaCodeEditor(juce::CodeDocument& documentRef)
+: CodeEditorComponent(documentRef, &tokenizer) {
     setCodeEditorComponentColourScheme();
 }
 

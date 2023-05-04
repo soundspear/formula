@@ -119,7 +119,6 @@ void formula::processor::library::FormulaLoader::loadLibrary(
 
     try {
         if (oldFormulaToDeleteCompilationId.has_value()) {
-            formula::storage::CompilerStorage storage;
             storage.deleteLibrary(oldFormulaToDeleteCompilationId.value());
         }
     } catch (std::exception&) {}

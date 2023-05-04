@@ -72,7 +72,9 @@ std::string formula::compiler::TccWrapper::getCompilerPath()
     return tccPath.string();
 }
 
-std::vector<std::string> formula::compiler::TccWrapper::getCompilerArgs(std::string sourcePath, std::string outPath, bool isMono)
+std::vector<std::string> formula::compiler::TccWrapper::getCompilerArgs(
+    std::string sourcePath, std::string outPath, [[maybe_unused]] bool isMono
+)
 {
     std::vector<std::string> args;
 

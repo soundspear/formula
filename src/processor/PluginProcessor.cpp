@@ -17,8 +17,8 @@ formula::processor::PluginProcessor::PluginProcessor()
     eventHub(std::make_shared<formula::events::EventHub>()),
     pluginState(std::make_shared<formula::processor::PluginState>(*this, "Formula")),
     settings(std::make_shared<formula::storage::LocalSettings>()),
-    cloud(std::make_shared<formula::cloud::FormulaCloudClient>(settings, eventHub)),
     localIndex(std::make_shared<formula::storage::LocalIndex>(pluginState)),
+    cloud(std::make_shared<formula::cloud::FormulaCloudClient>(settings, eventHub)),
     filePlayer(std::make_shared<formula::processor::FilePlayer>()),
     recompiled(false)
 {
