@@ -46,3 +46,11 @@ jobs:
     with:
       release_tag: '${{ github.event.inputs.version }}'
       release_candidate: "${{ github.event.inputs.release_candidate == 'true' }}"
+
+  build-linux:
+    needs: prepare
+    name: Build for Linux
+    uses: ./.github/workflows/build_plugin_linux.yml
+    with:
+      release_tag: '${{ github.event.inputs.version }}'
+      release_candidate: "${{ github.event.inputs.release_candidate == 'true' }}"
