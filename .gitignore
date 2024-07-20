@@ -17,3 +17,5 @@ JUCE/**
 /vcpkg/
 
 /cmake-build-*/
+
+assets/community_index.json

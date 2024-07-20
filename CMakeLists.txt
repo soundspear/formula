@@ -1,8 +1,14 @@
 cmake_minimum_required(VERSION 3.11)
-
 project(Formula VERSION 1.2.0 LANGUAGES CXX)
 
-# ------ Formula parameters
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# ==================================================================================================
+
+# Set preprocessor directives for Formula
+
 add_compile_definitions(FORMULA_VERSION="${CMAKE_PROJECT_VERSION}")
 if(NOT FORMULA_CLOUD_URL)
     set(FORMULA_CLOUD_URL https://formula.soundspear.com)
@@ -15,11 +21,10 @@ set(FORMULA_COMPILE_FORMATS "AU" "VST3")
 if(FORMULA_STANDALONE)
     list (APPEND FORMULA_COMPILE_FORMATS "Standalone")
 endif()
-# ------
 
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+# ==================================================================================================
+
+# Configure dependencies
 
 add_compile_definitions(BOOST_BIND_GLOBAL_PLACEHOLDERS)
 IF (WIN32)
@@ -40,21 +45,23 @@ ELSEIF (APPLE)
     add_compile_definitions(BOOST_NO_CXX98_FUNCTION_BASE) # Fixes "No template named 'unary_function' in namespace 'std'" while Boost is not updated
 ENDIF()
 
-# DEPENDENCIES
 find_package(Boost 1.74.0 COMPONENTS REQUIRED filesystem date_time)
 include_directories(Formula ${Boost_INCLUDE_DIR} SYSTEM)
 
-add_subdirectory(JUCE)
-
 find_package(cpprestsdk CONFIG REQUIRED)
 add_compile_definitions(_TURN_OFF_PLATFORM_STRING)
+
+# ==================================================================================================
+
+# Configure JUCE
+
+add_subdirectory(JUCE)
 
 IF (FORMULA_VST2_SDK_DIR)
     juce_set_vst2_sdk_path(${FORMULA_VST2_SDK_DIR})
     list (APPEND FORMULA_COMPILE_FORMATS "VST")
 ENDIF ()
 
-include_directories(Formula ${CMAKE_CURRENT_SOURCE_DIR}/src)
 juce_add_plugin(Formula
     ICON_BIG assets/formula_icon.png
     COMPANY_NAME Soundspear
@@ -71,6 +78,12 @@ juce_add_plugin(Formula
     VST3_CATEGORIES Fx Tools Network
     AU_MAIN_TYPE kAudioUnitType_Effect
     PRODUCT_NAME Formula)
+
+# Embed all the Formulas from the 'formulas/' folder into an index readable by the app
+include(packaging/generate_formulas_index.cmake)
+set(community_formulas_directory "${CMAKE_SOURCE_DIR}/formulas")
+set(community_index "${CMAKE_SOURCE_DIR}/assets/community_index.json")
+generate_formulas_index(${community_formulas_directory} ${community_index})
 
 juce_add_binary_data(FormulaBinaryData
     NAMESPACE formula::binary
@@ -93,6 +106,7 @@ juce_add_binary_data(FormulaBinaryData
         assets/icons/unpause.svg
         assets/icons/zoom_in.svg
         assets/icons/zoom_out.svg
+        ${community_index}
 )
 IF (UNIX)
     set_target_properties(FormulaBinaryData PROPERTIES
@@ -104,6 +118,11 @@ add_compile_definitions(JUCE_USE_MP3AUDIOFORMAT)
 
 juce_generate_juce_header(Formula)
 
+# ==================================================================================================
+
+# Configure compiler
+
+include_directories(Formula ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_sources(Formula
     PRIVATE
         "src/cloud/AuthenticatedClient.cpp"
@@ -138,11 +157,14 @@ target_sources(Formula
 
 target_compile_definitions(Formula
     PRIVATE
-        # JUCE_WEB_BROWSER and JUCE_USE_CURL would be on by default, but you might not need them.
-        JUCE_WEB_BROWSER=0  # If you remove this, add `NEEDS_WEB_BROWSER TRUE` to the `juce_add_gui_app` call
-        JUCE_USE_CURL=0     # If you remove this, add `NEEDS_CURL TRUE` to the `juce_add_gui_app` call
+        JUCE_WEB_BROWSER=0
+        JUCE_USE_CURL=0
         JUCE_VST3_CAN_REPLACE_VST2=0
 )
+
+# ==================================================================================================
+
+# Configure linker
 
 target_link_libraries(Formula
     PRIVATE
@@ -165,3 +187,19 @@ ELSEIF (UNIX)
     target_link_libraries(Formula PRIVATE
             OpenSSL::SSL)
 ENDIF()
+
+# ==================================================================================================
+
+# Add a build step to generate the community Formulas index
+
+add_custom_command(
+        OUTPUT ${community_index}
+        COMMAND ${CMAKE_COMMAND} -P "${CMAKE_SOURCE_DIR}/packaging/generate_formulas_index.cmake" ${community_formulas_directory} ${community_index}
+        DEPENDS ${community_formulas_directory}
+        COMMENT "Generating the community Formula index into ${community_index}"
+)
+
+# Build ordering IndexGeneration -> FormulaBinaryData -> Formula
+add_custom_target(IndexGeneration ALL DEPENDS ${community_index} ${community_formulas_directory})
+add_dependencies(FormulaBinaryData IndexGeneration)
+# ==================================================================================================
