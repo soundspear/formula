@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.11)
 
-project(Formula VERSION 1.1.3 LANGUAGES CXX)
+project(Formula VERSION 1.2.0 LANGUAGES CXX)
 
 # ------ Formula parameters
 add_compile_definitions(FORMULA_VERSION="${CMAKE_PROJECT_VERSION}")
@@ -37,6 +37,7 @@ IF (WIN32)
 ELSEIF (APPLE)
     set(VCPKG_LIBRARY_LINKAGE static CACHE STRING "VCPKG_Library_Linkage")
     set(Boost_USE_STATIC_LIBS ON)
+    add_compile_definitions(BOOST_NO_CXX98_FUNCTION_BASE) # Fixes "No template named 'unary_function' in namespace 'std'" while Boost is not updated
 ENDIF()
 
 # DEPENDENCIES
