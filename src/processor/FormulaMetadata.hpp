@@ -33,8 +33,8 @@ namespace formula::processor {
 	};
 
 	inline bool formulaContains(FormulaMetadata& metadata, const std::string& searchQuery) {
-		return metadata[FormulaMetadataKeys::name].find(searchQuery)
-		 || metadata[FormulaMetadataKeys::description].find(searchQuery);
+		return metadata[FormulaMetadataKeys::name].find(searchQuery) != std::string::npos
+		 || metadata[FormulaMetadataKeys::description].find(searchQuery) != std::string::npos;
 	}
 }
 

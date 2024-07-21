@@ -50,8 +50,6 @@ void formula::gui::OnlineFormulasTab::refreshData()
         }
     }
 
-    if (sortDirection == "")
-
     table.updateContent();
 }
 

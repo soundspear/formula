@@ -26,15 +26,6 @@ enum class EventType {
     newVersionReleased,
     webRequestSent,
     webRequestFinished,
-    loginSuccess,
-    loginFail,
-    needLogin,
-    needSetUsername,
-    userNameAlreadyExists,
-    subscriptionExpired,
-    listFormulaResponse,
-    getFormulaResponse,
-    ratingSubmitted,
     // Miscellaneous
     unexpectedError,
 };
