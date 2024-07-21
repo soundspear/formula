@@ -22,7 +22,6 @@ formula::gui::PluginWindow::PluginWindow(
       eventHub(eventHubRef),
       pluginState(pluginStateRef),
       settings(settingsRef),
-      filePlayer(filePlayerRef),
       github(eventHubRef),
       tabs(TabbedButtonBar::TabsAtTop),
       spinner(eventHubRef)
@@ -43,27 +42,9 @@ formula::gui::PluginWindow::PluginWindow(
 #ifndef FORMULA_LOCAL_ONLY
     tabs.addTab("All Formulas", colour, new CommunityFormulasTab(eventHub, communityIndexRef), true);
 #endif
-    tabs.addTab("Settings", colour, new SettingsTab(eventHub), true);
+    tabs.addTab("Settings", colour, new SettingsTab(eventHub, filePlayerRef), true);
 
     addAndMakeVisible(tabs);
-
-    loadAudioFileButton.setButtonText("Load audio file");
-    addAndMakeVisible(loadAudioFileButton);
-    loadAudioFileButton.onClick = [this]() {
-        auto chooserPath = File::getSpecialLocation(File::userHomeDirectory);
-        auto& previousPath = this->filePlayer->getCurrentPath();
-        if (!previousPath.isEmpty()) {
-            chooserPath = juce::File(previousPath).getParentDirectory();
-        }
-        juce::FileChooser chooser("Select the file to load...",
-            chooserPath, this->filePlayer->getWildcardForAllFormats(), true);
-
-        auto fileChosen = chooser.browseForFileToOpen();
-
-        if (!fileChosen) return;
-        auto filePath = chooser.getResult().getFullPathName();
-        this->filePlayer->loadFile(filePath);
-    };
 
     logoDrawable = Drawable::createFromImageData(formula::binary::logo_svg, formula::binary::logo_svgSize);
     addAndMakeVisible(logoDrawable.get());
@@ -182,12 +163,6 @@ void formula::gui::PluginWindow::resized()
     }
     versionLabel.setBounds(getLocalBounds().removeFromRight(45).removeFromTop(31)
                                    .withTrimmedBottom(11).withTrimmedTop(10));
-
-    if (JUCEApplicationBase::isStandaloneApp()) {
-        auto loadAudioFileButtonPos = getLocalBounds().withTrimmedRight(150).removeFromRight(100)
-                .removeFromTop(30).withTrimmedBottom(5).withTrimmedTop(5);
-        loadAudioFileButton.setBounds(loadAudioFileButtonPos);
-    }
 
     const auto areaCenter = area.getCentre();
     noCompilerFoundPopup.setBounds(noCompilerFoundPopup.getAreaToFit(areaCenter));

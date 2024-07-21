@@ -53,7 +53,6 @@ namespace formula::gui
         std::shared_ptr<formula::events::EventHub> eventHub;
         std::shared_ptr<formula::processor::PluginState> pluginState;
         std::shared_ptr<formula::storage::LocalSettings> settings;
-        std::shared_ptr<formula::processor::FilePlayer> filePlayer;
         formula::http::GithubClient github;
 
         std::unique_ptr<juce::Drawable> logoDrawable;
@@ -66,8 +65,6 @@ namespace formula::gui
         static std::unique_ptr<juce::TooltipWindow> tooltipWindow;
         formula::gui::NoCompilerFoundPopup noCompilerFoundPopup;
         std::unique_ptr<formula::gui::FormulaLookAndFeel> laf;
-
-        juce::TextButton loadAudioFileButton;
 
         float scaleFactor = 1;
 
