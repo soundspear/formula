@@ -39,9 +39,9 @@ formula::gui::PluginWindow::PluginWindow(
     auto colour = findColour(ResizableWindow::backgroundColourId);
 
     tabs.addTab("Editor", colour, new CodeEditorTab(eventHub, pluginState, userIndexRef), true);
-    tabs.addTab("Saved files", colour, new SavedFilesTab(eventHub, pluginState, userIndexRef), true);
+    tabs.addTab("Saved files", colour, new SavedFormulasTab(eventHub, pluginState, userIndexRef), true);
 #ifndef FORMULA_LOCAL_ONLY
-    tabs.addTab("All Formulas", colour, new OnlineFormulasTab(eventHub, communityIndexRef), true);
+    tabs.addTab("All Formulas", colour, new CommunityFormulasTab(eventHub, communityIndexRef), true);
 #endif
     tabs.addTab("Settings", colour, new SettingsTab(eventHub), true);
 

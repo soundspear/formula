@@ -1,5 +1,5 @@
-#ifndef FORMULA_GUI_SAVEDFILESTAB_INCLUDED
-#define FORMULA_GUI_SAVEDFILESTAB_INCLUDED
+#ifndef FORMULA_GUI_SAVEDFORMULASTAB_INCLUDED
+#define FORMULA_GUI_SAVEDFORMULASTAB_INCLUDED
 
 #include <vector>
 #include <algorithm>
@@ -24,10 +24,10 @@ namespace formula::gui
     /**
      * Application tab that displays locally saved formulas
      */
-    class SavedFilesTab : public FormulaListTabBase
+    class SavedFormulasTab : public FormulaListTabBase
     {
     public:
-        SavedFilesTab(
+        SavedFormulasTab(
             const std::shared_ptr<formula::events::EventHub>& eventHubRef,
             const std::shared_ptr<formula::processor::PluginState>& pluginStateRef,
             const std::shared_ptr<formula::storage::UserIndex>& localIndexRef);
@@ -52,8 +52,8 @@ namespace formula::gui
         std::shared_ptr<formula::events::EventHub> eventHub;
         std::shared_ptr<formula::processor::PluginState> pluginState;
 
-        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SavedFilesTab)
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SavedFormulasTab)
     };
 }
 
-#endif // FORMULA_GUI_SAVEDFILESTAB_INCLUDED
+#endif // FORMULA_GUI_SAVEDFORMULASTAB_INCLUDED

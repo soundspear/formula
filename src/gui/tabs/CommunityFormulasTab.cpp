@@ -1,10 +1,10 @@
 #include <boost/format.hpp>
 
-#include "OnlineFormulasTab.hpp"
+#include "CommunityFormulasTab.hpp"
 
 using namespace boost::assign;
 
-formula::gui::OnlineFormulasTab::OnlineFormulasTab(
+formula::gui::CommunityFormulasTab::CommunityFormulasTab(
     const std::shared_ptr<formula::events::EventHub>& eventHubRef,
     const std::shared_ptr<formula::storage::CommunityIndex>& communityIndexRef
 )
@@ -29,17 +29,17 @@ formula::gui::OnlineFormulasTab::OnlineFormulasTab(
 
     addChildComponent(detailsPanel);
 
-    eventHub->subscribeOnUiThread<OnlineFormulasTab>(
-            EventType::searchFormulaRequest, []([[maybe_unused]] boost::any arg, OnlineFormulasTab* thisPtr) {
+    eventHub->subscribeOnUiThread<CommunityFormulasTab>(
+            EventType::searchFormulaRequest, []([[maybe_unused]] boost::any arg, CommunityFormulasTab* thisPtr) {
         thisPtr->refreshData();
     }, this);
 }
 
-formula::gui::OnlineFormulasTab::~OnlineFormulasTab() {
+formula::gui::CommunityFormulasTab::~CommunityFormulasTab() {
     eventHub->unsubscribe(this);
 }
 
-void formula::gui::OnlineFormulasTab::refreshData()
+void formula::gui::CommunityFormulasTab::refreshData()
 {
     data.clear();
     for (auto it = index->begin(); it != index->end(); ++it) {
@@ -53,7 +53,7 @@ void formula::gui::OnlineFormulasTab::refreshData()
     table.updateContent();
 }
 
-void formula::gui::OnlineFormulasTab::selectedRowsChanged([[maybe_unused]] int lastRowSelected) {
+void formula::gui::CommunityFormulasTab::selectedRowsChanged([[maybe_unused]] int lastRowSelected) {
     const auto selectedRowIdx = table.getSelectedRow();
     if (selectedRowIdx == -1 || static_cast<unsigned>(selectedRowIdx) >= data.size()) {
         return;
@@ -67,7 +67,7 @@ void formula::gui::OnlineFormulasTab::selectedRowsChanged([[maybe_unused]] int l
     table.deselectAllRows();
 }
 
-void formula::gui::OnlineFormulasTab::resized() {
+void formula::gui::CommunityFormulasTab::resized() {
     constexpr auto margin = 8;
     constexpr auto searchBarHeight = 24;
 

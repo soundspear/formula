@@ -1,10 +1,10 @@
-#include "SavedFilesTab.hpp"
+#include "SavedFormulasTab.hpp"
 
 using namespace boost::assign;
 using FormulaMetadata = formula::processor::FormulaMetadata;
 using FormulaMetadataKeys = formula::processor::FormulaMetadataKeys;
 
-formula::gui::SavedFilesTab::SavedFilesTab(
+formula::gui::SavedFormulasTab::SavedFormulasTab(
     const std::shared_ptr<formula::events::EventHub>& eventHubRef,
     const std::shared_ptr<formula::processor::PluginState>& pluginStateRef,
     const std::shared_ptr<formula::storage::UserIndex>& localIndexRef
@@ -63,7 +63,7 @@ formula::gui::SavedFilesTab::SavedFilesTab(
     };
 }
 
-void formula::gui::SavedFilesTab::refreshData()
+void formula::gui::SavedFormulasTab::refreshData()
 {
     data.clear();
     for (auto it = index->begin(); it != index->end(); ++it) {
@@ -73,14 +73,14 @@ void formula::gui::SavedFilesTab::refreshData()
     table.updateContent();
 }
 
-void formula::gui::SavedFilesTab::changeBottomBarVisibility(bool visible)
+void formula::gui::SavedFormulasTab::changeBottomBarVisibility(bool visible)
 {
     this->loadButton.setVisible(visible);
     this->exportButton.setVisible(visible);
     this->deleteButton.setVisible(visible);
 }
 
-void formula::gui::SavedFilesTab::exportFormulaToFile()
+void formula::gui::SavedFormulasTab::exportFormulaToFile()
 {
     const auto metadata = this->data[static_cast<unsigned int>(this->table.getSelectedRow())];
 
@@ -105,7 +105,7 @@ void formula::gui::SavedFilesTab::exportFormulaToFile()
     }
 }
 
-void formula::gui::SavedFilesTab::importFormulaFromFile()
+void formula::gui::SavedFormulasTab::importFormulaFromFile()
 {
     FileChooser chooser("Select the file to import...",
         File::getSpecialLocation(File::userHomeDirectory),
@@ -133,7 +133,7 @@ void formula::gui::SavedFilesTab::importFormulaFromFile()
     refreshData();
 }
 
-void formula::gui::SavedFilesTab::deleteFormula()
+void formula::gui::SavedFormulasTab::deleteFormula()
 {
     auto result = AlertWindow::showYesNoCancelBox(
         MessageBoxIconType::WarningIcon,
@@ -151,14 +151,14 @@ void formula::gui::SavedFilesTab::deleteFormula()
     refreshData();
 }
 
-void formula::gui::SavedFilesTab::selectedRowsChanged(int /*lastRowSelected*/) {
+void formula::gui::SavedFormulasTab::selectedRowsChanged(int /*lastRowSelected*/) {
     auto bottomBarVisible = table.getSelectedRow() != -1;
     changeBottomBarVisibility(bottomBarVisible);
 
     repaint();
 }
 
-void formula::gui::SavedFilesTab::resized()
+void formula::gui::SavedFormulasTab::resized()
 {
     constexpr auto topBarHeight = 32;
     constexpr auto topBarMargin = 4;

@@ -1,5 +1,5 @@
-#ifndef FORMULA_GUI_ONLINEFORMULASTAB_INCLUDED
-#define FORMULA_GUI_ONLINEFORMULASTAB_INCLUDED
+#ifndef FORMULA_GUI_COMMUNITYFORMULASTAB_INCLUDED
+#define FORMULA_GUI_COMMUNITYFORMULASTAB_INCLUDED
 
 #include <mutex>
 #include <boost/assign/std/vector.hpp>
@@ -16,13 +16,13 @@ namespace formula::gui {
     /**
      * Application tab that displays stock Formulas from the Community
      */
-    class OnlineFormulasTab : public FormulaListTabBase {
+    class CommunityFormulasTab : public FormulaListTabBase {
     public:
-        OnlineFormulasTab(
+        CommunityFormulasTab(
             const std::shared_ptr<formula::events::EventHub>& eventHubRef,
             const std::shared_ptr<formula::storage::CommunityIndex>& communityIndexRef
         );
-        ~OnlineFormulasTab() override;
+        ~CommunityFormulasTab() override;
 
         void refreshData() override;
         void selectedRowsChanged(int lastRowSelected) override;
@@ -37,4 +37,4 @@ namespace formula::gui {
     };
 }
 
-#endif //FORMULA_GUI_ONLINEFORMULASTAB_INCLUDED
+#endif //FORMULA_GUI_COMMUNITYFORMULASTAB_INCLUDED

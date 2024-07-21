@@ -16,8 +16,8 @@
 #include <processor/PluginProcessor.hpp>
 #include <storage/LocalIndex.hpp>
 #include <gui/tabs/CodeEditorTab.hpp>
-#include <gui/tabs/SavedFilesTab.hpp>
-#include <gui/tabs/OnlineFormulasTab.hpp>
+#include <gui/tabs/SavedFormulasTab.hpp>
+#include <gui/tabs/CommunityFormulasTab.hpp>
 #include <gui/tabs/SettingsTab.hpp>
 #include <gui/components/popups/NoCompilerFoundPopup.hpp>
 #include <gui/components/SpinnerOverlay.hpp>
