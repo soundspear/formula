@@ -29,7 +29,7 @@ on:
 jobs:  
   build:
     name: Building the project
-    runs-on: macos-11
+    runs-on: macos-latest
     steps: 
     - name: Git Checkout
       uses: actions/checkout@v2
