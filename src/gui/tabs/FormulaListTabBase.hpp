@@ -13,6 +13,10 @@
 #include <storage/LocalIndex.hpp>
 
 namespace formula::gui {
+    /**
+     * Application tab containing a table whose rows are Formulas part of an index.
+     * This class is abstract and fetching the data is implementation specific.
+     */
     class FormulaListTabBase : public TableListBoxModel, public Component {
     public:
         explicit FormulaListTabBase(const std::shared_ptr<formula::storage::LocalIndex>& indexRef);

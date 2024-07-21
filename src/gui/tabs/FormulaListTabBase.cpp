@@ -72,7 +72,6 @@ void formula::gui::FormulaListTabBase::sortOrderChanged(int newSortColumnId, boo
                 return a[FormulaMetadataKeys::name] < b[FormulaMetadataKeys::name];
         };
         break;
-        /* /!\ A PARSER EN DATE */
         case ColumnsIds::created:
             predicate = [](FormulaMetadata a, FormulaMetadata b) {
                 const auto& timeA = boost::posix_time::time_from_string(a[FormulaMetadataKeys::created]);

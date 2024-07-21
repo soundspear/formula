@@ -22,7 +22,7 @@
 namespace formula::gui
 {
     /**
-     * Application tab that displays locally saved formulas
+     * Application tab that displays Formulas saved locally by the user
      */
     class SavedFormulasTab : public FormulaListTabBase
     {

@@ -14,7 +14,8 @@
 
 namespace formula::gui {
     /**
-     * Application tab that displays stock Formulas from the Community
+     * Application tab that displays all the Formulas from the Community
+     * @see formula::storage::CommunityIndex
      */
     class CommunityFormulasTab : public FormulaListTabBase {
     public:
