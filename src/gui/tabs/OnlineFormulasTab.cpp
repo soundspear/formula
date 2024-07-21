@@ -21,11 +21,6 @@ formula::gui::OnlineFormulasTab::OnlineFormulasTab(const std::shared_ptr<formula
     auto & header = table.getHeader();
     header.addColumn("Name", OnlineFormulasColumnsIds::name, 200);
     header.addColumn("Author", OnlineFormulasColumnsIds::author, 125);
-
-#ifdef __PREVIEW_SHOW_RATINGS
-    header.addColumn("Rating", OnlineFormulasColumnsIds::rating, 75);
-#endif
-
     header.addColumn("Description", OnlineFormulasColumnsIds::description, 600);
     header.addColumn("Created", OnlineFormulasColumnsIds::created, 100);
     header.addColumn("LastModified", OnlineFormulasColumnsIds::lastModified, 100);
@@ -142,26 +137,6 @@ void formula::gui::OnlineFormulasTab::sortOrderChanged(int newSortColumnId, bool
     sortDirection = isForwards ? "asc" : "desc";
 
     makeSearchAsync();
-}
-
-Component *formula::gui::OnlineFormulasTab::refreshComponentForCell(int /*rowNumber*/, int /*columnId*/, bool,
-                                                                    Component */*existingComponentToUpdate*/) {
-
-#ifdef __PREVIEW_SHOW_RATINGS
-    if (columnId == OnlineFormulasColumnsIds::rating) {
-        auto* ratingsBox = dynamic_cast<formula::gui::RatingComponent*> (existingComponentToUpdate);
-
-        if (ratingsBox == nullptr)
-            ratingsBox = new RatingComponent(false);
-
-        if (data[rowNumber].rating.has_value())
-            ratingsBox->setRating(data[rowNumber].rating.value());
-        else
-            ratingsBox->setRating(-1);
-        return ratingsBox;
-    }
-#endif
-    return nullptr;
 }
 
 void formula::gui::OnlineFormulasTab::selectedRowsChanged([[maybe_unused]] int lastRowSelected) {

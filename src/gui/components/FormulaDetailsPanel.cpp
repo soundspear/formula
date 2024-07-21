@@ -41,10 +41,6 @@ formula::gui::FormulaDetailsPanel::FormulaDetailsPanel(
     };
     addAndMakeVisible(loadFormulaButton);
 
-    ratingsHeadingLabel.setText("User ratings", NotificationType::sendNotificationAsync);
-#ifdef __PREVIEW_SHOW_RATINGS
-    addAndMakeVisible(ratingsHeadingLabel);
-#endif
 }
 
 
@@ -54,21 +50,6 @@ void formula::gui::FormulaDetailsPanel::setFormulaDto(formula::cloud::GetFormula
     codePreviewEditor->loadContent(newDto.metadata[formula::processor::FormulaMetadataKeys::source]);
     descriptionLabel.setText(newDto.description, NotificationType::sendNotificationAsync);
     this->dto = newDto;
-
-#ifdef __PREVIEW_SHOW_RATINGS
-    ratingComponents.clear(); commentLabels.clear();
-    for (auto& rating : dto.ratings) {
-        auto ratingComponent = std::make_unique<RatingComponent>(true);
-        ratingComponent->setRating(rating.rating);
-        addAndMakeVisible(ratingComponent.get());
-        ratingComponents.push_back(std::move(ratingComponent));
-
-        auto commentLabel = std::make_unique<Label>();
-        commentLabel->setText(rating.comment, NotificationType::sendNotificationAsync);
-        addAndMakeVisible(commentLabel.get());
-        commentLabels.push_back(std::move(commentLabel));
-    }
-#endif
 
     resized();
     repaint();
@@ -122,25 +103,5 @@ void formula::gui::FormulaDetailsPanel::resized()
     buttonArea = buttonArea.removeFromBottom(loadButtonHeight)
             .withTrimmedLeft(buttonMarginX/2).withTrimmedRight(buttonMarginX/2);
     loadFormulaButton.setBounds(buttonArea);
-
-#ifdef __PREVIEW_SHOW_RATINGS
-    constexpr auto commentHeight = 32;
-    constexpr auto labelHeight = 12;
-    constexpr auto ratingHeight = 25;
-    constexpr auto ratingWidth = 80;
-
-    ratingsHeadingLabel.setBounds(area.removeFromTop(labelHeight));
-    area.removeFromTop(labelMargin);
-
-    const auto numRatings = ratingComponents.size();
-    for (auto i = 0; i < numRatings; i++) {
-        auto ratingArea = area.removeFromTop(ratingHeight);
-        ratingArea.setWidth(ratingWidth);
-        ratingComponents[i]->setBounds(ratingArea);
-        area.removeFromTop(labelMargin);
-        commentLabels[i]->setBounds(area.removeFromTop(commentHeight));
-        area.removeFromTop(labelMargin);
-    }
-#endif
 }
 

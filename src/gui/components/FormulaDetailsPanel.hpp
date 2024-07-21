@@ -39,8 +39,6 @@ namespace formula::gui {
         Label descriptionLabel;
         Label ratingsHeadingLabel;
         TextButton loadFormulaButton;
-        std::vector<std::unique_ptr<RatingComponent>> ratingComponents;
-        std::vector<std::unique_ptr<Label>> commentLabels;
     };
 }
 

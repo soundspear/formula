@@ -29,7 +29,6 @@ namespace formula::gui {
         void paintRowBackground(Graphics& g, int rowNumber, int, int, bool rowIsSelected) override;
         void paintCell(Graphics& g, int rowNumber, int columnId, int width, int height, bool) override;
         void sortOrderChanged(int newSortColumnId, bool isForwards) override;
-        Component* refreshComponentForCell(int rowNumber, int columnId, bool, Component* existingComponentToUpdate) override;
         void selectedRowsChanged(int lastRowSelected) override;
         void resized() override;
         void visibilityChanged() override;
@@ -38,7 +37,7 @@ namespace formula::gui {
         void makeSearchAsync();
 
         enum OnlineFormulasColumnsIds {
-            name = 1, author, rating, description, created, lastModified
+            name = 1, author, description, created, lastModified
         };
 
         std::shared_ptr<formula::cloud::FormulaCloudClient> cloud;
