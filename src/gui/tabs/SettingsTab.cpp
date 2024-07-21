@@ -1,17 +1,10 @@
 #include "SettingsTab.hpp"
 
 formula::gui::SettingsTab::SettingsTab(
-        const std::shared_ptr<formula::events::EventHub>& eventHubRef
+    const std::shared_ptr<formula::events::EventHub>& eventHubRef
 )
 : eventHub(eventHubRef)
 {
-    formulaCloudTosButton.setButtonText("Formula Cloud Terms of Service");
-    addAndMakeVisible(formulaCloudTosButton);
-    formulaCloudTosButton.onClick = [this]() {
-        tosPopup.setVisible(true);
-    };
-    addChildComponent(tosPopup);
-
     windowSizeLabel.setText("Window size", juce::NotificationType::sendNotification);
     addAndMakeVisible(windowSizeLabel);
     setPossibleWindowSizes();
@@ -32,11 +25,9 @@ void formula::gui::SettingsTab::resized() {
     auto colWidth = area.getWidth() / 3;
 
     const auto areaCenter = area.getCentre();
-    tosPopup.setBounds(tosPopup.getAreaToFit(areaCenter));
 
     auto col1 = area.removeFromLeft(colWidth);
     col1 = col1.withTrimmedBottom(pad).withTrimmedTop(pad).withTrimmedRight(pad).withTrimmedLeft(pad);
-    formulaCloudTosButton.setBounds(col1.removeFromTop(24));
 
     auto col2 = area.removeFromLeft(colWidth);
     col2 = col2.withTrimmedBottom(pad).withTrimmedTop(pad).withTrimmedRight(pad).withTrimmedLeft(pad);

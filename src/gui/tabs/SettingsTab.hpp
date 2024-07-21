@@ -3,7 +3,6 @@
 
 #include <JuceHeader.h>
 #include <events/EventHub.hpp>
-#include <gui/components/popups/FormulaCloudTosPopup.hpp>
 
 namespace formula::gui {
     /**
@@ -21,9 +20,6 @@ class SettingsTab : public juce::Component, juce::ComboBox::Listener {
         void comboBoxChanged(ComboBox *comboBoxThatHasChanged) override;
 
         std::shared_ptr<formula::events::EventHub> eventHub;
-
-        juce::TextButton formulaCloudTosButton;
-        formula::gui::FormulaCloudTosPopup tosPopup;
 
         juce::Label windowSizeLabel;
         juce::ComboBox windowSizeComboBox;

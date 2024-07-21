@@ -13,7 +13,7 @@
 
 namespace formula::gui {
     /**
-     * Search bar for Formula Cloud
+     * Search bar for Formula name and description
      */
     class SearchBar : public juce::Component {
     public:
