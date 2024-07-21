@@ -13,11 +13,11 @@ formula::processor::PluginProcessor::PluginProcessor()
                        .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                        ),
-    KnobsPanelListener(),
     eventHub(std::make_shared<formula::events::EventHub>()),
     pluginState(std::make_shared<formula::processor::PluginState>(*this, "Formula")),
     settings(std::make_shared<formula::storage::LocalSettings>()),
-    localIndex(std::make_shared<formula::storage::UserIndex>(pluginState)),
+    localIndex(std::make_shared<formula::storage::UserIndex>()),
+    communityIndex(std::make_shared<formula::storage::CommunityIndex>()),
     cloud(std::make_shared<formula::cloud::FormulaCloudClient>(settings, eventHub)),
     filePlayer(std::make_shared<formula::processor::FilePlayer>()),
     recompiled(false)

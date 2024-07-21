@@ -41,7 +41,7 @@ formula::gui::SaveLocalFormulaPopup::SaveLocalFormulaPopup(
             thisPtr->pluginState->setActiveFormulaMetadata(metadata);
 
             thisPtr->setVisible(false);
-            thisPtr->localIndex->saveCurrentFormulaToIndex();
+            thisPtr->localIndex->saveCurrentFormulaToIndex(thisPtr->pluginState);
         });
 	};
 	addAndMakeVisible(saveButton);

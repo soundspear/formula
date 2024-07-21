@@ -10,9 +10,7 @@
 namespace formula::storage {
     class UserIndex : public LocalIndex {
     public:
-        UserIndex(
-            const std::shared_ptr<formula::processor::PluginState>& pluginStateRef
-        );
+        UserIndex();
 
         void loadIndex() override;
         void saveIndex() override;

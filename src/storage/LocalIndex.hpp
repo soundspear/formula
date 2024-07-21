@@ -26,13 +26,10 @@ namespace formula::storage {
      */
 	class LocalIndex : public LocalStorage {
 	public:
-		LocalIndex(
-			const std::shared_ptr<formula::processor::PluginState>& pluginStateRef
-		);
         static std::string serializeMetadata(const formula::processor::FormulaMetadata& metadata);
         static formula::processor::FormulaMetadata deserializeMetadata(const std::string& metadata);
 
-        void saveCurrentFormulaToIndex();
+        void saveCurrentFormulaToIndex(const std::shared_ptr<formula::processor::PluginState>& pluginStateRef);
 		void addFormulaToIndex(formula::processor::FormulaMetadata& metadata, bool overrideExisting);
 		void deleteFormula(std::string name);
 
@@ -45,7 +42,6 @@ namespace formula::storage {
 		boost::property_tree::ptree index;
 
 		std::shared_ptr<formula::events::EventHub> eventHub;
-		std::shared_ptr<formula::processor::PluginState> pluginState;
 	};
 }
 

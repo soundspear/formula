@@ -4,10 +4,7 @@
 
 #include "UserIndex.hpp"
 
-formula::storage::UserIndex::UserIndex(
-    const std::shared_ptr<formula::processor::PluginState>& pluginStateRef
-)
-    : LocalIndex(pluginStateRef)
+formula::storage::UserIndex::UserIndex()
 {
     indexPath = storageFolder / "index.json";
 }

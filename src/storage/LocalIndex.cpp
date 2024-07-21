@@ -5,19 +5,14 @@
 */
 
 #include "LocalIndex.hpp"
-#include "UserIndex.hpp"
 
 using namespace formula::processor;
 
-formula::storage::LocalIndex::LocalIndex(
+void formula::storage::LocalIndex::saveCurrentFormulaToIndex(
     const std::shared_ptr<formula::processor::PluginState>& pluginStateRef
-) : pluginState(pluginStateRef)
+)
 {
-}
-
-void formula::storage::LocalIndex::saveCurrentFormulaToIndex()
-{
-    auto metadata = pluginState->getActiveFormulaMetadata();
+    auto metadata = pluginStateRef->getActiveFormulaMetadata();
 
     auto dateNow = boost::posix_time::second_clock::local_time();
     const auto dateNowStr = boost::posix_time::to_simple_string(dateNow);
@@ -29,7 +24,7 @@ void formula::storage::LocalIndex::saveCurrentFormulaToIndex()
 
     addFormulaToIndex(metadata, true);
 
-    this->pluginState->setActiveFormulaMetadata(metadata);
+    pluginStateRef->setActiveFormulaMetadata(metadata);
 
     saveIndex();
 }
