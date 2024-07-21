@@ -21,6 +21,7 @@
 #include <storage/LocalIndex.hpp>
 #include <storage/CompilerStorage.hpp>
 #include <storage/LocalSettings.hpp>
+#include <storage/UserIndex.hpp>
 #include <cloud/FormulaCloudClient.hpp>
 
 namespace formula::processor
@@ -61,7 +62,7 @@ class PluginProcessor : public juce::AudioProcessor, public formula::processor::
         std::shared_ptr<formula::events::EventHub> eventHub;
         std::shared_ptr<formula::processor::PluginState> pluginState;
         std::shared_ptr<formula::storage::LocalSettings> settings;
-        std::shared_ptr<formula::storage::LocalIndex> localIndex;
+        std::shared_ptr<formula::storage::UserIndex> localIndex;
         std::shared_ptr<formula::cloud::FormulaCloudClient> cloud;
         std::shared_ptr<formula::processor::FilePlayer> filePlayer;
         std::unique_ptr<formula::compiler::CompilerWrapper> compiler;

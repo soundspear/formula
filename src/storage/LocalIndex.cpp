@@ -5,35 +5,14 @@
 */
 
 #include "LocalIndex.hpp"
+#include "UserIndex.hpp"
 
 using namespace formula::processor;
 
 formula::storage::LocalIndex::LocalIndex(
     const std::shared_ptr<formula::processor::PluginState>& pluginStateRef
-)
-    : formula::storage::LocalStorage(),
-    pluginState(pluginStateRef)
+) : pluginState(pluginStateRef)
 {
-    indexPath = storageFolder / "index.json";
-
-    refreshIndex();
-}
-
-void formula::storage::LocalIndex::refreshIndex()
-{
-    if (!boost::filesystem::exists(indexPath))
-    {
-        auto defaultIndex = std::string(formula::binary::default_index_json, formula::binary::default_index_jsonSize);
-        std::ofstream file(indexPath.string());
-        file << defaultIndex;
-        file.close();
-    }
-    boost::property_tree::read_json(indexPath.string(), index);
-}
-
-void formula::storage::LocalIndex::saveIndex()
-{
-    boost::property_tree::write_json(indexPath.string(), index);
 }
 
 void formula::storage::LocalIndex::saveCurrentFormulaToIndex()

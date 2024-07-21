@@ -352,7 +352,7 @@ void formula::gui::SavedFilesTab::resized()
 void formula::gui::SavedFilesTab::visibilityChanged()
 {
     if (isVisible()) {
-        localIndex->refreshIndex();
+        localIndex->loadIndex();
         refreshData();
         table.updateContent();
     }

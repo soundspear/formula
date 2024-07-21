@@ -6,7 +6,7 @@
 
 #include <processor/PluginProcessor.hpp>
 #include <gui/PluginWindow.hpp>
-#include "cloud/FormulaCloudClient.hpp"
+#include <cloud/FormulaCloudClient.hpp>
 
 formula::processor::PluginProcessor::PluginProcessor()
      : AudioProcessor (BusesProperties()
@@ -17,7 +17,7 @@ formula::processor::PluginProcessor::PluginProcessor()
     eventHub(std::make_shared<formula::events::EventHub>()),
     pluginState(std::make_shared<formula::processor::PluginState>(*this, "Formula")),
     settings(std::make_shared<formula::storage::LocalSettings>()),
-    localIndex(std::make_shared<formula::storage::LocalIndex>(pluginState)),
+    localIndex(std::make_shared<formula::storage::UserIndex>(pluginState)),
     cloud(std::make_shared<formula::cloud::FormulaCloudClient>(settings, eventHub)),
     filePlayer(std::make_shared<formula::processor::FilePlayer>()),
     recompiled(false)

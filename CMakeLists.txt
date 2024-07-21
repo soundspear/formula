@@ -152,6 +152,7 @@ target_sources(Formula
         "src/processor/PluginProcessor.cpp"
         "src/compiler/CompilerWrapper.cpp"
         "src/storage/LocalIndex.cpp"
+        "src/storage/UserIndex.cpp"
         "src/storage/LocalSettings.cpp"
         "src/storage/CompilerStorage.cpp")
 
