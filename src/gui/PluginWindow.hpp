@@ -10,7 +10,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
 
-#include <cloud/GithubClient.hpp>
+#include <http/GithubClient.hpp>
 #include <events/EventHub.hpp>
 #include <processor/FilePlayer.hpp>
 #include <processor/PluginProcessor.hpp>
@@ -19,9 +19,7 @@
 #include <gui/tabs/SavedFilesTab.hpp>
 #include <gui/tabs/OnlineFormulasTab.hpp>
 #include <gui/tabs/SettingsTab.hpp>
-#include <gui/components/popups/LoginPopup.hpp>
 #include <gui/components/popups/NoCompilerFoundPopup.hpp>
-#include <gui/components/popups/SetUserNamePopup.hpp>
 #include <gui/components/SpinnerOverlay.hpp>
 #include <gui/FormulaLookAndFeel.hpp>
 
@@ -37,8 +35,8 @@ namespace formula::gui
             formula::processor::PluginProcessor& processor, 
             const std::shared_ptr<formula::events::EventHub>& eventHubRef,
             const std::shared_ptr<formula::processor::PluginState>& pluginStateRef,
-            const std::shared_ptr<formula::cloud::FormulaCloudClient>& cloudRef,
-            const std::shared_ptr<formula::storage::LocalIndex>& localIndexRef,
+            const std::shared_ptr<formula::storage::CommunityIndex>& communityIndexRef,
+            const std::shared_ptr<formula::storage::UserIndex>& userIndexRef,
             const std::shared_ptr<formula::storage::LocalSettings>& settingsRef,
             const std::shared_ptr<formula::processor::FilePlayer>& filePlayer
         );
@@ -54,10 +52,9 @@ namespace formula::gui
         formula::processor::PluginProcessor& associatedProcessor;
         std::shared_ptr<formula::events::EventHub> eventHub;
         std::shared_ptr<formula::processor::PluginState> pluginState;
-        std::shared_ptr<formula::cloud::FormulaCloudClient> cloud;
         std::shared_ptr<formula::storage::LocalSettings> settings;
         std::shared_ptr<formula::processor::FilePlayer> filePlayer;
-        formula::cloud::GithubClient github;
+        formula::http::GithubClient github;
 
         std::unique_ptr<juce::Drawable> logoDrawable;
         juce::Rectangle<float> logoPos;
@@ -67,9 +64,7 @@ namespace formula::gui
         juce::TabbedComponent tabs;
         SpinnerOverlay spinner;
         static std::unique_ptr<juce::TooltipWindow> tooltipWindow;
-        formula::gui::LoginPopup loginPopup;
         formula::gui::NoCompilerFoundPopup noCompilerFoundPopup;
-        formula::gui::SetUserNamePopup setUserNamePopup;
         std::unique_ptr<formula::gui::FormulaLookAndFeel> laf;
 
         juce::TextButton loadAudioFileButton;

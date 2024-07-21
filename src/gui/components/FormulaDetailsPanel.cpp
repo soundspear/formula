@@ -22,10 +22,6 @@ formula::gui::FormulaDetailsPanel::FormulaDetailsPanel(
     };
 
     addAndMakeVisible(nameLabel);
-    authorFont = authorLabel.getFont();
-    authorFont.setItalic(true);
-    authorLabel.setFont(authorFont);
-    addAndMakeVisible(authorLabel);
     descriptionFont = descriptionLabel.getFont();
     descriptionFont.setItalic(true);
     descriptionLabel.setFont(descriptionFont);
@@ -37,19 +33,18 @@ formula::gui::FormulaDetailsPanel::FormulaDetailsPanel(
     loadFormulaButton.setButtonText("Load formula");
     loadFormulaButton.onClick = [this]() {
         using namespace formula::processor;
-        eventHub->publish(EventType::loadFormulaRequest, dto.metadata);
+        eventHub->publish(EventType::loadFormulaRequest, metadata);
     };
     addAndMakeVisible(loadFormulaButton);
 
 }
 
 
-void formula::gui::FormulaDetailsPanel::setFormulaDto(formula::cloud::GetFormulaDto newDto) {
-    nameLabel.setText(newDto.name, NotificationType::sendNotificationAsync);
-    authorLabel.setText("by " + newDto.author, NotificationType::sendNotificationAsync);
-    codePreviewEditor->loadContent(newDto.metadata[formula::processor::FormulaMetadataKeys::source]);
-    descriptionLabel.setText(newDto.description, NotificationType::sendNotificationAsync);
-    this->dto = newDto;
+void formula::gui::FormulaDetailsPanel::setFormula(formula::processor::FormulaMetadata metadata) {
+    nameLabel.setText(metadata[formula::processor::FormulaMetadataKeys::name], NotificationType::sendNotificationAsync);
+    codePreviewEditor->loadContent(metadata[formula::processor::FormulaMetadataKeys::source]);
+    descriptionLabel.setText(metadata[formula::processor::FormulaMetadataKeys::description], NotificationType::sendNotificationAsync);
+    this->metadata = metadata;
 
     resized();
     repaint();
@@ -69,7 +64,6 @@ void formula::gui::FormulaDetailsPanel::resized()
     constexpr auto borderSize = 1;
     constexpr auto topMargin = 10;
     constexpr auto componentsMargin = 14;
-    constexpr auto labelMargin = 4;
 
     constexpr auto closeButtonSize = 32;
     constexpr auto nameHeight = 18;
@@ -87,8 +81,6 @@ void formula::gui::FormulaDetailsPanel::resized()
     area.removeFromTop(topMargin);
 
     nameLabel.setBounds(area.removeFromTop(nameHeight));
-    area.removeFromTop(labelMargin);
-    authorLabel.setBounds(area.removeFromTop(nameHeight));
     area.removeFromTop(componentsMargin);
 
     codePreviewEditor->setBounds(area.removeFromTop(editorPreviewHeight));

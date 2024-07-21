@@ -4,12 +4,12 @@
     See http://www.boost.org/LICENSE_1_0.txt
 */
 
-#ifndef FORMULA_CLOUD_SEARCHPARAMETERS_INCLUDED
-#define FORMULA_CLOUD_SEARCHPARAMETERS_INCLUDED
+#ifndef FORMULA_HTTP_SEARCHPARAMETERS_INCLUDED
+#define FORMULA_HTTP_SEARCHPARAMETERS_INCLUDED
 
 #include <string>
 
-namespace formula::cloud {
+namespace formula::http {
     /**
      * Stores persistent search parameters
      */
@@ -24,4 +24,4 @@ namespace formula::cloud {
     };
 }
 
-#endif //FORMULA_CLOUD_SEARCHPARAMETERS_INCLUDED
+#endif //FORMULA_HTTP_SEARCHPARAMETERS_INCLUDED

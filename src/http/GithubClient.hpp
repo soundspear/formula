@@ -4,17 +4,17 @@
     See http://www.boost.org/LICENSE_1_0.txt
 */
 
-#ifndef FORMULA_CLOUD_GITHUBCLIENT_INCLUDED
-#define FORMULA_CLOUD_GITHUBCLIENT_INCLUDED
+#ifndef FORMULA_HTTP_GITHUBCLIENT_INCLUDED
+#define FORMULA_HTTP_GITHUBCLIENT_INCLUDED
 
 #include <cpprest/json.h>
 #include <cpprest/http_msg.h>
 #include <cpprest/http_client.h>
 
 #include "events/EventHub.hpp"
-#include "cloud/StringHelpers.hpp"
+#include "http/StringHelpers.hpp"
 
-namespace formula::cloud {
+namespace formula::http {
     /**
      * Client to check for updates using the Github API
      */
@@ -32,4 +32,4 @@ namespace formula::cloud {
     };
 }
 
-#endif //FORMULA_CLOUD_GITHUBCLIENT_INCLUDED
+#endif //FORMULA_HTTP_GITHUBCLIENT_INCLUDED

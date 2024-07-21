@@ -6,7 +6,6 @@
 
 #include <processor/PluginProcessor.hpp>
 #include <gui/PluginWindow.hpp>
-#include <cloud/FormulaCloudClient.hpp>
 
 formula::processor::PluginProcessor::PluginProcessor()
      : AudioProcessor (BusesProperties()
@@ -18,7 +17,6 @@ formula::processor::PluginProcessor::PluginProcessor()
     settings(std::make_shared<formula::storage::LocalSettings>()),
     localIndex(std::make_shared<formula::storage::UserIndex>()),
     communityIndex(std::make_shared<formula::storage::CommunityIndex>()),
-    cloud(std::make_shared<formula::cloud::FormulaCloudClient>(settings, eventHub)),
     filePlayer(std::make_shared<formula::processor::FilePlayer>()),
     recompiled(false)
 {
@@ -174,7 +172,7 @@ bool formula::processor::PluginProcessor::hasEditor() const
 juce::AudioProcessorEditor* formula::processor::PluginProcessor::createEditor()
 {
     auto* editor = new formula::gui::PluginWindow(
-        *this, eventHub, pluginState, cloud, localIndex, settings, filePlayer
+        *this, eventHub, pluginState, communityIndex, localIndex, settings, filePlayer
     );
     if (!compiler) {
         eventHub->publish(EventType::noCompilerFound);

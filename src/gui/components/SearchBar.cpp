@@ -16,12 +16,6 @@ formula::gui::SearchBar::SearchBar(const std::shared_ptr<formula::events::EventH
         this->eventHub->publish(EventType::searchFormulaRequest);
     };
     addAndMakeVisible(searchButton);
-
-    shouldSearchOnlyUserFormulasToggle.setButtonText("Show only your formulas");
-    addAndMakeVisible(shouldSearchOnlyUserFormulasToggle);
-    shouldSearchOnlyUserFormulasToggle.onClick = [this]() {
-        this->eventHub->publish(EventType::searchFormulaRequest);
-    };
 }
 
 void formula::gui::SearchBar::resized() {
@@ -29,7 +23,6 @@ void formula::gui::SearchBar::resized() {
 
     constexpr auto searchQueryWidth = 200;
     constexpr auto buttonSize = 24;
-    constexpr auto checkBoxWidth = 200;
     constexpr auto searchQueryButtonMargin = 6;
 
     auto area = getLocalBounds();
@@ -38,7 +31,4 @@ void formula::gui::SearchBar::resized() {
     area.removeFromLeft(searchQueryButtonMargin);
 
     searchButton.setBounds(area.removeFromLeft(buttonSize));
-
-    area = getLocalBounds();
-    shouldSearchOnlyUserFormulasToggle.setBounds(area.removeFromRight(checkBoxWidth));
 }

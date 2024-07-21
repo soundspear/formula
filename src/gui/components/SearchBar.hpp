@@ -21,13 +21,11 @@ namespace formula::gui {
         void resized() override;
 
         std::string getQuery() const { return queryEditor.getText().toStdString(); }
-        bool shouldSearchOnlyUserFormulas() const { return shouldSearchOnlyUserFormulasToggle.getToggleState(); }
     private:
         std::shared_ptr<formula::events::EventHub> eventHub;
 
         juce::TextEditor queryEditor;
         formula::gui::IconButton searchButton;
-        juce::ToggleButton shouldSearchOnlyUserFormulasToggle;
     };
 }
 

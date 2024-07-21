@@ -1,17 +1,18 @@
 #include <boost/format.hpp>
+
 #include "OnlineFormulasTab.hpp"
-#include "gui/components/RatingComponent.hpp"
 
 using namespace boost::assign;
 
-formula::gui::OnlineFormulasTab::OnlineFormulasTab(const std::shared_ptr<formula::events::EventHub>& eventHubRef,
-                                                   const std::shared_ptr<formula::cloud::FormulaCloudClient>& cloudRef)
-        :   cloud(cloudRef),
-            eventHub(eventHubRef),
-            sortColumn("last_modified"), sortDirection("desc"),
-            detailsPanel(eventHubRef),
-            searchBar(eventHubRef),
-            endOfResultsReached(false)
+formula::gui::OnlineFormulasTab::OnlineFormulasTab(
+    const std::shared_ptr<formula::events::EventHub>& eventHubRef,
+    const std::shared_ptr<formula::storage::CommunityIndex>& communityIndexRef
+)
+    :   FormulaListTabBase(communityIndexRef),
+        eventHub(eventHubRef),
+        sortColumn("last_modified"), sortDirection("desc"),
+        detailsPanel(eventHubRef),
+        searchBar(eventHubRef)
 {
     addAndMakeVisible(searchBar);
 
@@ -19,42 +20,18 @@ formula::gui::OnlineFormulasTab::OnlineFormulasTab(const std::shared_ptr<formula
     table.setOutlineThickness(2);
     table.setRowHeight(30);
     auto & header = table.getHeader();
-    header.addColumn("Name", OnlineFormulasColumnsIds::name, 200);
-    header.addColumn("Author", OnlineFormulasColumnsIds::author, 125);
-    header.addColumn("Description", OnlineFormulasColumnsIds::description, 600);
-    header.addColumn("Created", OnlineFormulasColumnsIds::created, 100);
-    header.addColumn("LastModified", OnlineFormulasColumnsIds::lastModified, 100);
+    header.addColumn("Name", ColumnsIds::name, 200);
+    header.addColumn("Description", ColumnsIds::description, 600);
+    header.addColumn("Created", ColumnsIds::created, 100);
+    header.addColumn("LastModified", ColumnsIds::lastModified, 100);
     table.setModel(this);
-    table.getVerticalScrollBar().addListener(this);
     addAndMakeVisible(table);
 
     addChildComponent(detailsPanel);
 
     eventHub->subscribeOnUiThread<OnlineFormulasTab>(
-            EventType::listFormulaResponse, [](boost::any arg, OnlineFormulasTab* thisPtr) {
-        thisPtr->searchParams.skip += thisPtr->searchParams.take;
-        const auto response = boost::any_cast<std::vector<formula::cloud::ListFormulaDto>>(arg);
-        if (response.size() < static_cast<unsigned>(thisPtr->searchParams.take)) {
-            thisPtr->endOfResultsReached = true;
-        }
-        thisPtr->data.insert(thisPtr->data.end(), response.begin(), response.end());
-        thisPtr->table.updateContent();
-    }, this);
-
-    eventHub->subscribeOnUiThread<OnlineFormulasTab>(
-            EventType::getFormulaResponse, [](boost::any arg, OnlineFormulasTab* thisPtr) {
-        const auto response = boost::any_cast<formula::cloud::GetFormulaDto>(arg);
-        thisPtr->detailsPanel.setFormulaDto(response);
-        thisPtr->detailsPanel.setVisible(true);
-        thisPtr->resized();
-    }, this);
-
-    eventHub->subscribeOnUiThread<OnlineFormulasTab>(
             EventType::searchFormulaRequest, []([[maybe_unused]] boost::any arg, OnlineFormulasTab* thisPtr) {
-        thisPtr->data.clear();
-        thisPtr->endOfResultsReached = false;
-        thisPtr->searchParams.skip = 0;
-        thisPtr->makeSearchAsync();
+        thisPtr->refreshData();
     }, this);
 }
 
@@ -62,81 +39,20 @@ formula::gui::OnlineFormulasTab::~OnlineFormulasTab() {
     eventHub->unsubscribe(this);
 }
 
-int formula::gui::OnlineFormulasTab::getNumRows() {
-    return static_cast<int>(data.size());
-}
-
-void formula::gui::OnlineFormulasTab::paintRowBackground(Graphics &g, int rowNumber, int, int, bool rowIsSelected) {
-    auto alternateColour = getLookAndFeel().findColour(ListBox::backgroundColourId)
-            .interpolatedWith(getLookAndFeel().findColour(ListBox::textColourId), 0.03f);
-    if (rowIsSelected)
-        g.fillAll(Colours::lightblue);
-    else if (rowNumber % 2)
-        g.fillAll(alternateColour);
-}
-
-void formula::gui::OnlineFormulasTab::paintCell(Graphics &g, int rowNumber, int columnId, int width, int height, bool) {
-    if (static_cast<unsigned>(rowNumber) >= data.size()) {
-        return;
-    }
-
-    g.setColour(getLookAndFeel().findColour(ListBox::textColourId));
-    g.setFont(Font());
-
-    auto row = data[static_cast<unsigned>(rowNumber)];
-    String text;
-
-    switch (columnId) {
-        case OnlineFormulasColumnsIds::name:
-            text = row.name;
-            break;
-        case OnlineFormulasColumnsIds::author:
-            text = row.author;
-            break;
-        case OnlineFormulasColumnsIds::description:
-            text = row.description;
-            break;
-        case OnlineFormulasColumnsIds::created:
-            text = boost::posix_time::to_simple_string(row.created);
-            text = text.dropLastCharacters(text.length() - 11);
-            break;
-        case OnlineFormulasColumnsIds::lastModified:
-            text = boost::posix_time::to_simple_string(row.lastModified);
-            text = text.dropLastCharacters(text.length() - 11);
-            break;
-        default:
-            return;
-    }
-
-    g.drawText(text, 2, 0, width - 4, height, Justification::centredLeft, true);
-
-    g.setColour(getLookAndFeel().findColour(ListBox::backgroundColourId));
-    g.fillRect(width - 1, 0, 1, height);
-}
-
-void formula::gui::OnlineFormulasTab::sortOrderChanged(int newSortColumnId, bool isForwards) {
-    switch (newSortColumnId) {
-        case OnlineFormulasColumnsIds::name:
-            sortColumn = "name";
-            break;
-        case OnlineFormulasColumnsIds::author:
-            sortColumn = "author";
-            break;
-        case OnlineFormulasColumnsIds::lastModified:
-            sortColumn = "last_modified";
-            break;
-        case OnlineFormulasColumnsIds::created:
-            sortColumn = "created";
-            break;
-        default:
-            return;
-    }
-    searchParams.skip = 0;
+void formula::gui::OnlineFormulasTab::refreshData()
+{
     data.clear();
-    endOfResultsReached = false;
-    sortDirection = isForwards ? "asc" : "desc";
+    for (auto it = index->begin(); it != index->end(); ++it) {
+        auto metadata = static_cast<formula::processor::FormulaMetadata>(it);
+        const auto& searchQuery = searchBar.getQuery();
+        if (searchQuery.empty() || formula::processor::formulaContains(metadata, searchQuery)) {
+            data += metadata;
+        }
+    }
 
-    makeSearchAsync();
+    if (sortDirection == "")
+
+    table.updateContent();
 }
 
 void formula::gui::OnlineFormulasTab::selectedRowsChanged([[maybe_unused]] int lastRowSelected) {
@@ -145,7 +61,11 @@ void formula::gui::OnlineFormulasTab::selectedRowsChanged([[maybe_unused]] int l
         return;
     }
     const auto & selectedRowInformation = data[static_cast<unsigned>(selectedRowIdx)];
-    cloud->getFormula(selectedRowInformation.id);
+
+    detailsPanel.setFormula(selectedRowInformation);
+    detailsPanel.setVisible(true);
+    resized();
+
     table.deselectAllRows();
 }
 
@@ -165,23 +85,4 @@ void formula::gui::OnlineFormulasTab::resized() {
     table.setBounds(area);
 
     detailsPanel.setBounds(getLocalBounds().removeFromLeft(getLocalBounds().getWidth() / 3));
-}
-
-void formula::gui::OnlineFormulasTab::visibilityChanged() {
-    if (isVisible() && data.size() == 0) {
-        makeSearchAsync();
-    }
-}
-
-void formula::gui::OnlineFormulasTab::scrollBarMoved(ScrollBar *scrollBarThatHasMoved, [[maybe_unused]] double newRangeStart) {
-    const auto barRange = scrollBarThatHasMoved->getCurrentRange();
-    const auto scrollLimit = scrollBarThatHasMoved->getMaximumRangeLimit();
-    if (barRange.getEnd() >= scrollLimit && !this->endOfResultsReached) {
-        makeSearchAsync();
-    }
-}
-
-void formula::gui::OnlineFormulasTab::makeSearchAsync() {
-    cloud->listFormulas(searchParams.skip, searchParams.take, sortColumn, sortDirection,
-                        searchBar.shouldSearchOnlyUserFormulas(), searchBar.getQuery());
 }

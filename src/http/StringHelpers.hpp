@@ -4,14 +4,14 @@
     See http://www.boost.org/LICENSE_1_0.txt
 */
 
-#ifndef FORMULA_CLOUD_STRINGHELPERS_INCLUDED
-#define FORMULA_CLOUD_STRINGHELPERS_INCLUDED
+#ifndef FORMULA_HTTP_STRINGHELPERS_INCLUDED
+#define FORMULA_HTTP_STRINGHELPERS_INCLUDED
 
 #include <string>
 #include <utility>
 #include <codecvt>
 
-namespace formula::cloud {
+namespace formula::http {
     namespace {
         /**
          * Converts a wide string to a narrow string
@@ -29,4 +29,4 @@ namespace formula::cloud {
     }
 }
 
-#endif //FORMULA_CLOUD_STRINGHELPERS_INCLUDED
+#endif //FORMULA_HTTP_STRINGHELPERS_INCLUDED

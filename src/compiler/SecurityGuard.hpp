@@ -24,7 +24,7 @@ namespace formula::compiler {
     protected:
         void setErrorMessage(std::string newErrorMessage) {
             errorMessage = std::move(newErrorMessage);
-            errorMessage += "\r\n\tYou can ask for a corporate Formula build to bypass this guard in your private cloud tenant.";
+            errorMessage += "\r\n\tYou can ask for a corporate Formula build to bypass this guard.";
         }
 
     private:

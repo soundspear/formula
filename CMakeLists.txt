@@ -10,10 +10,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Set preprocessor directives for Formula
 
 add_compile_definitions(FORMULA_VERSION="${CMAKE_PROJECT_VERSION}")
-if(NOT FORMULA_CLOUD_URL)
-    set(FORMULA_CLOUD_URL https://formula.soundspear.com)
-endif()
-add_compile_definitions(FORMULA_CLOUD_URL="${FORMULA_CLOUD_URL}")
 if(FORMULA_LOCAL_ONLY)
     add_compile_definitions(FORMULA_LOCAL_ONLY)
 endif()
@@ -125,24 +121,20 @@ juce_generate_juce_header(Formula)
 include_directories(Formula ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_sources(Formula
     PRIVATE
-        "src/cloud/AuthenticatedClient.cpp"
-        "src/cloud/FormulaCloudClient.cpp"
-        "src/cloud/GithubClient.cpp"
+        "src/http/GithubClient.cpp"
         "src/compiler/TccWrapper.cpp"
         "src/compiler/ClangWrapper.cpp"
         "src/gui/PluginWindow.cpp"
         "src/gui/FormulaCodeTokenizer.cpp"
+        "src/gui/tabs/FormulaListTabBase.cpp"
         "src/gui/tabs/CodeEditorTab.cpp"
         "src/gui/tabs/SavedFilesTab.cpp"
         "src/gui/tabs/OnlineFormulasTab.cpp"
         "src/gui/tabs/SettingsTab.cpp"
         "src/gui/components/popups/SaveLocalFormulaPopup.cpp"
-        "src/gui/components/popups/LoginPopup.cpp"
         "src/gui/components/popups/NoCompilerFoundPopup.cpp"
-        "src/gui/components/popups/SetUserNamePopup.cpp"
         "src/gui/components/SpinnerOverlay.cpp"
         "src/gui/components/FormulaCodeEditor.cpp"
-        "src/gui/components/RatingComponent.cpp"
         "src/gui/components/FormulaDetailsPanel.cpp"
         "src/gui/components/SearchBar.cpp"
         "src/processor/FilePlayer.cpp"

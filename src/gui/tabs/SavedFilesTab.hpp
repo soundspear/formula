@@ -12,27 +12,27 @@
 
 #include <gui/components/IconButton.hpp>
 #include <gui/ErrorCodes.hpp>
-#include <gui/components/popups/LoginPopup.hpp>
 #include <events/EventHub.hpp>
 #include <processor/PluginState.hpp>
 #include <processor/FormulaMetadata.hpp>
 #include <storage/LocalIndex.hpp>
+#include <gui/tabs/FormulaListTabBase.hpp>
+#include <storage/UserIndex.hpp>
 
 namespace formula::gui
 {
     /**
      * Application tab that displays locally saved formulas
      */
-    class SavedFilesTab : public juce::Component, public TableListBoxModel
+    class SavedFilesTab : public FormulaListTabBase
     {
     public:
         SavedFilesTab(
             const std::shared_ptr<formula::events::EventHub>& eventHubRef,
-            const std::shared_ptr<formula::cloud::FormulaCloudClient>& cloudRef,
             const std::shared_ptr<formula::processor::PluginState>& pluginStateRef,
-            const std::shared_ptr<formula::storage::LocalIndex>& localIndexRef);
+            const std::shared_ptr<formula::storage::UserIndex>& localIndexRef);
 
-        void refreshData();
+        void refreshData() override;
         void changeBottomBarVisibility(bool visible);
         void exportFormulaToFile();
         void importFormulaFromFile();
@@ -40,33 +40,17 @@ namespace formula::gui
         void publishFormula();
         void askOverwriteFormula(std::string formulaId, formula::processor::FormulaMetadata metadata);
 
-        int getNumRows() override;
-        void paintRowBackground(Graphics& g, int rowNumber, int, int, bool rowIsSelected) override;
-        void paintCell(Graphics& g, int rowNumber, int columnId, int width, int height, bool) override;
-        void sortOrderChanged(int newSortColumnId, bool isForwards) override;
-        Component* refreshComponentForCell(int rowNumber, int columnId, bool, Component* existingComponentToUpdate) override;
         void selectedRowsChanged(int lastRowSelected) override;
         void resized() override;
-        void visibilityChanged() override;
 
     private:
-        enum SavedFileColumnsIds {
-            source = 1, name = 2, created = 3, lastModified = 4, description = 5
-        };
-
-        std::vector<formula::processor::FormulaMetadata> data;
-        TableListBox table;
-
         TextButton importButton;
         TextButton loadButton;
-        TextButton publishButton;
         TextButton exportButton;
         TextButton deleteButton;
 
         std::shared_ptr<formula::events::EventHub> eventHub;
-        std::shared_ptr<formula::cloud::FormulaCloudClient> cloud;
         std::shared_ptr<formula::processor::PluginState> pluginState;
-        std::shared_ptr<formula::storage::LocalIndex> localIndex;
 
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SavedFilesTab)
     };

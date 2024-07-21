@@ -12,8 +12,8 @@ formula::gui::PluginWindow::PluginWindow(
     formula::processor::PluginProcessor& processorRef,
     const std::shared_ptr<formula::events::EventHub>& eventHubRef,
     const std::shared_ptr<formula::processor::PluginState>& pluginStateRef,
-    const std::shared_ptr<formula::cloud::FormulaCloudClient>& cloudRef,
-    const std::shared_ptr<formula::storage::LocalIndex>& localIndexRef,
+    const std::shared_ptr<formula::storage::CommunityIndex>& communityIndexRef,
+    const std::shared_ptr<formula::storage::UserIndex>& userIndexRef,
     const std::shared_ptr<formula::storage::LocalSettings>& settingsRef,
     const std::shared_ptr<formula::processor::FilePlayer>& filePlayerRef
 )
@@ -21,14 +21,11 @@ formula::gui::PluginWindow::PluginWindow(
       associatedProcessor(processorRef),
       eventHub(eventHubRef),
       pluginState(pluginStateRef),
-      cloud(cloudRef),
       settings(settingsRef),
       filePlayer(filePlayerRef),
       github(eventHubRef),
       tabs(TabbedButtonBar::TabsAtTop),
-      spinner(eventHubRef),
-      loginPopup(cloud),
-      setUserNamePopup(cloud)
+      spinner(eventHubRef)
 {
     if (!laf) {
         laf = std::make_unique<FormulaLookAndFeel>();
@@ -41,12 +38,12 @@ formula::gui::PluginWindow::PluginWindow(
 
     auto colour = findColour(ResizableWindow::backgroundColourId);
 
-    tabs.addTab("Editor", colour, new CodeEditorTab(eventHub, pluginState, localIndexRef), true);
-    tabs.addTab("Saved files", colour, new SavedFilesTab(eventHub, cloud, pluginState, localIndexRef), true);
+    tabs.addTab("Editor", colour, new CodeEditorTab(eventHub, pluginState, userIndexRef), true);
+    tabs.addTab("Saved files", colour, new SavedFilesTab(eventHub, pluginState, userIndexRef), true);
 #ifndef FORMULA_LOCAL_ONLY
-    tabs.addTab("Formula cloud", colour, new OnlineFormulasTab(eventHub, cloud), true);
+    tabs.addTab("All Formulas", colour, new OnlineFormulasTab(eventHub, communityIndexRef), true);
 #endif
-    tabs.addTab("Settings", colour, new SettingsTab(eventHub, cloud), true);
+    tabs.addTab("Settings", colour, new SettingsTab(eventHub), true);
 
     addAndMakeVisible(tabs);
 
@@ -153,48 +150,6 @@ void formula::gui::PluginWindow::setupPopups() {
                 thisPtr->tabs.setInterceptsMouseClicks(false, false);
                 thisPtr->resized();
             }, this);
-
-    // Login Popup
-    addChildComponent(loginPopup);
-
-    eventHub->subscribeOnUiThread<PluginWindow>(
-            EventType::loginSuccess, [] ([[maybe_unused]] boost::any _, [[maybe_unused]] PluginWindow* thisPtr) {
-                juce::AlertWindow::showMessageBox(juce::AlertWindow::InfoIcon,
-                                                  "Login success!", "You are logged into Formula Cloud");
-            }, this);
-
-    eventHub->subscribeOnUiThread<PluginWindow>(
-            EventType::loginFail, [] ([[maybe_unused]] boost::any _, PluginWindow* thisPtr) {
-                thisPtr->loginPopup.setType(LoginPopupType::LoginFailed);
-                thisPtr->loginPopup.setVisible(true); thisPtr->resized();
-            }, this);
-
-    eventHub->subscribeOnUiThread<PluginWindow>(
-            EventType::needLogin, [] ([[maybe_unused]] boost::any _, PluginWindow* thisPtr) {
-                thisPtr->loginPopup.setType(LoginPopupType::FirstLogin);
-                thisPtr->loginPopup.setVisible(true); thisPtr->resized();
-            }, this);
-
-    eventHub->subscribeOnUiThread<PluginWindow>(
-            EventType::subscriptionExpired, [] ([[maybe_unused]] boost::any _, PluginWindow* thisPtr) {
-                thisPtr->loginPopup.setType(LoginPopupType::MissingSubscription);
-                thisPtr->loginPopup.setVisible(true); thisPtr->resized();
-            }, this);
-
-    // Set UserName Popup
-    addChildComponent(setUserNamePopup);
-
-    eventHub->subscribeOnUiThread<PluginWindow>(
-            EventType::needSetUsername, [] ([[maybe_unused]] boost::any _, PluginWindow* thisPtr) {
-                thisPtr->setUserNamePopup.setUserNameAlreadyExists(false);
-                thisPtr->setUserNamePopup.setVisible(true); thisPtr->resized();
-            }, this);
-
-    eventHub->subscribeOnUiThread<PluginWindow>(
-            EventType::userNameAlreadyExists, [] ([[maybe_unused]] boost::any _, PluginWindow* thisPtr) {
-                thisPtr->setUserNamePopup.setUserNameAlreadyExists(true);
-                thisPtr->setUserNamePopup.setVisible(true); thisPtr->resized();
-            }, this);
 }
 
 formula::gui::PluginWindow::~PluginWindow() {
@@ -235,9 +190,7 @@ void formula::gui::PluginWindow::resized()
     }
 
     const auto areaCenter = area.getCentre();
-    loginPopup.setBounds(loginPopup.getAreaToFit(areaCenter));
     noCompilerFoundPopup.setBounds(noCompilerFoundPopup.getAreaToFit(areaCenter));
-    setUserNamePopup.setBounds(setUserNamePopup.getAreaToFit(areaCenter));
 }
 
 void formula::gui::PluginWindow::setWindowSizeFromResolutionString(std::optional<std::string> resolutionOpt) {

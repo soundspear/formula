@@ -13,7 +13,7 @@
 
 namespace formula::gui {
     /**
-     * Popup to display the terms and conditions of Formula Cloud
+     * Popup to display the terms and conditions
      */
     class FormulaCloudTosPopup : public formula::gui::FormulaPopup {
     public:

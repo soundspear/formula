@@ -31,6 +31,11 @@ namespace formula::processor {
 		static inline std::string switchName(int switchId) { return std::string("SwitchName") + std::to_string(switchId); }
 		static inline std::string switchDefaultValue(int switchId) { return std::string("SwitchDefaultValue") + std::to_string(switchId); }
 	};
+
+	inline bool formulaContains(FormulaMetadata& metadata, const std::string& searchQuery) {
+		return metadata[FormulaMetadataKeys::name].find(searchQuery)
+		 || metadata[FormulaMetadataKeys::description].find(searchQuery);
+	}
 }
 
 #endif // FORMULA_PROCESSOR_FORMULAMETADATA_INCLUDED

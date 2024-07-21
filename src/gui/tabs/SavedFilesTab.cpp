@@ -6,11 +6,10 @@ using FormulaMetadataKeys = formula::processor::FormulaMetadataKeys;
 
 formula::gui::SavedFilesTab::SavedFilesTab(
     const std::shared_ptr<formula::events::EventHub>& eventHubRef,
-    const std::shared_ptr<formula::cloud::FormulaCloudClient>& cloudRef,
     const std::shared_ptr<formula::processor::PluginState>& pluginStateRef,
-    const std::shared_ptr<formula::storage::LocalIndex>& localIndexRef
+    const std::shared_ptr<formula::storage::UserIndex>& localIndexRef
 )
-    : eventHub(eventHubRef), cloud(cloudRef), pluginState(pluginStateRef), localIndex(localIndexRef)
+    : FormulaListTabBase(localIndexRef), eventHub(eventHubRef), pluginState(pluginStateRef)
 {
     importButton.setButtonText("Import formula from file");
     importButton.onClick = [this] {
@@ -27,11 +26,11 @@ formula::gui::SavedFilesTab::SavedFilesTab(
     table.setRowHeight(30);
 
     auto & header = table.getHeader();
-    header.addColumn("Source", SavedFileColumnsIds::source, 1);
-    header.addColumn("Name", SavedFileColumnsIds::name, 300);
-    header.addColumn("Created", SavedFileColumnsIds::created, 175);
-    header.addColumn("Last Modified", SavedFileColumnsIds::lastModified, 175);
-    header.addColumn("Description", SavedFileColumnsIds::description, 600);
+    header.addColumn("Source", ColumnsIds::source, 1);
+    header.addColumn("Name", ColumnsIds::name, 300);
+    header.addColumn("Created", ColumnsIds::created, 175);
+    header.addColumn("Last Modified", ColumnsIds::lastModified, 175);
+    header.addColumn("Description", ColumnsIds::description, 600);
 
     header.setSortColumnId(4, true);
     header.setColumnVisible(1, false);
@@ -55,15 +54,6 @@ formula::gui::SavedFilesTab::SavedFilesTab(
         this->table.deselectAllRows();
     };
 
-    publishButton.setButtonText("Publish online");
-    publishButton.setHelpText("Publish publicly or privately in Formula Cloud");
-    addChildComponent(publishButton);
-    publishButton.onClick = [this] {
-        changeBottomBarVisibility(false);
-        publishFormula();
-        this->table.deselectAllRows();
-    };
-
     exportButton.setButtonText("Export to file");
     exportButton.setHelpText("Save this formula and its configuration to a local file that you can import back");
     addChildComponent(exportButton);
@@ -71,25 +61,12 @@ formula::gui::SavedFilesTab::SavedFilesTab(
         exportFormulaToFile();
         this->table.deselectAllRows();
     };
-
-    eventHub->subscribeOnUiThread<SavedFilesTab>(EventType::formulaAlreadyExists,
-                                  [](boost::any arg, SavedFilesTab* thisPtr) {
-        auto pair = boost::any_cast<std::pair<std::string, FormulaMetadata>>(arg);
-        auto conflictingFormulaId = pair.first;
-        auto metadata = pair.second;
-        thisPtr->askOverwriteFormula(conflictingFormulaId, metadata);
-    }, this);
-
-    eventHub->subscribeOnUiThread<SavedFilesTab>(EventType::createFormulaSuccess,
-                                  []([[maybe_unused]] boost::any arg, [[maybe_unused]] SavedFilesTab* thisPtr) {
-        AlertWindow::showMessageBox(MessageBoxIconType::NoIcon, "Success", "Your formula was successfully uploaded");
-    }, this);
 }
 
 void formula::gui::SavedFilesTab::refreshData()
 {
     data.clear();
-    for (auto it = localIndex->begin(); it != localIndex->end(); ++it) {
+    for (auto it = index->begin(); it != index->end(); ++it) {
         auto metadata = static_cast<FormulaMetadata>(it);
         data += metadata;
     }
@@ -99,7 +76,6 @@ void formula::gui::SavedFilesTab::refreshData()
 void formula::gui::SavedFilesTab::changeBottomBarVisibility(bool visible)
 {
     this->loadButton.setVisible(visible);
-    this->publishButton.setVisible(visible);
     this->exportButton.setVisible(visible);
     this->deleteButton.setVisible(visible);
 }
@@ -149,7 +125,7 @@ void formula::gui::SavedFilesTab::importFormulaFromFile()
         std::string content = buffer.str();
 
         FormulaMetadata metadata = formula::storage::LocalIndex::deserializeMetadata(content);
-        localIndex->addFormulaToIndex(metadata, false);
+        index->addFormulaToIndex(metadata, false);
     } catch (std::exception&) {
         eventHub->publish(EventType::unexpectedError, ErrorCodes::cannotImportFile);
     }
@@ -171,133 +147,8 @@ void formula::gui::SavedFilesTab::deleteFormula()
     if (result != 1) return;
 
     auto &metadata = this->data[static_cast<unsigned int>(this->table.getSelectedRow())];
-    localIndex->deleteFormula(metadata[FormulaMetadataKeys::name]);
+    index->deleteFormula(metadata[FormulaMetadataKeys::name]);
     refreshData();
-}
-
-void formula::gui::SavedFilesTab::publishFormula() {
-    auto result = AlertWindow::showYesNoCancelBox(
-            MessageBoxIconType::WarningIcon,
-            "Confirmation",
-            "You will publish this formula on Formula Cloud, and it will be publicly available. Continue?",
-            "Yes",
-            "No",
-            "Cancel"
-    );
-
-    if (result != 1) return;
-
-    auto &metadata = this->data[static_cast<unsigned int>(this->table.getSelectedRow())];
-    cloud->createFormula(metadata);
-}
-
-void formula::gui::SavedFilesTab::askOverwriteFormula(std::string formulaId, formula::processor::FormulaMetadata metadata) {
-    auto result = AlertWindow::showYesNoCancelBox(
-            MessageBoxIconType::WarningIcon,
-            "Confirmation",
-            "You already published a formula with the same name. Overwrite?",
-            "Yes",
-            "No",
-            "Cancel"
-    );
-
-    if (result != 1) return;
-
-    cloud->updateFormula(formulaId, metadata);
-}
-
-int formula::gui::SavedFilesTab::getNumRows()
-{
-    return static_cast<int>(data.size());
-}
-
-void formula::gui::SavedFilesTab::paintRowBackground(Graphics& g, int rowNumber, int /*width*/, int /*height*/, bool rowIsSelected)
-{
-    auto alternateColour = getLookAndFeel().findColour(ListBox::backgroundColourId)
-        .interpolatedWith(getLookAndFeel().findColour(ListBox::textColourId), 0.03f);
-    if (rowIsSelected)
-        g.fillAll(Colours::lightblue);
-    else if (rowNumber % 2)
-        g.fillAll(alternateColour);
-}
-
-void formula::gui::SavedFilesTab::paintCell(Graphics& g, int rowNumber, int columnId,
-    int width, int height, bool /*rowIsSelected*/)
-{
-    if (rowNumber >= static_cast<int>(data.size())) {
-        return;
-    }
-    g.setColour(getLookAndFeel().findColour(ListBox::textColourId));
-    g.setFont(Font());
-
-    auto row = data[static_cast<unsigned int>(rowNumber)];
-    String text;
-
-    switch (columnId) {
-    case SavedFileColumnsIds::name:
-        text = row[FormulaMetadataKeys::name];
-        break;
-    case SavedFileColumnsIds::created:
-        text = row[FormulaMetadataKeys::created];
-        break;
-    case SavedFileColumnsIds::lastModified:
-        text = row[FormulaMetadataKeys::lastModified];
-        break;
-    case SavedFileColumnsIds::description:
-        text = row[FormulaMetadataKeys::description];
-        break;
-    default:
-        return;
-    }
-
-    g.drawText(text, 2, 0, width - 4, height, Justification::centredLeft, true);
-
-    g.setColour(getLookAndFeel().findColour(ListBox::backgroundColourId));
-    g.fillRect(width - 1, 0, 1, height);
-}
-
-void formula::gui::SavedFilesTab::sortOrderChanged(int newSortColumnId, bool isForwards)
-{
-    std::function<bool(FormulaMetadata, FormulaMetadata)> predicate;
-    switch (newSortColumnId) {
-        case SavedFileColumnsIds::name:
-            predicate = [](FormulaMetadata a, FormulaMetadata b) { 
-                return a[FormulaMetadataKeys::name] < b[FormulaMetadataKeys::name];
-            };
-            break;
-            /* /!\ A PARSER EN DATE */
-        case SavedFileColumnsIds::created:
-            predicate = [](FormulaMetadata a, FormulaMetadata b) {
-                return a[FormulaMetadataKeys::created] < b[FormulaMetadataKeys::created];
-            };
-            break;
-        case SavedFileColumnsIds::lastModified:
-            predicate = [](FormulaMetadata a, FormulaMetadata b) {
-                return a[FormulaMetadataKeys::lastModified] < b[FormulaMetadataKeys::lastModified];
-            };
-            break;
-        case SavedFileColumnsIds::description:
-            predicate = [](FormulaMetadata a, FormulaMetadata b) {
-                return a[FormulaMetadataKeys::description] < b[FormulaMetadataKeys::description];
-            };
-            break;
-        default:
-            return;
-    }
-    if (isForwards) {
-        std::sort(data.begin(), data.end(), predicate);
-    }
-    else {
-        std::sort(data.rbegin(), data.rend(), predicate);
-    }
-
-    table.updateContent();
-}
-// This is overloaded from TableListBoxModel, and must update any custom components that we're using
-Component* formula::gui::SavedFilesTab::refreshComponentForCell(int /*rowNumber*/ , int /*columnId*/ , bool /*isRowSelected*/,
-    Component* /*existingComponentToUpdate*/)
-{
-    return nullptr;
 }
 
 void formula::gui::SavedFilesTab::selectedRowsChanged(int /*lastRowSelected*/) {
@@ -339,22 +190,8 @@ void formula::gui::SavedFilesTab::resized()
         buttonsCenter.getX() - buttonWidthPixels * 3 / 2 - bottomButtonsMargin, buttonsArea.getY(),
             buttonWidthPixels, buttonHeightPixels
     });
-    publishButton.setBounds(Rectangle<int> {
-        buttonsCenter.getX() - buttonWidthPixels / 2, buttonsArea.getY(),
-            buttonWidthPixels, buttonHeightPixels
-    });
     exportButton.setBounds(Rectangle<int> {
         buttonsCenter.getX() + buttonWidthPixels / 2 + bottomButtonsMargin, buttonsArea.getY(),
             buttonWidthPixels, buttonHeightPixels
     });
 }
-
-void formula::gui::SavedFilesTab::visibilityChanged()
-{
-    if (isVisible()) {
-        localIndex->loadIndex();
-        refreshData();
-        table.updateContent();
-    }
-}
-

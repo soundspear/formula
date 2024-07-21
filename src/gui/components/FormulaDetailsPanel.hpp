@@ -9,31 +9,28 @@
 
 #include <JuceHeader.h>
 #include <events/EventHub.hpp>
-#include <cloud/GetFormulaDto.hpp>
 #include <processor/FormulaMetadata.hpp>
-#include <gui/components/RatingComponent.hpp>
 #include <gui/components/FormulaCodeEditor.hpp>
 
 namespace formula::gui {
     /**
-     * Collapsable panel in Formula Cloud to display the preview of a formula
+     * Collapsible panel to display the preview of a formula
      */
     class FormulaDetailsPanel : public juce::Component {
     public:
         explicit FormulaDetailsPanel(const std::shared_ptr<formula::events::EventHub>& eventHubRef);
-        void setFormulaDto(formula::cloud::GetFormulaDto dto);
+        void setFormula(formula::processor::FormulaMetadata metadata);
 
         void paint(Graphics& g) override;
         void resized() override;
     private:
-        cloud::GetFormulaDto dto;
+        formula::processor::FormulaMetadata metadata;
         std::shared_ptr<formula::events::EventHub> eventHub;
 
         Font nameFont, authorFont, descriptionFont;
 
         std::unique_ptr<Button> closeButton;
         Label nameLabel;
-        Label authorLabel;
         CodeDocument codePreview;
         std::unique_ptr<formula::gui::FormulaCodeEditor> codePreviewEditor;
         Label descriptionLabel;

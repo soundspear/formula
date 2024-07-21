@@ -4,8 +4,8 @@
     See http://www.boost.org/LICENSE_1_0.txt
 */
 
-#ifndef FORMULA_CLOUD_TCCWRAPPER_INCLUDED
-#define FORMULA_CLOUD_TCCWRAPPER_INCLUDED
+#ifndef FORMULA_COMPILER_TCCWRAPPER_INCLUDED
+#define FORMULA_COMPILER_TCCWRAPPER_INCLUDED
 
 #include <boost/lexical_cast.hpp>
 
@@ -26,4 +26,4 @@ namespace formula::compiler{
 	};
 }
 
-#endif // FORMULA_CLOUD_TCCWRAPPER_INCLUDED
+#endif // FORMULA_COMPILER_TCCWRAPPER_INCLUDED

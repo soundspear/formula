@@ -6,10 +6,10 @@
 
 #include "GithubClient.hpp"
 
-formula::cloud::GithubClient::GithubClient(const std::shared_ptr<formula::events::EventHub>& eventHubRef)
+formula::http::GithubClient::GithubClient(const std::shared_ptr<formula::events::EventHub>& eventHubRef)
 : eventHub(eventHubRef), client(WIDE("https://api.github.com/"))  { }
 
-void formula::cloud::GithubClient::checkForUpdates() {
+void formula::http::GithubClient::checkForUpdates() {
     client.request(web::http::methods::GET, WIDE("/repos/soundspear/formula/releases"), destructorCts.get_token())
         .then([this](const web::http::http_response& response) mutable {
             if (response.status_code() != 200) {
@@ -39,7 +39,7 @@ void formula::cloud::GithubClient::checkForUpdates() {
         });
 }
 
-void formula::cloud::GithubClient::parseVersion(const std::string& input, int result[3]) {
+void formula::http::GithubClient::parseVersion(const std::string& input, int result[3]) {
     std::istringstream parser(input);
     parser >> result[0];
     for(int idx = 1; idx < 3; idx++)
@@ -49,7 +49,7 @@ void formula::cloud::GithubClient::parseVersion(const std::string& input, int re
     }
 }
 
-bool formula::cloud::GithubClient::isGreaterThanCurrentVersion(std::string semverStr) {
+bool formula::http::GithubClient::isGreaterThanCurrentVersion(std::string semverStr) {
     int currentVersion[3], semver[3];
     parseVersion(FORMULA_VERSION, currentVersion);
     parseVersion(semverStr, semver);
