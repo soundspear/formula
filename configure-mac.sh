@@ -2,8 +2,8 @@
 
 JuceVersion="7.0.5"
 LLVMVersion="11"
-BoostVersion="1.78" # 1.74 not available through brew
 OpenSSLVersion="1.1"
+VCPKGVersion="2024.03.19" # Boost 1.84, cpprestsdk 2.10.19
 
 echo "Installing CMake"
 brew install cmake
@@ -18,7 +18,7 @@ fi
 echo "Installing vcpkg"
 git clone https://github.com/microsoft/vcpkg
 cd vcpkg
-git reset --hard "2022.02.02"
+git reset --hard "$VCPKGVersion"
 cd ..
 ./vcpkg/bootstrap-vcpkg.sh
 

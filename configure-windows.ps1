@@ -3,7 +3,7 @@
 $JuceVersion="7.0.5"
 $LLVMVersion="11.1.0"
 $OpenSSLVersion="1.1.1.1300"
-$BoostVersion="1.74"
+$BoostVersion="1.84"
 $CMakeVersion="3.22.1"
 
 if (Get-Command -Name choco -ErrorAction SilentlyContinue) {
