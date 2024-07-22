@@ -38,10 +38,10 @@ IF (WIN32)
 ELSEIF (APPLE)
     set(VCPKG_LIBRARY_LINKAGE static CACHE STRING "VCPKG_Library_Linkage")
     set(Boost_USE_STATIC_LIBS ON)
-    add_compile_definitions(BOOST_NO_CXX98_FUNCTION_BASE) # Fixes "No template named 'unary_function' in namespace 'std'" while Boost is not updated
+    add_compile_definitions(BOOST_NO_CXX98_FUNCTION_BASE)
 ENDIF()
 
-find_package(Boost 1.74.0 COMPONENTS REQUIRED filesystem date_time)
+find_package(Boost 1.84.0 COMPONENTS REQUIRED filesystem date_time)
 include_directories(Formula ${Boost_INCLUDE_DIR} SYSTEM)
 
 find_package(cpprestsdk CONFIG REQUIRED)

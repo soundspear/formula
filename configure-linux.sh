@@ -2,7 +2,7 @@
 
 JuceVersion="7.0.5"
 LLVMVersion="11"
-BoostVersion="1.74"
+BoostVersion="1.84"
 
 if [ "$EUID" -ne 0 ]
   then echo "Please run as root"
