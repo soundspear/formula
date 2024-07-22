@@ -3,7 +3,7 @@
 $JuceVersion="7.0.5"
 $LLVMVersion="11.1.0"
 $OpenSSLVersion="1.1.1.1300"
-$BoostVersion="1.84"
+$BoostVersion="1.84.0.1"
 $CMakeVersion="3.22.1"
 
 if (Get-Command -Name choco -ErrorAction SilentlyContinue) {
@@ -24,7 +24,7 @@ Write-Host "Installing OpenSSL $OpenSSLVersion"
 choco install openssl --version $OpenSSLVersion -y
 Write-Host
 Write-Host "Installing Boost $BoostVersion"
-choco install boost-msvc-14.2 --version $BoostVersion -y
+choco install boost-msvc-14.3 --version $BoostVersion -y
 Write-Host
 Write-Host "Installing LLVM $LLVMVersion"
 choco install llvm --version $LLVMVersion -y

@@ -39,9 +39,7 @@ formula::gui::PluginWindow::PluginWindow(
 
     tabs.addTab("Editor", colour, new CodeEditorTab(eventHub, pluginState, userIndexRef), true);
     tabs.addTab("Saved files", colour, new SavedFormulasTab(eventHub, pluginState, userIndexRef), true);
-#ifndef FORMULA_LOCAL_ONLY
     tabs.addTab("All Formulas", colour, new CommunityFormulasTab(eventHub, communityIndexRef), true);
-#endif
     tabs.addTab("Settings", colour, new SettingsTab(eventHub, filePlayerRef), true);
 
     addAndMakeVisible(tabs);

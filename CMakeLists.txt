@@ -10,9 +10,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Set preprocessor directives for Formula
 
 add_compile_definitions(FORMULA_VERSION="${CMAKE_PROJECT_VERSION}")
-if(FORMULA_LOCAL_ONLY)
-    add_compile_definitions(FORMULA_LOCAL_ONLY)
-endif()
 set(FORMULA_COMPILE_FORMATS "AU" "VST3")
 if(FORMULA_STANDALONE)
     list (APPEND FORMULA_COMPILE_FORMATS "Standalone")

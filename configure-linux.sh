@@ -2,7 +2,9 @@
 
 JuceVersion="7.0.5"
 LLVMVersion="11"
-BoostVersion="1.84"
+BoostVersion="1.84.0"
+
+set -e
 
 if [ "$EUID" -ne 0 ]
   then echo "Please run as root"
@@ -22,24 +24,14 @@ echo "Installing LLVM"
 apt-get install llvm-$LLVMVersion clang-$LLVMVersion -y
 
 echo "Installing Boost"
-apt-get install libboost$BoostVersion-dev -y
-BOOST_PACKAGES=(
-	"boost-date-time"
-	"boost-filesystem"
-)
-for PACKAGE in "${BOOST_PACKAGES[@]}"
-do
-	apt-get install lib$PACKAGE$BoostVersion-dev -y
-done
-
-: '
 BoostVersion_=$(echo boost_$BoostVersion | tr '.' '_')
-https://boostorg.jfrog.io/artifactory/main/release/$BoostVersion/source/boost_$(echo $BoostVersion | tr '.' '_').tar.gz
-tar xzfv $BoostVersion_.tar.gz
-cd $BoostVersion_
+wget "https://boostorg.jfrog.io/artifactory/main/release/$BoostVersion/source/boost_$(echo $BoostVersion | tr '.' '_').tar.gz"
+tar xzfv "$BoostVersion_.tar.gz"
+cd "$BoostVersion_"
 ./bootstrap.sh --prefix=/usr/local/
-./b2 && ./b2 install
-'
+./b2 link=static runtime-link=static --with-date_time	--with-filesystem --with-iostreams
+./b2 install
+cd ..
 
 echo "Installing JUCE"
 if [[ ! -d "JUCE" ]]; then

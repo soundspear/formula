@@ -46,7 +46,7 @@ jobs:
     - name: CMake
       shell: powershell
       run: |
-        cmake . -G "Visual Studio 17 2022" -DVCPKG_TARGET_TRIPLET=x64-windows-static -DCMAKE_TOOLCHAIN_FILE=D:/a/formula/formula/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_WIN_DIR=D:/a/formula/formula/vcpkg/installed/x64-windows-static -DFORMULA_STANDALONE=1 -DCMAKE_BUILD_TYPE=Release
+        cmake . -G "Visual Studio 17 2022" -DVCPKG_TARGET_TRIPLET=x64-windows-static -DCMAKE_TOOLCHAIN_FILE=D:/a/formula/formula/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_WIN_DIR=D:/a/formula/formula/vcpkg/installed/x64-windows-static -DBOOST_ROOT="C:\local\boost_1_84_0" -DFORMULA_STANDALONE=1 -DCMAKE_BUILD_TYPE=Release
     
     - name: CMake Build
       shell: powershell

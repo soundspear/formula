@@ -2,7 +2,6 @@
 
 JuceVersion="7.0.5"
 LLVMVersion="11"
-OpenSSLVersion="1.1"
 VCPKGVersion="2024.03.19" # Boost 1.84, cpprestsdk 2.10.19
 
 echo "Installing CMake"
