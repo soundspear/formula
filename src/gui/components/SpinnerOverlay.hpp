@@ -21,7 +21,7 @@ namespace formula::gui {
     class SpinnerOverlay : public Component {
     public:
         explicit SpinnerOverlay(const std::shared_ptr<formula::events::EventHub>& eventHub);
-        ~SpinnerOverlay();
+        ~SpinnerOverlay() override;
         void showSpinner();
         void hideSpinner();
 

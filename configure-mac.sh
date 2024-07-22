@@ -29,6 +29,8 @@ BOOST_PACKAGES=(
 	"boost-date-time"
 	"boost-dll"
 	"boost-filesystem"
+	"boost-format"
+	"boost-iostreams"
 	"boost-lexical-cast"
 	"boost-process"
 	"boost-preprocessor"

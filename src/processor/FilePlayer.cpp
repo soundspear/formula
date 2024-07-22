@@ -57,7 +57,7 @@ void formula::processor::FilePlayer::prepare(double sampleRate, int maximumExpec
 }
 
 void formula::processor::FilePlayer::prepare() {
-    prepare(currentSampleRate, currentSamplesPerBlock);
+    prepare(currentSampleRate, static_cast<int>(currentSamplesPerBlock));
 }
 
 void formula::processor::FilePlayer::getNextBlock(AudioBuffer<float> &buffer) {

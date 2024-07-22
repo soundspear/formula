@@ -78,14 +78,14 @@ namespace formula::gui {
     public:
         explicit KnobPanelSlider() : KnobPanelElement<juce::Slider, double>() {
             setSliderProperties();
-        };
+        }
         explicit KnobPanelSlider(bool isReadOnlyKnob) : KnobPanelElement<juce::Slider, double>(isReadOnlyKnob) {
             setSliderProperties();
-        };
+        }
         KnobPanelSlider(bool isReadOnlyKnob, Slider::SliderStyle sliderStyle) : KnobPanelElement<juce::Slider, double>(isReadOnlyKnob) {
             setSliderProperties();
             innerElement.setSliderStyle(sliderStyle);
-        };
+        }
 
         void resized() override
         {
@@ -116,7 +116,7 @@ namespace formula::gui {
     class KnobPanelToggle : public KnobPanelElement<juce::ToggleButton, bool>
     {
     public:
-        KnobPanelToggle() : KnobPanelElement<juce::ToggleButton, bool>() {};
+        KnobPanelToggle() : KnobPanelElement<juce::ToggleButton, bool>() {}
 
         void resized() override
         {

@@ -48,10 +48,10 @@ formula::gui::PluginWindow::PluginWindow(
 
     logoDrawable = Drawable::createFromImageData(formula::binary::logo_svg, formula::binary::logo_svgSize);
     addAndMakeVisible(logoDrawable.get());
-    logoDrawable->setAlpha(0.6);
+    logoDrawable->setAlpha(0.6f);
 
     versionLabel.setText("v" + juce::String(FORMULA_VERSION), NotificationType::dontSendNotification);
-    versionLabel.setAlpha(0.4);
+    versionLabel.setAlpha(0.4f);
     versionFont = versionLabel.getFont();
     versionFont.setHeight(12);
     versionLabel.setFont(versionFont);
@@ -87,14 +87,14 @@ formula::gui::PluginWindow::PluginWindow(
 
     eventHub->subscribeOnUiThread<PluginWindow>(
             EventType::scaleUp, [] ([[maybe_unused]] boost::any _, PluginWindow* thisPtr) {
-                thisPtr->scaleFactor += 0.25;
+                thisPtr->scaleFactor += 0.25f;
                 thisPtr->scaleFactor = fmin(2.f, thisPtr->scaleFactor);
                 thisPtr->setScaleFactor(thisPtr->scaleFactor);
             }, this);
 
     eventHub->subscribeOnUiThread<PluginWindow>(
             EventType::scaleDown, [] ([[maybe_unused]] boost::any _, PluginWindow* thisPtr) {
-                thisPtr->scaleFactor -= 0.25;
+                thisPtr->scaleFactor -= 0.25f;
                 thisPtr->scaleFactor = fmax(0.25f, thisPtr->scaleFactor);
                 thisPtr->setScaleFactor(thisPtr->scaleFactor);
             }, this);

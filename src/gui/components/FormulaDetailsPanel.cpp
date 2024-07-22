@@ -40,11 +40,12 @@ formula::gui::FormulaDetailsPanel::FormulaDetailsPanel(
 }
 
 
-void formula::gui::FormulaDetailsPanel::setFormula(formula::processor::FormulaMetadata metadata) {
+void formula::gui::FormulaDetailsPanel::setFormula(const formula::processor::FormulaMetadata& newMetadata) {
+    this->metadata = newMetadata;
+
     nameLabel.setText(metadata[formula::processor::FormulaMetadataKeys::name], NotificationType::sendNotificationAsync);
     codePreviewEditor->loadContent(metadata[formula::processor::FormulaMetadataKeys::source]);
     descriptionLabel.setText(metadata[formula::processor::FormulaMetadataKeys::description], NotificationType::sendNotificationAsync);
-    this->metadata = metadata;
 
     resized();
     repaint();
@@ -93,7 +94,7 @@ void formula::gui::FormulaDetailsPanel::resized()
             .withTrimmedBottom(componentsMargin);
     auto buttonMarginX =  buttonArea.getWidth() * 0.4;
     buttonArea = buttonArea.removeFromBottom(loadButtonHeight)
-            .withTrimmedLeft(buttonMarginX/2).withTrimmedRight(buttonMarginX/2);
+            .withTrimmedLeft(static_cast<int>(buttonMarginX/2)).withTrimmedRight(static_cast<int>(buttonMarginX/2));
     loadFormulaButton.setBounds(buttonArea);
 }
 

@@ -19,7 +19,7 @@ namespace formula::gui {
     class FormulaDetailsPanel : public juce::Component {
     public:
         explicit FormulaDetailsPanel(const std::shared_ptr<formula::events::EventHub>& eventHubRef);
-        void setFormula(formula::processor::FormulaMetadata metadata);
+        void setFormula(const formula::processor::FormulaMetadata& newMetadata);
 
         void paint(Graphics& g) override;
         void resized() override;

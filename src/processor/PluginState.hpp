@@ -35,7 +35,7 @@ namespace formula::processor {
 
         void setupListener(AudioProcessorValueTreeState::Listener* listener);
 
-        std::string getDebugString() { return debugString; };
+        std::string getDebugString() { return debugString; }
         void setDebugString(std::string newString) { debugString = newString; }
 
 		void setActiveFormulaMetadata(FormulaMetadata metadata);

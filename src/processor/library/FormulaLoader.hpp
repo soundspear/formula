@@ -42,7 +42,7 @@ namespace formula::processor::library {
                 float* userKnobs, float* userSwitches,
                 double sampleRate
         );
-		bool isReady() const { return isLoaded; };
+		bool isReady() const { return isLoaded; }
         std::string getDebugString() { return lastDebugString; }
 	private:
         void loadLibrary(std::string compilationId,
@@ -53,7 +53,7 @@ namespace formula::processor::library {
 
         int *debugStackIdx;
         char **debugStack;
-        int debugStackSize = 512;
+        unsigned long debugStackSize = 512UL;
 
         std::string lastDebugString;
 

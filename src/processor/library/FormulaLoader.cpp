@@ -14,7 +14,7 @@ formula::processor::library::FormulaLoader::FormulaLoader()
 
     debugStackIdx = new int;
     debugStack = new char* [debugStackSize];
-    for (int i = 0; i < debugStackSize; i++) {
+    for (auto i = 0UL; i < debugStackSize; i++) {
         debugStack[i] = new char[2048];
     }
 }
@@ -28,7 +28,7 @@ formula::processor::library::FormulaLoader::~FormulaLoader()
     unloadLibrary();
 
     delete debugStackIdx;
-    for (int i = 0; i < debugStackSize; i++) {
+    for (auto i = 0UL; i < debugStackSize; i++) {
         delete debugStack[i];
     }
     delete debugStack;
@@ -79,7 +79,7 @@ void formula::processor::library::FormulaLoader::formulaProcessBlock(
                           bpm, bar,
                           userKnobs, userSwitches,
                           sampleRate,
-                          debugStackIdx, debugStack, debugStackSize);
+                          debugStackIdx, debugStack, static_cast<int>(debugStackSize));
 
     formatDebugString();
 
