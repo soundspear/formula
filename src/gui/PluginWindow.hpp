@@ -64,7 +64,6 @@ namespace formula::gui
         SpinnerOverlay spinner;
         static std::unique_ptr<juce::TooltipWindow> tooltipWindow;
         formula::gui::NoCompilerFoundPopup noCompilerFoundPopup;
-        std::unique_ptr<formula::gui::FormulaLookAndFeel> laf;
 
         float scaleFactor = 1;
 

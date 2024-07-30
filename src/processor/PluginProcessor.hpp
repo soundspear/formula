@@ -14,6 +14,7 @@
 #include <events/EventHub.hpp>
 #include <compiler/TccWrapper.hpp>
 #include <compiler/ClangWrapper.hpp>
+#include <gui/FormulaLookAndFeel.hpp>
 #include <processor/FilePlayer.hpp>
 #include <processor/library/FormulaLoader.hpp>
 #include <processor/PluginState.hpp>
@@ -35,7 +36,7 @@ class PluginProcessor : public juce::AudioProcessor, public formula::processor::
         PluginProcessor();
         ~PluginProcessor() override;
 
-        void instanciateCompiler();
+        void instantiateCompiler();
 
         void prepareToPlay (double sampleRate, int samplesPerBlock) override;
         void releaseResources() override;
@@ -66,6 +67,7 @@ class PluginProcessor : public juce::AudioProcessor, public formula::processor::
         std::shared_ptr<formula::storage::CommunityIndex> communityIndex;
         std::shared_ptr<formula::processor::FilePlayer> filePlayer;
         std::unique_ptr<formula::compiler::CompilerWrapper> compiler;
+        std::unique_ptr<formula::gui::FormulaLookAndFeel> laf;
         formula::processor::library::FormulaLoader formulaLoader;
 
         juce::AudioPlayHead* audioPlayHead;

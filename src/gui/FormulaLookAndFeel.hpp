@@ -8,6 +8,7 @@
 #define FORMULA_GUI_FORMULALOOKANDFEEL_INCLUDED
 
 #include <JuceHeader.h>
+#include <gui/components/IconButton.hpp>
 
 namespace formula::gui {
     /**

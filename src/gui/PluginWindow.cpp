@@ -26,11 +26,6 @@ formula::gui::PluginWindow::PluginWindow(
       tabs(TabbedButtonBar::TabsAtTop),
       spinner(eventHubRef)
 {
-    if (!laf) {
-        laf = std::make_unique<FormulaLookAndFeel>();
-    }
-    LookAndFeel::setDefaultLookAndFeel(laf.get());
-
     setResizable(true, false);
     auto resolutionSetting = settings->find<std::string>(formula::storage::SettingKey::windowResolution);
     setWindowSizeFromResolutionString(resolutionSetting);
@@ -135,9 +130,6 @@ formula::gui::PluginWindow::~PluginWindow() {
     setLookAndFeel(nullptr);
     if (tooltipWindow) {
         tooltipWindow.reset(nullptr);
-    }
-    if (laf) {
-        laf.reset(nullptr);
     }
     eventHub->unsubscribe(this);
 }

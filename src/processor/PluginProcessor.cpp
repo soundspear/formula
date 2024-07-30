@@ -18,11 +18,12 @@ formula::processor::PluginProcessor::PluginProcessor()
     localIndex(std::make_shared<formula::storage::UserIndex>()),
     communityIndex(std::make_shared<formula::storage::CommunityIndex>()),
     filePlayer(std::make_shared<formula::processor::FilePlayer>()),
+    laf(std::make_unique<formula::gui::FormulaLookAndFeel>()),
     recompiled(false)
 {
     pluginState->setupListener(this);
 
-    instanciateCompiler();
+    instantiateCompiler();
 
     eventHub->subscribe(EventType::compilationSuccess, [this](boost::any compilationId) {
         auto formulaMetadata = pluginState->getActiveFormulaMetadata();
@@ -31,13 +32,15 @@ formula::processor::PluginProcessor::PluginProcessor()
         pluginState->setActiveFormulaMetadata(formulaMetadata);
         this->recompiled = true;
     }, this);
+
+    LookAndFeel::setDefaultLookAndFeel(laf.get());
 }
 
 formula::processor::PluginProcessor::~PluginProcessor()
 {
 }
 
-void formula::processor::PluginProcessor::instanciateCompiler() {
+void formula::processor::PluginProcessor::instantiateCompiler() {
     compiler = std::make_unique<formula::compiler::TccWrapper>(eventHub);
     if (compiler->isCompilerAvailable()) {
         return;
@@ -189,6 +192,8 @@ void formula::processor::PluginProcessor::getStateInformation (juce::MemoryBlock
 void formula::processor::PluginProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     pluginState->deserialize(data, sizeInBytes);
+    eventHub->publish(EventType::loadFormulaRequest, pluginState->getActiveFormulaMetadata());
+
     const auto compilationId = pluginState->getActiveFormulaMetadata()[FormulaMetadataKeys::compilationId];
     if (!compilationId.empty()) {
         recompiled = true;

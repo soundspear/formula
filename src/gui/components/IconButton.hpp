@@ -39,11 +39,6 @@ namespace formula::gui
 
 		void paintButton(Graphics& g,
 			bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override {
-            const auto& laf = getLookAndFeel();
-            const auto idleColour = laf.findColour(static_cast<int>(ColourIds::idleColourId));
-            const auto highlightedColour = laf.findColour(static_cast<int>(ColourIds::highlightedColourId));
-            const auto downColour = laf.findColour(static_cast<int>(ColourIds::downColourId));
-            const auto toggledColour = laf.findColour(static_cast<int>(ColourIds::toggledColourId));
 
 			auto localBounds = getLocalBounds().toFloat();
             g.fillAll(idleColour);
@@ -61,9 +56,24 @@ namespace formula::gui
                 g.fillRoundedRectangle(localBounds, 3.f);
             }
 		}
+
+		void colourChanged() override {
+			const auto& laf = getLookAndFeel();
+			if (laf.isColourSpecified(ColourIds::idleColourId)) {
+				idleColour = laf.findColour(static_cast<int>(ColourIds::idleColourId));
+				highlightedColour = laf.findColour(static_cast<int>(ColourIds::highlightedColourId));
+				downColour = laf.findColour(static_cast<int>(ColourIds::downColourId));
+				toggledColour = laf.findColour(static_cast<int>(ColourIds::toggledColourId));
+			}
+		}
 	private:
 		std::unique_ptr<XmlElement> normalImageSvgSource;
 		std::unique_ptr<juce::Drawable> normalImageSvgDrawable;
+
+		Colour idleColour;
+		Colour highlightedColour;
+		Colour downColour;
+		Colour toggledColour;
 	};
 }
 
