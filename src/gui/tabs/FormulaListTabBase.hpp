@@ -35,6 +35,9 @@ namespace formula::gui {
         std::vector<formula::processor::FormulaMetadata> data;
         TableListBox table;
         std::shared_ptr<formula::storage::LocalIndex> index;
+    private:
+        static bool compareFormulaDates(formula::processor::FormulaMetadata& a, formula::processor::FormulaMetadata& b,
+            const std::string& column);
     };
 }
 

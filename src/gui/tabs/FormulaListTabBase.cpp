@@ -74,17 +74,13 @@ void formula::gui::FormulaListTabBase::sortOrderChanged(int newSortColumnId, boo
         break;
         case ColumnsIds::created:
             predicate = [](FormulaMetadata a, FormulaMetadata b) {
-                const auto& timeA = boost::posix_time::time_from_string(a[FormulaMetadataKeys::created]);
-                const auto& timeB = boost::posix_time::time_from_string(b[FormulaMetadataKeys::created]);
-                return timeA < timeB;
+                return compareFormulaDates(a, b, FormulaMetadataKeys::created);
             };
         break;
         case ColumnsIds::lastModified:
             predicate = [](FormulaMetadata a, FormulaMetadata b) {
-                const auto& timeA = boost::posix_time::time_from_string(a[FormulaMetadataKeys::lastModified]);
-                const auto& timeB = boost::posix_time::time_from_string(b[FormulaMetadataKeys::lastModified]);
-                return timeA < timeB;
-        };
+                return compareFormulaDates(a, b, FormulaMetadataKeys::created);
+            };
         break;
         case ColumnsIds::description:
             predicate = [](FormulaMetadata a, FormulaMetadata b) {
@@ -110,6 +106,21 @@ void formula::gui::FormulaListTabBase::visibilityChanged()
         index->loadIndex();
         refreshData();
         table.updateContent();
+    }
+}
+
+bool formula::gui::FormulaListTabBase::compareFormulaDates(formula::processor::FormulaMetadata& a,
+    formula::processor::FormulaMetadata& b, const std::string& column)
+{
+    try
+    {
+        const auto& timeA = boost::posix_time::time_from_string(a[column]);
+        const auto& timeB = boost::posix_time::time_from_string(b[column]);
+        return timeA < timeB;
+    }
+    catch (const std::exception& _)
+    {
+        return false;
     }
 }
 
