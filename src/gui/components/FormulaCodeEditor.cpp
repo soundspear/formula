@@ -31,6 +31,7 @@ formula::gui::FormulaCodeEditor::FormulaCodeEditor(const std::shared_ptr<events:
             break;
         case SearchAction::SearchCancelled:
             thisPtr->toggleSearchBar();
+            thisPtr->unselect();
             break;
         }
     }, this);
@@ -38,15 +39,24 @@ formula::gui::FormulaCodeEditor::FormulaCodeEditor(const std::shared_ptr<events:
 
 bool formula::gui::FormulaCodeEditor::keyPressed (const KeyPress& key)
 {
-    if (CodeEditorComponent::keyPressed(key)) return true;
-
     if (key == KeyPress ('f', ModifierKeys::commandModifier, 0))
     {
         toggleSearchBar();
         return true;
     }
 
-    return false;
+    if (key == KeyPress::tabKey && isHighlightActive())
+    {
+        indentSelection();
+        return true;
+    }
+    if (key == KeyPress (KeyPress::tabKey, ModifierKeys::shiftModifier, 0))
+    {
+        unindentSelection();
+        return true;
+    }
+
+    return CodeEditorComponent::keyPressed(key);
 }
 
 void formula::gui::FormulaCodeEditor::resized()
@@ -61,6 +71,11 @@ void formula::gui::FormulaCodeEditor::resized()
             .withTrimmedLeft(margin);
 
     searchBar.setBounds(area.removeFromTop(searchBarHeight));
+}
+
+void formula::gui::FormulaCodeEditor::unselect()
+{
+    selectRegion(getCaretPos(), getCaretPos());
 }
 
 void formula::gui::FormulaCodeEditor::setCodeEditorComponentColourScheme()
@@ -141,7 +156,7 @@ void formula::gui::FormulaCodeEditor::goToNextSearchResult()
         return;
     }
 
-    if (++currentSearchMatch >= searchMatches.size())
+    if (++currentSearchMatch >= static_cast<int>(searchMatches.size()))
     {
         currentSearchMatch = 0;
     }

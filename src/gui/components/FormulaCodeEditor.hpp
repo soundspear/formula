@@ -21,6 +21,7 @@ namespace formula::gui {
         FormulaCodeEditor(const std::shared_ptr<events::EventHub>& eventHub, juce::CodeDocument& document);
         bool keyPressed (const KeyPress& key) override;
         void resized() override;
+        void unselect();
     private:
         void setCodeEditorComponentColourScheme();
         void toggleSearchBar();
