@@ -68,7 +68,7 @@ void formula::gui::FormulaCodeEditor::resized()
 
     auto area = getLocalBounds()
             .withTrimmedTop(margin)
-            .withTrimmedLeft(margin);
+            .withTrimmedLeft(margin * 5);
 
     searchBar.setBounds(area.removeFromTop(searchBarHeight));
 }
