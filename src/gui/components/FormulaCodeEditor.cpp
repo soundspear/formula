@@ -4,6 +4,7 @@
     See http://www.boost.org/LICENSE_1_0.txt
 */
 
+#include <regex>
 #include "FormulaCodeEditor.hpp"
 
 formula::gui::FormulaCodeTokenizer formula::gui::FormulaCodeEditor::tokenizer;
@@ -22,9 +23,14 @@ formula::gui::FormulaCodeEditor::FormulaCodeEditor(const std::shared_ptr<events:
         switch (actionType)
         {
         case SearchAction::QueryChanged:
+            thisPtr->runSearchQuery();
+            thisPtr->goToNextSearchResult();
             break;
-        case SearchAction::SearchValidated: case SearchAction::SearchCancelled:
-            thisPtr->toggleSearch();
+        case SearchAction::SearchValidated:
+            thisPtr->goToNextSearchResult();
+            break;
+        case SearchAction::SearchCancelled:
+            thisPtr->toggleSearchBar();
             break;
         }
     }, this);
@@ -36,7 +42,7 @@ bool formula::gui::FormulaCodeEditor::keyPressed (const KeyPress& key)
 
     if (key == KeyPress ('f', ModifierKeys::commandModifier, 0))
     {
-        toggleSearch();
+        toggleSearchBar();
         return true;
     }
 
@@ -89,7 +95,7 @@ void formula::gui::FormulaCodeEditor::setCodeEditorComponentColourScheme()
     setColourScheme(cs);
 }
 
-void formula::gui::FormulaCodeEditor::toggleSearch()
+void formula::gui::FormulaCodeEditor::toggleSearchBar()
 {
     if (!searchBar.isVisible())
     {
@@ -103,4 +109,45 @@ void formula::gui::FormulaCodeEditor::toggleSearch()
     {
         searchBar.setVisible(false);
     }
+}
+
+void formula::gui::FormulaCodeEditor::runSearchQuery()
+{
+    const auto& query = searchBar.getQuery();
+    if (query.empty()) return;
+
+    const auto& content = getDocument().getAllContent().toStdString();
+    searchMatches.clear();
+    currentSearchMatch = 0;
+
+    const std::regex pattern(query, std::regex_constants::icase);
+    std::smatch match;
+    std::string::const_iterator searchStart(content.cbegin());
+    int charactersFromStartOfDocument = 0;
+    while (regex_search(searchStart, content.cend(), match, pattern))
+    {
+        charactersFromStartOfDocument += static_cast<int>(match.position());
+        const auto position = CodeDocument::Position(getDocument(), charactersFromStartOfDocument);
+        searchMatches.push_back(position);
+        charactersFromStartOfDocument += static_cast<int>(match.size());
+        searchStart = match.suffix().first;
+    }
+}
+
+void formula::gui::FormulaCodeEditor::goToNextSearchResult()
+{
+    if (searchMatches.empty())
+    {
+        return;
+    }
+
+    if (++currentSearchMatch >= searchMatches.size())
+    {
+        currentSearchMatch = 0;
+    }
+
+    const auto& position = searchMatches[currentSearchMatch];
+    moveCaretTo(position, false);
+    Range highlight (position.getPosition(), position.getPosition() + static_cast<int>(searchBar.getQuery().size()));
+    setHighlightedRegion(highlight);
 }

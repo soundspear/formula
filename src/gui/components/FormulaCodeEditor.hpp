@@ -23,10 +23,14 @@ namespace formula::gui {
         void resized() override;
     private:
         void setCodeEditorComponentColourScheme();
-        void toggleSearch();
+        void toggleSearchBar();
+        void runSearchQuery();
+        void goToNextSearchResult();
 
         static formula::gui::FormulaCodeTokenizer tokenizer;
         formula::gui::SearchBar searchBar;
+        std::vector<CodeDocument::Position> searchMatches;
+        int currentSearchMatch = -1;
     };
 }
 
