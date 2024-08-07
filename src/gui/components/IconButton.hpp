@@ -59,7 +59,7 @@ namespace formula::gui
 
 		void colourChanged() override {
 			const auto& laf = getLookAndFeel();
-			if (laf.isColourSpecified(ColourIds::idleColourId)) {
+			if (laf.isColourSpecified(static_cast<int>(ColourIds::idleColourId))) {
 				idleColour = laf.findColour(static_cast<int>(ColourIds::idleColourId));
 				highlightedColour = laf.findColour(static_cast<int>(ColourIds::highlightedColourId));
 				downColour = laf.findColour(static_cast<int>(ColourIds::downColourId));

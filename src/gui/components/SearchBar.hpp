@@ -13,6 +13,16 @@
 
 namespace formula::gui {
     /**
+     * Action that is propagated along with the search event
+     */
+    enum SearchAction
+    {
+        QueryChanged,
+        SearchValidated,
+        SearchCancelled
+    };
+
+    /**
      * Search bar for Formula name and description
      */
     class SearchBar : public juce::Component {
@@ -21,7 +31,7 @@ namespace formula::gui {
         void resized() override;
 
         std::string getQuery() const { return queryEditor.getText().toStdString(); }
-        void setSearchEventType(EventType searchEventType);
+        void setSearchEventType(EventType newSearchEventType);
     private:
         std::shared_ptr<formula::events::EventHub> eventHub;
 

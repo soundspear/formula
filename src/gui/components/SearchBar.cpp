@@ -12,8 +12,17 @@ formula::gui::SearchBar::SearchBar(const std::shared_ptr<formula::events::EventH
     addAndMakeVisible(queryEditor);
 
     searchButton.setImage(formula::binary::search_svg, Colour::fromRGB(0xaf,0xb1,0xb3));
+    queryEditor.onTextChange = [this]() {
+        this->eventHub->publish(searchEventType, SearchAction::QueryChanged);
+    };
+    queryEditor.onEscapeKey = [this]() {
+        this->eventHub->publish(searchEventType, SearchAction::SearchCancelled);
+    };
+    queryEditor.onReturnKey = [this]() {
+        this->eventHub->publish(searchEventType, SearchAction::SearchValidated);
+    };
     searchButton.onClick = [this]() {
-        this->eventHub->publish(EventType::searchFormulaRequest);
+        this->eventHub->publish(searchEventType, SearchAction::SearchValidated);
     };
     addAndMakeVisible(searchButton);
 }
@@ -33,7 +42,7 @@ void formula::gui::SearchBar::resized() {
     searchButton.setBounds(area.removeFromLeft(buttonSize));
 }
 
-void formula::gui::SearchBar::setSearchEventType(EventType searchEventType)
+void formula::gui::SearchBar::setSearchEventType(EventType newSearchEventType)
 {
-    this->searchEventType = searchEventType;
+    this->searchEventType = newSearchEventType;
 }

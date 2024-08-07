@@ -15,6 +15,19 @@ formula::gui::FormulaCodeEditor::FormulaCodeEditor(const std::shared_ptr<events:
 
     searchBar.setSearchEventType(EventType::codeSearch);
     setCodeEditorComponentColourScheme();
+
+    eventHub->subscribeOnUiThread<FormulaCodeEditor>(
+            EventType::codeSearch, []([[maybe_unused]] boost::any arg, FormulaCodeEditor* thisPtr) {
+        auto actionType = boost::any_cast<formula::gui::SearchAction>(arg);
+        switch (actionType)
+        {
+        case SearchAction::QueryChanged:
+            break;
+        case SearchAction::SearchValidated: case SearchAction::SearchCancelled:
+            thisPtr->toggleSearch();
+            break;
+        }
+    }, this);
 }
 
 bool formula::gui::FormulaCodeEditor::keyPressed (const KeyPress& key)
@@ -81,7 +94,10 @@ void formula::gui::FormulaCodeEditor::toggleSearch()
     if (!searchBar.isVisible())
     {
         searchBar.setVisible(true);
-        searchBar.grabKeyboardFocus();
+        if (isShowing())
+        {
+            searchBar.grabKeyboardFocus();
+        }
     }
     else
     {

@@ -31,6 +31,7 @@ namespace formula::storage {
                 boost::filesystem::create_directories(storageFolder);
             }
 		}
+		virtual ~LocalStorage() = default;
 
 	protected:
 		boost::filesystem::path storageFolder;
