@@ -124,12 +124,12 @@ void formula::gui::FormulaCodeEditor::runSearchQuery()
     std::smatch match;
     std::string::const_iterator searchStart(content.cbegin());
     int charactersFromStartOfDocument = 0;
-    while (regex_search(searchStart, content.cend(), match, pattern))
+    while (std::regex_search(searchStart, content.cend(), match, pattern))
     {
         charactersFromStartOfDocument += static_cast<int>(match.position());
         const auto position = CodeDocument::Position(getDocument(), charactersFromStartOfDocument);
-        searchMatches.push_back(position);
-        charactersFromStartOfDocument += static_cast<int>(match.size());
+        searchMatches.emplace_back(std::make_pair(position, match.length()));
+        charactersFromStartOfDocument += static_cast<int>(match.length());
         searchStart = match.suffix().first;
     }
 }
@@ -146,8 +146,8 @@ void formula::gui::FormulaCodeEditor::goToNextSearchResult()
         currentSearchMatch = 0;
     }
 
-    const auto& position = searchMatches[currentSearchMatch];
+    const auto& [position, size] = searchMatches[currentSearchMatch];
     moveCaretTo(position, false);
-    Range highlight (position.getPosition(), position.getPosition() + static_cast<int>(searchBar.getQuery().size()));
+    const Range highlight (position.getPosition(), position.getPosition() + size);
     setHighlightedRegion(highlight);
 }
