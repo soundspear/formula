@@ -14,6 +14,7 @@ formula::gui::CommunityFormulasTab::CommunityFormulasTab(
         detailsPanel(eventHubRef),
         searchBar(eventHubRef)
 {
+    searchBar.setSearchEventType(EventType::searchFormulaRequest);
     addAndMakeVisible(searchBar);
 
     table.setColour(ListBox::outlineColourId, Colours::grey);

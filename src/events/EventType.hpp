@@ -22,12 +22,14 @@ enum class EventType {
     scaleUp,
     scaleDown,
     windowSizeRequested,
+	codeSearch,
     // Web client events
     newVersionReleased,
     webRequestSent,
     webRequestFinished,
     // Miscellaneous
     unexpectedError,
+	undefined
 };
 
 #endif // FORMULA_EVENTS_EVENTTYPE_INLUDED

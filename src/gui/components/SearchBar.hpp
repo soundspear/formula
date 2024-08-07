@@ -17,15 +17,18 @@ namespace formula::gui {
      */
     class SearchBar : public juce::Component {
     public:
-        SearchBar(const std::shared_ptr<formula::events::EventHub>& eventHubRef);
+        explicit SearchBar(const std::shared_ptr<formula::events::EventHub>& eventHubRef);
         void resized() override;
 
         std::string getQuery() const { return queryEditor.getText().toStdString(); }
+        void setSearchEventType(EventType searchEventType);
     private:
         std::shared_ptr<formula::events::EventHub> eventHub;
 
         juce::TextEditor queryEditor;
         formula::gui::IconButton searchButton;
+
+        EventType searchEventType;
     };
 }
 

@@ -10,17 +10,23 @@
 #include <JuceHeader.h>
 #include <gui/FormulaCodeTokenizer.hpp>
 
+#include <gui/components/SearchBar.hpp>
+
 namespace formula::gui {
     /**
      * Formula code editor component
      */
     class FormulaCodeEditor : public CodeEditorComponent {
     public:
-        FormulaCodeEditor(juce::CodeDocument& document);
+        FormulaCodeEditor(const std::shared_ptr<events::EventHub>& eventHub, juce::CodeDocument& document);
+        bool keyPressed (const KeyPress& key) override;
+        void resized() override;
     private:
         void setCodeEditorComponentColourScheme();
+        void toggleSearch();
 
         static formula::gui::FormulaCodeTokenizer tokenizer;
+        formula::gui::SearchBar searchBar;
     };
 }
 

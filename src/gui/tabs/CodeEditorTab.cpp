@@ -12,7 +12,7 @@ formula::gui::CodeEditorTab::CodeEditorTab(
 {
     setOpaque(true);
 
-    editor = std::make_unique<formula::gui::FormulaCodeEditor>(codeDocument);
+    editor = std::make_unique<formula::gui::FormulaCodeEditor>(eventHub, codeDocument);
     addAndMakeVisible(editor.get());
     auto metadata = pluginState->getActiveFormulaMetadata();
     auto formulaSource = metadata[formula::processor::FormulaMetadataKeys::source];

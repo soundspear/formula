@@ -7,7 +7,7 @@
 #include "SearchBar.hpp"
 
 formula::gui::SearchBar::SearchBar(const std::shared_ptr<formula::events::EventHub>& eventHubRef)
-: eventHub(eventHubRef) {
+: eventHub(eventHubRef), searchEventType(EventType::undefined) {
     queryEditor.setMultiLine(false, false);
     addAndMakeVisible(queryEditor);
 
@@ -31,4 +31,9 @@ void formula::gui::SearchBar::resized() {
     area.removeFromLeft(searchQueryButtonMargin);
 
     searchButton.setBounds(area.removeFromLeft(buttonSize));
+}
+
+void formula::gui::SearchBar::setSearchEventType(EventType searchEventType)
+{
+    this->searchEventType = searchEventType;
 }

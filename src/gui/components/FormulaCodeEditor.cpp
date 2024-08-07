@@ -8,9 +8,40 @@
 
 formula::gui::FormulaCodeTokenizer formula::gui::FormulaCodeEditor::tokenizer;
 
-formula::gui::FormulaCodeEditor::FormulaCodeEditor(juce::CodeDocument& documentRef)
-: CodeEditorComponent(documentRef, &tokenizer) {
+formula::gui::FormulaCodeEditor::FormulaCodeEditor(const std::shared_ptr<events::EventHub>& eventHub, juce::CodeDocument& documentRef)
+    : CodeEditorComponent(documentRef, &tokenizer), searchBar(eventHub)
+{
+    addChildComponent(searchBar);
+
+    searchBar.setSearchEventType(EventType::codeSearch);
     setCodeEditorComponentColourScheme();
+}
+
+bool formula::gui::FormulaCodeEditor::keyPressed (const KeyPress& key)
+{
+    if (CodeEditorComponent::keyPressed(key)) return true;
+
+    if (key == KeyPress ('f', ModifierKeys::commandModifier, 0))
+    {
+        toggleSearch();
+        return true;
+    }
+
+    return false;
+}
+
+void formula::gui::FormulaCodeEditor::resized()
+{
+    CodeEditorComponent::resized();
+
+    constexpr auto searchBarHeight = 24;
+    constexpr auto margin = 8;
+
+    auto area = getLocalBounds()
+            .withTrimmedTop(margin)
+            .withTrimmedLeft(margin);
+
+    searchBar.setBounds(area.removeFromTop(searchBarHeight));
 }
 
 void formula::gui::FormulaCodeEditor::setCodeEditorComponentColourScheme()
@@ -43,4 +74,17 @@ void formula::gui::FormulaCodeEditor::setCodeEditorComponentColourScheme()
         cs.set(t.name, Colour(t.colour));
 
     setColourScheme(cs);
+}
+
+void formula::gui::FormulaCodeEditor::toggleSearch()
+{
+    if (!searchBar.isVisible())
+    {
+        searchBar.setVisible(true);
+        searchBar.grabKeyboardFocus();
+    }
+    else
+    {
+        searchBar.setVisible(false);
+    }
 }

@@ -27,7 +27,7 @@ formula::gui::FormulaDetailsPanel::FormulaDetailsPanel(
     descriptionLabel.setFont(descriptionFont);
     addAndMakeVisible(descriptionLabel);
 
-    codePreviewEditor = std::make_unique<formula::gui::FormulaCodeEditor>(codePreview);
+    codePreviewEditor = std::make_unique<formula::gui::FormulaCodeEditor>(eventHub, codePreview);
     addAndMakeVisible(codePreviewEditor.get());
 
     loadFormulaButton.setButtonText("Load formula");
