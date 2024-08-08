@@ -156,7 +156,7 @@ void formula::gui::FormulaCodeEditor::goToNextSearchResult()
         return;
     }
 
-    if (++currentSearchMatch >= static_cast<int>(searchMatches.size()))
+    if (++currentSearchMatch >= searchMatches.size())
     {
         currentSearchMatch = 0;
     }

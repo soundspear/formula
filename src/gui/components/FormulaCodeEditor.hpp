@@ -31,7 +31,7 @@ namespace formula::gui {
         static formula::gui::FormulaCodeTokenizer tokenizer;
         formula::gui::SearchBar searchBar;
         std::vector<std::pair<CodeDocument::Position, int>> searchMatches;
-        int currentSearchMatch = -1;
+        unsigned int currentSearchMatch = 0;
     };
 }
 
