@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.11)
-project(Formula VERSION 1.2.0 LANGUAGES CXX)
+project(Formula VERSION 1.2.1 LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_CXX_STANDARD 20)
