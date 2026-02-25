@@ -17,14 +17,14 @@ namespace formula::compiler {
      */
     class NoPreprocessorGuard : public SecurityGuard {
     public:
-        NoPreprocessorGuard() : noPreprocessorRegex(R"(^\s*#.*)") { }
+        NoPreprocessorGuard() : noPreprocessorRegex(R"(^\s*#include\b)") { }
 
         bool checkLine(std::string& line) override {
             auto found = std::regex_search(line, noPreprocessorRegex);
             if (found) {
                 setErrorMessage(
                     line + "\r\n" +
-                    "\tPreprocessor definitions (#include, #define, ...) are not allowed in formulas for safety reasons."
+                    "\t#include is not allowed in formulas for safety reasons."
                 );
             }
             return found;
