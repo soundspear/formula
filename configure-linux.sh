@@ -28,9 +28,9 @@ apt-get install llvm-$LLVMVersion clang-$LLVMVersion -y
 
 echo "Installing Boost"
 BoostVersion_=$(echo boost_$BoostVersion | tr '.' '_')
-wget "https://boostorg.jfrog.io/artifactory/main/release/$BoostVersion/source/boost_$(echo $BoostVersion | tr '.' '_').tar.gz"
-tar xzfv "$BoostVersion_.tar.gz"
-cd "$BoostVersion_"
+wget "https://github.com/boostorg/boost/releases/download/boost-$BoostVersion/boost-$BoostVersion-b2-nodocs.tar.gz"
+tar xzfv "boost-$BoostVersion-b2-nodocs.tar.gz"
+cd "boost-$BoostVersion"
 ./bootstrap.sh --prefix=/usr/local/
 ./b2 link=static runtime-link=static --with-date_time	--with-filesystem --with-iostreams
 ./b2 install
