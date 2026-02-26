@@ -1,18 +1,13 @@
 #!/bin/zsh
 
+set -e
+
 JuceVersion="7.0.5"
-LLVMVersion="11"
-VCPKGVersion="2024.03.19" # Boost 1.84, cpprestsdk 2.10.19
+VCPKGVersion="2026.01.16"
 
 echo "Installing CMake"
 brew install cmake
 brew install ninja
-
-which -s clang
-if [[ $? != 0 ]] ; then
-  echo "Installing LLVM"
-  brew install llvm@$LLVMVersion
-fi
 
 echo "Installing vcpkg"
 git clone https://github.com/microsoft/vcpkg

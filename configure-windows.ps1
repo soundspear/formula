@@ -1,10 +1,12 @@
 #Requires -RunAsAdministrator
 
+$ErrorActionPreference = "Stop"
+
 $JuceVersion="7.0.5"
 $LLVMVersion="11.1.0"
 $OpenSSLVersion="1.1.1.1300"
-$BoostVersion="1.84.0.1"
-$CMakeVersion="3.22.1"
+$BoostVersion="1.84.0"
+$VCPKGVersion="2026.01.16"
 
 if (Get-Command -Name choco -ErrorAction SilentlyContinue) {
   Write-Host "Chocolatey package manager already installed"
@@ -16,15 +18,8 @@ if (Get-Command -Name choco -ErrorAction SilentlyContinue) {
 }
 refreshenv
 Write-Host
-Write-Host "Installing CMake $CMakeVersion"
-choco install cmake --version $CMakeVersion --installargs 'ADD_CMAKE_TO_PATH=User' -y
-choco install ninja
-Write-Host
 Write-Host "Installing OpenSSL $OpenSSLVersion"
 choco install openssl --version $OpenSSLVersion -y
-Write-Host
-Write-Host "Installing Boost $BoostVersion"
-choco install boost-msvc-14.3 --version $BoostVersion -y
 Write-Host
 Write-Host "Installing LLVM $LLVMVersion"
 choco install llvm --version $LLVMVersion -y
@@ -39,9 +34,22 @@ Invoke-WebRequest -uri "http://download.savannah.gnu.org/releases/tinycc/tcc-0.9
 Expand-Archive "tinycc.zip" -DestinationPath "$Env:Programfiles" -Force
 Remove-Item "tinycc.zip"
 
+Write-Host "Installing Boost $BoostVersion"
+$BoostVersionUnderscore = $BoostVersion -replace '\.', '_'
+$BoostInstaller = "boost_${BoostVersionUnderscore}-msvc-14.3-64.exe"
+$BoostUrl = "https://sourceforge.net/projects/boost/files/boost-binaries/$BoostVersion/$BoostInstaller/download"
+Invoke-WebRequest -Uri $BoostUrl -OutFile $BoostInstaller -UserAgent "Wget"
+Start-Process -Wait -FilePath ".\$BoostInstaller" -ArgumentList "/SILENT","/DIR=C:\local\boost_${BoostVersionUnderscore}"
+Remove-Item $BoostInstaller
+
 Write-Host "Installing vcpkg"
-git clone https://github.com/Microsoft/vcpkg.git --depth 1
+git clone https://github.com/Microsoft/vcpkg.git
+cd vcpkg
+git reset --hard "$VCPKGVersion"
+cd ..
 .\vcpkg\bootstrap-vcpkg.bat
+
+Write-Host "Installing cpprestsdk via vcpkg"
 .\vcpkg\vcpkg install --triplet x64-windows-static cpprestsdk
 .\vcpkg\vcpkg integrate install
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 JuceVersion="7.0.5"
-LLVMVersion="11"
+LLVMVersion="18"
 BoostVersion="1.84.0"
 
 set -e
@@ -11,10 +11,13 @@ if [ "$EUID" -ne 0 ]
   exit
 fi
 
+echo "Updating package index"
+apt-get update -y
+
 echo "Installing Prerequisites"
 apt-get install curl tar gzip build-essential -y
-apt-get install libasound2-dev libfreetype6-dev libfontconfig1-dev xclip libcurl4-openssl-dev  -y
-apt-get install webkit2gtk-4.0 libgtk-3-dev -y 
+apt-get install libasound2-dev libfreetype-dev libfontconfig1-dev xclip libcurl4-openssl-dev -y
+apt-get install libwebkit2gtk-4.1-dev libgtk-3-dev -y
 apt-get install xorg-dev -y
 
 echo "Installing CMake"
