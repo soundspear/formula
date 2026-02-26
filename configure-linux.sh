@@ -1,6 +1,6 @@
 #!/bin/bash
 
-JuceVersion="7.0.5"
+JuceVersion="7.0.12"
 LLVMVersion="18"
 BoostVersion="1.84.0"
 

@@ -2,7 +2,7 @@
 
 set -e
 
-JuceVersion="7.0.5"
+JuceVersion="7.0.12"
 VCPKGVersion="2026.01.16"
 
 echo "Installing CMake"
