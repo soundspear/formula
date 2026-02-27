@@ -8,6 +8,7 @@ VCPKGVersion="2026.01.16"
 echo "Installing CMake"
 brew install cmake
 brew install ninja
+brew install pkg-config
 
 echo "Installing vcpkg"
 git clone https://github.com/microsoft/vcpkg
