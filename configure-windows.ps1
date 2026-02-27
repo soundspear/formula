@@ -2,7 +2,7 @@
 
 $ErrorActionPreference = "Stop"
 
-$JuceVersion="7.0.12"
+$JuceVersion="8.0.4"
 $LLVMVersion="11.1.0"
 $OpenSSLVersion="1.1.1.1300"
 $BoostVersion="1.84.0"
