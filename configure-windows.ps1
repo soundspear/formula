@@ -49,7 +49,8 @@ git reset --hard "$VCPKGVersion"
 cd ..
 .\vcpkg\bootstrap-vcpkg.bat
 
-Write-Host "Installing cpprestsdk via vcpkg"
+Write-Host "Installing cpprestsdk via vcpkg (classic mode)"
+$env:VCPKG_FEATURE_FLAGS = "-manifests"
 .\vcpkg\vcpkg install --triplet x64-windows-static cpprestsdk
 .\vcpkg\vcpkg integrate install
 
