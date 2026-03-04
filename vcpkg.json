@@ -3,10 +3,19 @@
   "version": "1.2.2",
   "dependencies": [
     "cpprestsdk",
-    "boost-filesystem",
+    "boost-any",
+    "boost-assign",
     "boost-date-time",
+    "boost-dll",
+    "boost-filesystem",
+    "boost-format",
+    "boost-iostreams",
+    "boost-lexical-cast",
     "boost-process",
-    "boost-iostreams"
+    "boost-preprocessor",
+    "boost-property-tree",
+    "boost-signals2",
+    "boost-uuid"
   ],
   "builtin-baseline": "943c5ef1c8f6b5e6ced092b242c8299caae2ff01"
 }
