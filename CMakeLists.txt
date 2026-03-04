@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
-project(Formula VERSION 1.2.2 LANGUAGES CXX)
+cmake_policy(SET CMP0144 NEW)
+project(Formula VERSION 1.2.2 LANGUAGES C CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_CXX_STANDARD 20)

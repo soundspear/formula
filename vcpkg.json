@@ -1,0 +1,12 @@
+{
+  "name": "formula",
+  "version": "1.2.2",
+  "dependencies": [
+    "cpprestsdk",
+    "boost-filesystem",
+    "boost-date-time",
+    "boost-process",
+    "boost-iostreams"
+  ],
+  "builtin-baseline": "943c5ef1c8f6b5e6ced092b242c8299caae2ff01"
+}
