@@ -50,8 +50,9 @@ cd ..
 .\vcpkg\bootstrap-vcpkg.bat
 
 Write-Host "Installing cpprestsdk via vcpkg (classic mode)"
-$env:VCPKG_FEATURE_FLAGS = "-manifests"
+Rename-Item vcpkg.json vcpkg.json.bak
 .\vcpkg\vcpkg install --triplet x64-windows-static cpprestsdk
 .\vcpkg\vcpkg integrate install
+Rename-Item vcpkg.json.bak vcpkg.json
 
 Write-Host "All done."
