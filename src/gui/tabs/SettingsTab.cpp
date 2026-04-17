@@ -5,7 +5,8 @@ formula::gui::SettingsTab::SettingsTab(
     const std::shared_ptr<formula::processor::FilePlayer>& filePlayerRef
 )
     : eventHub(eventHubRef),
-      filePlayer(filePlayerRef)
+      filePlayer(filePlayerRef),
+      settings(std::make_shared<formula::storage::LocalSettings>())
 {
     windowSizeLabel.setText("Window size", juce::NotificationType::sendNotification);
     addAndMakeVisible(windowSizeLabel);
@@ -13,6 +14,24 @@ formula::gui::SettingsTab::SettingsTab(
     windowSizeComboBox.addItemList(windowSizeList, 1);
     windowSizeComboBox.addListener(this);
     addAndMakeVisible(windowSizeComboBox);
+
+    autoCompileLabel.setText("Automatic compilation", juce::NotificationType::sendNotification);
+    addAndMakeVisible(autoCompileLabel);
+    
+    autoCompileToggle.setToggleState(settings->find<bool>(formula::storage::SettingKey::autoCompile).value_or(false), juce::NotificationType::dontSendNotification);
+    autoCompileToggle.addListener(this);
+    addAndMakeVisible(autoCompileToggle);
+
+    autoCompileDelayLabel.setText("Automatic compilation delay", juce::NotificationType::sendNotification);
+    addAndMakeVisible(autoCompileDelayLabel);
+
+    autoCompileDelayInput.setText(std::to_string(settings->find<int>(formula::storage::SettingKey::autoCompileDelay).value_or(1000)));
+    autoCompileDelayInput.setInputFilter(new juce::TextEditor::LengthAndCharacterRestriction(6, "0123456789"), false);
+    autoCompileDelayInput.addListener(this);
+    addAndMakeVisible(autoCompileDelayInput);
+
+    autoCompileDelaySuffix.setText("ms", juce::NotificationType::sendNotification);
+    addAndMakeVisible(autoCompileDelaySuffix);
 
     if (JUCEApplicationBase::isStandaloneApp()) {
         addAudioFileLoader();
@@ -35,10 +54,29 @@ void formula::gui::SettingsTab::resized() {
     windowSizeComboBox.setBounds(col.removeFromTop(24).removeFromLeft(area.getWidth() / 2));
     col.removeFromTop(componentMargin + pad);
 
+    if (JUCEApplicationBase::isStandaloneApp())
+    {
+        col.removeFromTop(pad);
+        auto row = col.removeFromTop(24);
+        loadAudioFileButton.setBounds(row.removeFromLeft(area.getWidth() / 3));
+        row.removeFromLeft(pad);
+        audioFileName.setBounds(row);
+        col.removeFromTop(componentMargin + pad);
+    }
+
+    // Auto Compile toggle button
     auto row = col.removeFromTop(24);
-    loadAudioFileButton.setBounds(row.removeFromLeft(area.getWidth() / 3));
+    autoCompileToggle.setBounds(row.removeFromLeft(area.getWidth() / 24));
     row.removeFromLeft(pad);
-    audioFileName.setBounds(row);
+    autoCompileLabel.setBounds(row);
+    col.removeFromTop(componentMargin);
+
+    // Auto Compile delay input
+    col.removeFromTop(componentMargin + pad);
+    row = col.removeFromTop(24);
+    autoCompileDelayInput.setBounds(row.removeFromLeft(area.getWidth() / 10));
+    row.removeFromLeft(pad);
+    autoCompileDelayLabel.setBounds(row);
 }
 
 void formula::gui::SettingsTab::setPossibleWindowSizes() {
@@ -76,5 +114,23 @@ void formula::gui::SettingsTab::addAudioFileLoader() {
 void formula::gui::SettingsTab::comboBoxChanged(juce::ComboBox *comboBoxThatHasChanged) {
     if (comboBoxThatHasChanged == &windowSizeComboBox) {
         eventHub->publish(EventType::windowSizeRequested, windowSizeComboBox.getText().toStdString());
+    }
+}
+
+void formula::gui::SettingsTab::textEditorTextChanged(juce::TextEditor& textEditor) {
+    if (&textEditor == &autoCompileDelayInput) {
+        auto delayValue = textEditor.getText().getIntValue();
+        if (delayValue > 0) {
+            settings->add<int>(formula::storage::SettingKey::autoCompileDelay, delayValue);
+            eventHub->publish(EventType::autoCompileDelayChanged, delayValue);
+        }
+    }
+}
+
+void formula::gui::SettingsTab::buttonClicked(juce::Button* button) {
+    if (button == &autoCompileToggle) {
+        auto isEnabled = autoCompileToggle.getToggleState();
+        settings->add<bool>(formula::storage::SettingKey::autoCompile, isEnabled);
+        eventHub->publish(EventType::autoCompileToggle, isEnabled);
     }
 }
