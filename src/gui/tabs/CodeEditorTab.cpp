@@ -8,9 +8,12 @@ formula::gui::CodeEditorTab::CodeEditorTab(
     savePopup(localIndexRef, pluginStateRef),
     knobsPanel(pluginStateRef),
     eventHub(eventHubRef),
-    pluginState(pluginStateRef)
+    pluginState(pluginStateRef),
+    settings(std::make_shared<formula::storage::LocalSettings>())
 {
     setOpaque(true);
+
+    loadSettings();
 
     editor = std::make_unique<formula::gui::FormulaCodeEditor>(eventHub, codeDocument);
     addAndMakeVisible(editor.get());
@@ -145,6 +148,16 @@ formula::gui::CodeEditorTab::CodeEditorTab(
         thisPtr->eventHub->publish(EventType::compilationRequest, activeFormulaSource);
     }, this);
 
+    eventHub->subscribeOnUiThread<CodeEditorTab>(
+            EventType::autoCompileToggle, [](boost::any isEnabled, CodeEditorTab* thisPtr) {
+        thisPtr->autoCompileEnabled = boost::any_cast<bool>(isEnabled);
+    }, this);
+
+    eventHub->subscribeOnUiThread<CodeEditorTab>(
+            EventType::autoCompileDelayChanged, [](boost::any delayMs, CodeEditorTab* thisPtr) {
+        thisPtr->autoCompileDelayMs = boost::any_cast<int>(delayMs);
+    }, this);
+
     startTimer(100);
 }
 
@@ -167,12 +180,26 @@ void formula::gui::CodeEditorTab::codeDocumentTextInserted(const String& newText
     }
     auto source = codeDocument.getAllContent();
     pluginState->setActiveFormulaMetadataField(formula::processor::FormulaMetadataKeys::source, source.toStdString());
+    triggerAutoCompile();
 }
 
 void formula::gui::CodeEditorTab::codeDocumentTextDeleted([[maybe_unused]] int startIndex, [[maybe_unused]] int endIndex)
 {
     auto source = codeDocument.getAllContent();
     pluginState->setActiveFormulaMetadataField(formula::processor::FormulaMetadataKeys::source, source.toStdString());
+    triggerAutoCompile();
+}
+
+void formula::gui::CodeEditorTab::triggerAutoCompile() {
+    if (autoCompileEnabled) {
+        stopTimer();
+        startTimer(autoCompileDelayMs);
+    }
+}
+
+void formula::gui::CodeEditorTab::loadSettings() {
+    autoCompileEnabled = settings->find<bool>(formula::storage::SettingKey::autoCompile).value_or(false);
+    autoCompileDelayMs = settings->find<int>(formula::storage::SettingKey::autoCompileDelay).value_or(1000);
 }
 
 void formula::gui::CodeEditorTab::resized()
@@ -252,6 +279,16 @@ void formula::gui::CodeEditorTab::resized()
 }
 
 void formula::gui::CodeEditorTab::timerCallback() {
+    if (autoCompileEnabled) {
+        auto activeMetadata = pluginState->getActiveFormulaMetadata();
+        auto activeFormulaSource = activeMetadata[formula::processor::FormulaMetadataKeys::source];
+
+        // Only compile if source changed
+        if (activeFormulaSource != lastCompiledSource) {
+            lastCompiledSource = activeFormulaSource;
+            eventHub->publish(EventType::compilationRequest, activeFormulaSource);
+        }
+    }
     debugSymbols.setText(pluginState->getDebugString());
 }
 
