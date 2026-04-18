@@ -15,14 +15,14 @@ formula::gui::SettingsTab::SettingsTab(
     windowSizeComboBox.addListener(this);
     addAndMakeVisible(windowSizeComboBox);
 
-    autoCompileLabel.setText("Automatic compilation", juce::NotificationType::sendNotification);
+    autoCompileLabel.setText("Auto-Launch", juce::NotificationType::sendNotification);
     addAndMakeVisible(autoCompileLabel);
     
     autoCompileToggle.setToggleState(settings->find<bool>(formula::storage::SettingKey::autoCompile).value_or(false), juce::NotificationType::dontSendNotification);
     autoCompileToggle.addListener(this);
     addAndMakeVisible(autoCompileToggle);
 
-    autoCompileDelayLabel.setText("Automatic compilation delay", juce::NotificationType::sendNotification);
+    autoCompileDelayLabel.setText("Auto-Launch Delay (ms)", juce::NotificationType::sendNotification);
     addAndMakeVisible(autoCompileDelayLabel);
 
     autoCompileDelayInput.setText(std::to_string(settings->find<int>(formula::storage::SettingKey::autoCompileDelay).value_or(1000)));
