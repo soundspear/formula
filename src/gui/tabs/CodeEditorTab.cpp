@@ -199,7 +199,7 @@ void formula::gui::CodeEditorTab::triggerAutoCompile() {
 
 void formula::gui::CodeEditorTab::loadSettings() {
     autoCompileEnabled = settings->find<bool>(formula::storage::SettingKey::autoCompile).value_or(false);
-    autoCompileDelayMs = settings->find<int>(formula::storage::SettingKey::autoCompileDelay).value_or(1000);
+    autoCompileDelayMs = settings->find<int>(formula::storage::SettingKey::autoCompileDelay).value_or(100);
 }
 
 void formula::gui::CodeEditorTab::resized()

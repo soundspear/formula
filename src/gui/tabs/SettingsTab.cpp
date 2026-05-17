@@ -25,10 +25,20 @@ formula::gui::SettingsTab::SettingsTab(
     autoCompileDelayLabel.setText("Auto-Launch Delay (ms)", juce::NotificationType::sendNotification);
     addAndMakeVisible(autoCompileDelayLabel);
 
-    autoCompileDelayInput.setText(std::to_string(settings->find<int>(formula::storage::SettingKey::autoCompileDelay).value_or(1000)));
+    autoCompileDelayInput.setText(std::to_string(settings->find<int>(formula::storage::SettingKey::autoCompileDelay).value_or(100)));
     autoCompileDelayInput.setInputFilter(new juce::TextEditor::LengthAndCharacterRestriction(6, "0123456789"), false);
     autoCompileDelayInput.addListener(this);
     addAndMakeVisible(autoCompileDelayInput);
+    
+    // "Auto-Launch" Delay Validation
+    auto autoCompileDelayInputValidation = [&]()
+    {
+        auto val = autoCompileDelayInput.getText().getIntValue();
+        if (val < 100)
+            autoCompileDelayInput.setText("100", juce::dontSendNotification);
+    };
+    autoCompileDelayInput.onFocusLost = autoCompileDelayInputValidation;
+    autoCompileDelayInput.onReturnKey = autoCompileDelayInputValidation;
 
     autoCompileDelaySuffix.setText("ms", juce::NotificationType::sendNotification);
     addAndMakeVisible(autoCompileDelaySuffix);
@@ -120,10 +130,9 @@ void formula::gui::SettingsTab::comboBoxChanged(juce::ComboBox *comboBoxThatHasC
 void formula::gui::SettingsTab::textEditorTextChanged(juce::TextEditor& textEditor) {
     if (&textEditor == &autoCompileDelayInput) {
         auto delayValue = textEditor.getText().getIntValue();
-        if (delayValue > 0) {
-            settings->add<int>(formula::storage::SettingKey::autoCompileDelay, delayValue);
-            eventHub->publish(EventType::autoCompileDelayChanged, delayValue);
-        }
+        if (delayValue < 100) delayValue = 100;
+        settings->add<int>(formula::storage::SettingKey::autoCompileDelay, delayValue);
+        eventHub->publish(EventType::autoCompileDelayChanged, delayValue);
     }
 }
 
