@@ -190,11 +190,14 @@ void formula::gui::CodeEditorTab::codeDocumentTextDeleted([[maybe_unused]] int s
     triggerAutoCompile();
 }
 
-void formula::gui::CodeEditorTab::triggerAutoCompile() {
-    if (autoCompileEnabled) {
-        stopTimer();
-        startTimer(autoCompileDelayMs);
-    }
+void formula::gui::CodeEditorTab::triggerAutoCompile() 
+{
+    if (!autoCompileEnabled) return;
+    
+    if (isSourceChanged) return;
+
+    isSourceChanged = true;
+    lastChangeMs = juce::Time::getMillisecondCounter();
 }
 
 void formula::gui::CodeEditorTab::loadSettings() {
