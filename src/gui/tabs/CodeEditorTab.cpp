@@ -278,18 +278,25 @@ void formula::gui::CodeEditorTab::resized()
 
 }
 
-void formula::gui::CodeEditorTab::timerCallback() {
-    if (autoCompileEnabled) {
+void formula::gui::CodeEditorTab::timerCallback() 
+{
+    debugSymbols.setText(pluginState->getDebugString());
+    handleAutoCompile();
+}
+
+void formula::gui::CodeEditorTab::handleAutoCompile() 
+{
+    if (!autoCompileEnabled) return;
+
+    if (autoCompileDelayMs > abs(int(lastChangeMs - juce::Time::getMillisecondCounter()))) return;
+
+    if (isSourceChanged) {
+        isSourceChanged = false;
+
         auto activeMetadata = pluginState->getActiveFormulaMetadata();
         auto activeFormulaSource = activeMetadata[formula::processor::FormulaMetadataKeys::source];
-
-        // Only compile if source changed
-        if (activeFormulaSource != lastCompiledSource) {
-            lastCompiledSource = activeFormulaSource;
-            eventHub->publish(EventType::compilationRequest, activeFormulaSource);
-        }
+        eventHub->publish(EventType::compilationRequest, activeFormulaSource);
     }
-    debugSymbols.setText(pluginState->getDebugString());
 }
 
 juce::String formula::gui::CodeEditorTab::findAutoTabulation() {

@@ -45,6 +45,7 @@ class CodeEditorTab : public juce::Component, public juce::CodeDocument::Listene
         juce::String findAutoTabulation();
     private:
         void triggerAutoCompile();
+        void handleAutoCompile();
         void loadSettings();
 
         CodeDocument codeDocument;
@@ -71,7 +72,8 @@ class CodeEditorTab : public juce::Component, public juce::CodeDocument::Listene
 
         bool autoCompileEnabled = false;
         int autoCompileDelayMs = 1000;
-        std::string lastCompiledSource;
+        bool isSourceChanged = false;
+        juce::uint32 lastChangeMs = 0;
 
         std::string defaultEditorContent = R"""(
 /*
