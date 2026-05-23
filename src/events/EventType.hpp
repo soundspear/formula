@@ -23,6 +23,8 @@ enum class EventType {
     scaleDown,
     windowSizeRequested,
 	codeSearch,
+    autoCompileToggle,
+    autoCompileDelayChanged,
     // Web client events
     newVersionReleased,
     webRequestSent,

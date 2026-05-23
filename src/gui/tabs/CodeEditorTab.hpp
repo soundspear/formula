@@ -12,6 +12,7 @@
 #include "src/events/EventHub.hpp"
 #include "src/processor/PluginState.hpp"
 #include "src/processor/FormulaMetadata.hpp"
+#include "src/storage/LocalSettings.hpp"
 
 namespace formula::gui
 {
@@ -43,6 +44,10 @@ class CodeEditorTab : public juce::Component, public juce::CodeDocument::Listene
 
         juce::String findAutoTabulation();
     private:
+        void triggerAutoCompile();
+        void handleAutoCompile();
+        void loadSettings();
+
         CodeDocument codeDocument;
         std::unique_ptr<formula::gui::FormulaCodeEditor> editor;
         formula::gui::IconButton newButton;
@@ -63,6 +68,12 @@ class CodeEditorTab : public juce::Component, public juce::CodeDocument::Listene
 
         std::shared_ptr<formula::events::EventHub> eventHub;
         std::shared_ptr<formula::processor::PluginState> pluginState;
+        std::shared_ptr<formula::storage::LocalSettings> settings;
+
+        bool autoCompileEnabled = false;
+        int autoCompileDelayMs = 1000;
+        bool isSourceChanged = false;
+        juce::uint32 lastChangeMs = 0;
 
         std::string defaultEditorContent = R"""(
 /*

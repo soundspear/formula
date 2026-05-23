@@ -22,6 +22,8 @@ namespace formula::storage {
         inline static const std::string username = "username";
         inline static const std::string email = "email";
         inline static const std::string windowResolution = "windowResolution";
+        inline static const std::string autoCompile = "autoCompile";
+        inline static const std::string autoCompileDelay = "autoCompileDelay";
     };
 
     /**
